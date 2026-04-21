@@ -1,0 +1,3 @@
+Jmeno: "ewfw";
+Obtiznost: 1;
+Penize: 2000;
