@@ -13,7 +13,8 @@ public class Menu extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // 1. OPRAVA: Relativní cesta k ikoně
+        SpravceZvuku.prehraj("obchodak_theme_sound","zvuk_v_pozadi.wav", 0, true);
+
         try {
             URL iconUrl = getClass().getResource("/logoAplikace.png");
             if (iconUrl != null) {

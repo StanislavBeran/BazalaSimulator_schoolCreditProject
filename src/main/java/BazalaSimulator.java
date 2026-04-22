@@ -46,6 +46,7 @@ public class BazalaSimulator extends JPanel {
             settingsLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
+                    SpravceZvuku.prehraj("obchodak_theme_sound","zvuk_v_pozadi.wav", 0, true);
                     hlavniOkno.zobrazObrazovku("HLAVNI_MENU");
                 }
             });
@@ -338,16 +339,16 @@ public class BazalaSimulator extends JPanel {
                         panelObrazovky.setVisible(vypinacObrazovky);
                     } else if (nazev.equals("Platební terminál")) {
                         // Zvuk pípnutí terminálu
-                        prehrajZvuk("/pipnuti.wav");
+                        SpravceZvuku.prehraj("/pipnuti.wav");
 
                     } else {
                         // Zde řešíme peníze
                         if (jeKulaty) {
                             // Je to mince
-                            prehrajZvuk("zvuky/mince.wav");
+                            SpravceZvuku.prehraj("/mince.wav");
                         } else {
                             // Je to bankovka
-                            prehrajZvuk("zvuky/bankovka.wav");
+                            SpravceZvuku.prehraj("/bankovka.wav");
                         }
                     }
 
@@ -355,26 +356,10 @@ public class BazalaSimulator extends JPanel {
                 }
             });
         }
-        private void prehrajZvuk(String cestaKZvuku) {
-            try {
-                // Načtení zvuku ze složky resources
-                java.net.URL url = getClass().getResource(cestaKZvuku);
-                if (url != null) {
-                    javax.sound.sampled.AudioInputStream audioIn = javax.sound.sampled.AudioSystem.getAudioInputStream(url);
-                    javax.sound.sampled.Clip clip = javax.sound.sampled.AudioSystem.getClip();
-                    clip.open(audioIn);
-                    clip.start(); // Spustí zvuk
-                } else {
-                    System.err.println("Zvuk nenalezen: " + cestaKZvuku);
-                }
-            } catch (Exception ex) {
-                System.err.println("Chyba při přehrávání zvuku: " + ex.getMessage());
-            }
-        }
+
         public void aktualizujPozici(double scaleW, double scaleH) {
             setBounds((int)(origX * scaleW), (int)(origY * scaleH), (int)(origW * scaleW), (int)(origH * scaleH));
         }
-
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);

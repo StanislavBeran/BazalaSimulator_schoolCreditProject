@@ -76,6 +76,7 @@ public class NovaHraMenu extends JPanel {
             if (!jmenoHry.isEmpty()) {
                 ulozNovouHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText);
                 hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");
+                SpravceZvuku.zastav("obchodak_theme_sound");
             } else {
                 JOptionPane.showMessageDialog(this, "Musíš zadat název!");
             }
