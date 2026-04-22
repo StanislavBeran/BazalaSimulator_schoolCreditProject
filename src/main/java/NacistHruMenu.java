@@ -61,7 +61,7 @@ public class NacistHruMenu extends JPanel {
 
         for (int i = 1; i <= 3; i++) {
             String cestaKSouboru = "ulozeneHry/ulozenaHra" + i + ".txt";
-            String textTlacitka = nactiInformaceZeSouboru(cestaKSouboru);
+            String textTlacitka = SpravceSouboru.nactiUlozeneHryZeSouboru(cestaKSouboru);
 
             JButton btnUlozenaHra = Menu.vytvorTlacitko(textTlacitka);
 
@@ -85,48 +85,5 @@ public class NacistHruMenu extends JPanel {
         tlacitkaContainer.repaint();
     }
 
-    private String nactiInformaceZeSouboru(String cesta) {
-        File soubor = new File(cesta);
 
-        if (!soubor.exists() || soubor.length() == 0) {
-            return "Prázdná pozice";
-        }
-
-        String jmeno = "Neznámé";
-        String obtiznost = "Neznámá";
-        String penize = "0";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(soubor))) {
-            String radek;
-            while ((radek = br.readLine()) != null) {
-                if (radek.trim().isEmpty()) continue;
-                if (radek.contains(":")) {
-                    String hodnota = radek.substring(radek.indexOf(":") + 1).replace(";", "").trim();
-
-                    if (hodnota.startsWith("\"") && hodnota.endsWith("\"")) {
-                        hodnota = hodnota.substring(1, hodnota.length() - 1);
-                    }
-
-                    if (radek.startsWith("Jmeno")) {
-                        jmeno = hodnota;
-                    } else if (radek.startsWith("Obtiznost")) {
-                        switch (hodnota) {
-                            case "0": obtiznost = "Lehká"; break;
-                            case "1": obtiznost = "Střední"; break;
-                            case "2": obtiznost = "Obtížná"; break;
-                            case "3": obtiznost = "Adam (Hardcore)"; break;
-                            default: obtiznost = hodnota; break;
-                        }
-                    } else if (radek.startsWith("Penize")) {
-                        penize = hodnota;
-                    }
-                }
-            }
-            return jmeno + " | Obtížnost: " + obtiznost + " | Peníze: " + penize;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Chyba při čtení";
-        }
-    }
 }
