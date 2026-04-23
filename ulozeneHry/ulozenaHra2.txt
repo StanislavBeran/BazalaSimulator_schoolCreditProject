@@ -1,3 +1,0 @@
-Jmeno: "reg";
-Obtiznost: 3;
-Penize: 10000;

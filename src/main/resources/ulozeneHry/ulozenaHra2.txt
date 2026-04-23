@@ -1,1 +1,3 @@
-
+Jmeno: "sera";
+Obtiznost: 0;
+Penize: 1000;

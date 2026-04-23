@@ -1,1 +1,3 @@
-
+Jmeno: "Bazala Shop";
+Obtiznost: 2;
+Penize: 5000;

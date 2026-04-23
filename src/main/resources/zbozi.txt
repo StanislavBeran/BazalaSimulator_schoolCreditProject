@@ -1,3 +1,12 @@
 Rohlík;11;1;2;0;0;100;8;1;1;Rohlík
 Chleba_Šumava;12;1;32;0;0;60;1;10;1;Šumava
-Debrecínská_pečeně;24;0;38;0;0;32;1;14;1;Debrecínka
+Debrecínská_pečeně;18;0;38;0;0;32;1;14;1;Debrecínka
+Banán;11;1;2;0;0;100;8;1;1;Banán
+Pizza_Žemle;42;1;32;0;0;60;1;10;1;Pizza Žemle
+Lovecký_salám;43;0;38;0;0;32;1;14;1;Lovečák
+Okurka;48;1;2;0;0;100;8;1;1;Okurka
+Hruška;52;1;32;0;0;60;1;10;1;Hruška
+Citrón;54;0;38;0;0;32;1;14;1;Citrón
+Kaiserka_Bílá;58;1;2;0;0;100;8;1;1;Kaiserka
+Eidam_sýr_20;61;1;32;0;0;60;1;10;1;Eidam 20
+Eidam_sýr_30;64;0;38;0;0;32;1;14;1;Eidam 30

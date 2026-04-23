@@ -60,7 +60,7 @@ public class NacistHruMenu extends JPanel {
         tlacitkaContainer.removeAll();
 
         for (int i = 1; i <= 3; i++) {
-            String cestaKSouboru = "ulozeneHry/ulozenaHra" + i + ".txt";
+            String cestaKSouboru = "src/main/resources/ulozeneHry/ulozenaHra" + i + ".txt";
             String textTlacitka = SpravceSouboru.nactiUlozeneHryZeSouboru(cestaKSouboru);
 
             JButton btnUlozenaHra = Menu.vytvorTlacitko(textTlacitka);

@@ -20,7 +20,7 @@ public class NovaHraMenu extends JPanel {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
 
-        JLabel label = new JLabel("Zadej název nové hry:");
+        JLabel label = new JLabel("Zadejte název tvého obchodu:");
         stylizujLabel(label);
         container.add(label);
         container.add(Box.createVerticalStrut(5));
@@ -102,7 +102,7 @@ public class NovaHraMenu extends JPanel {
                 slozka.mkdir();
             }
 
-            File soubor = new File("ulozeneHry/ulozenaHra" + slot + ".txt");
+            File soubor = new File("src/main/resources/ulozeneHry/ulozenaHra" + slot + ".txt");
             PrintWriter writer = new PrintWriter(new FileWriter(soubor));
 
             writer.println("Jmeno: \"" + jmeno + "\";");

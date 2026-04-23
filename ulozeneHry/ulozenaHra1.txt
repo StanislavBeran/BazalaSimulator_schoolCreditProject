@@ -1,3 +1,0 @@
-Jmeno: "ewwef";
-Obtiznost: 0;
-Penize: 1000;

@@ -43,7 +43,7 @@ public class SpravceSouboru {
                     }
                 }
             }
-            return jmeno + " | Obtížnost: " + obtiznost + " | Peníze: " + penize;
+            return jmeno;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -152,4 +152,6 @@ public class SpravceSouboru {
             return "Chyba při čtení";
         }
     }
+
+
 }
