@@ -180,9 +180,14 @@ public class BazalaSimulator extends JPanel {
         gbc.weighty = 1.0;
         gbc.insets = new Insets(1, 1, 1, 1);
 
-        // 1. LEVÁ ČÁST (Produkty)
+        // 1. LEVÁ ČÁST
+// 1. LEVÁ ČÁST (Produkty + Vyhledávač)
         JPanel levyPanel = new JPanel(new BorderLayout());
         levyPanel.setBackground(Color.WHITE);
+
+        // --- HLAVIČKA LEVÉHO PANELU (Kategorie + Vyhledávání) ---
+        JPanel hlavickaLevy = new JPanel(new BorderLayout());
+        hlavickaLevy.setBackground(Color.WHITE);
 
         JPanel kategorie = new JPanel(new GridLayout(1, 4, 1, 1));
         kategorie.setBackground(Color.BLACK);
@@ -190,29 +195,80 @@ public class BazalaSimulator extends JPanel {
         kategorie.add(vytvorZalozku("ZELENINA", isFs));
         kategorie.add(vytvorZalozku("OVOCE", isFs));
         kategorie.add(vytvorZalozku("OSTATNÍ", isFs));
-        levyPanel.add(kategorie, BorderLayout.NORTH);
+        hlavickaLevy.add(kategorie, BorderLayout.NORTH);
 
-        JPanel seznamZbozi = new JPanel(new GridLayout(0, 3, 5, 5));
+        // NOVÉ: Vyhledávací pole
+        JTextField vyhledavac = new JTextField();
+        vyhledavac.setFont(new Font("Arial", Font.PLAIN, isFs ? 18 : 11));
+        vyhledavac.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY), // Jemná spodní linka
+                BorderFactory.createEmptyBorder(4, 4, 4, 4) // Vnitřní odsazení
+        ));
+
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        searchPanel.setBackground(Color.WHITE);
+        JLabel searchIcon = new JLabel(" 🔍 "); // Ikonka lupy
+        searchIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 18 : 12));
+        searchPanel.add(searchIcon, BorderLayout.WEST);
+        searchPanel.add(vyhledavac, BorderLayout.CENTER);
+
+        hlavickaLevy.add(searchPanel, BorderLayout.SOUTH);
+        levyPanel.add(hlavickaLevy, BorderLayout.NORTH);
+
+        // --- SEZNAM ZBOŽÍ ---
+        JPanel seznamZbozi = new JPanel(new GridLayout(0, 3, 2, 2));
         seznamZbozi.setBackground(Color.WHITE);
-        seznamZbozi.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        seznamZbozi.add(vytvorProduktPanel("Rohlík", "101", "3 Kč", "Rohlík", isFs));
-        seznamZbozi.add(vytvorProduktPanel("Chleba_Šumava", "102", "35 Kč", "Chleba", isFs));
-        seznamZbozi.add(vytvorProduktPanel("jablko", "201", "112 Kč", "Jablko", isFs));
-        seznamZbozi.add(vytvorProduktPanel("banan", "202", "800 Kč", "Banán", isFs));
-        seznamZbozi.add(vytvorProduktPanel("mleko", "301", "225 Kč", "Mléko", isFs));
-        seznamZbozi.add(vytvorProduktPanel("vejce", "302", "40 Kč", "Vejce", isFs));
-        seznamZbozi.add(vytvorProduktPanel("maslo", "303", "55 Kč", "Máslo", isFs));
+        // ZMĚNA: Vytvoříme obalovací panel, který zarovná produkty nahoru a zakáže jejich roztahování
+        JPanel obalovaciPanel = new JPanel(new BorderLayout());
+        obalovaciPanel.setBackground(Color.WHITE);
+        obalovaciPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2)); // Přesunuli jsme okraj sem
+        obalovaciPanel.add(seznamZbozi, BorderLayout.NORTH); // Přilepení nahoru!
 
-        JScrollPane scrollPane = new JScrollPane(seznamZbozi);
+        // Databáze všech produktů {Cesta_k_obrázku, ID, Cena, Název}
+        String[][] vsechnyProdukty = {
+                {"Rohlík", "101", "3 Kč", "Rohlík"},
+                {"Chleba_Šumava", "102", "35 Kč", "Šumava"},
+                {"jablko", "201", "112 Kč", "Jablko"},
+                {"banan", "202", "800 Kč", "Banán"},
+                {"mleko", "301", "225 Kč", "Mléko"},
+                {"vejce", "302", "40 Kč", "Vejce"},
+                {"maslo", "303", "55 Kč", "Máslo"}
+        };
+
+        // Funkce pro naplnění/aktualizaci seznamu podle hledaného textu
+        Runnable aktualizujSeznam = () -> {
+            String hledanyText = vyhledavac.getText().toLowerCase();
+            seznamZbozi.removeAll();
+
+            for (String[] p : vsechnyProdukty) {
+                if (p[3].toLowerCase().contains(hledanyText) || p[1].contains(hledanyText)) {
+                    seznamZbozi.add(vytvorProduktPanel(p[0], p[1], p[2], p[3], isFs));
+                }
+            }
+            // ZMĚNA: Musíme říct i obalovacímu panelu, ať se přepočítá
+            obalovaciPanel.revalidate();
+            obalovaciPanel.repaint();
+        };
+
+        aktualizujSeznam.run();
+
+        // Listener na vyhledávací políčko
+        vyhledavac.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { aktualizujSeznam.run(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { aktualizujSeznam.run(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { aktualizujSeznam.run(); }
+        });
+
+        // ZMĚNA: Do posuvníku teď vkládáme náš 'obalovaciPanel' místo samotného 'seznamZbozi'
+        JScrollPane scrollPane = new JScrollPane(obalovaciPanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        // Zákaz horizontálního posuvníku zajistí, že se 3 sloupce musí vejít
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         levyPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // ZMĚNA: Levá část dostala 40% (místo 38%)
-        gbc.gridx = 0; gbc.weightx = isFs ? 0.50 : 0.40;
+        gbc.gridx = 0; gbc.weightx = isFs ? 0.45 : 0.42;
         screen.add(levyPanel, gbc);
 
         // 2. STŘEDNÍ ČÁST (Klávesnice)
@@ -230,13 +286,21 @@ public class BazalaSimulator extends JPanel {
                 protected void paintComponent(Graphics g) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
                     if (k.equals("↵")) {
-                        g2.setColor(getModel().isPressed() ? new Color(0, 180, 0) : (getModel().isRollover() ? new Color(50, 255, 50) : new Color(0, 200, 0)));
+                        if (getModel().isPressed()) g2.setColor(new Color(0, 180, 0));
+                        else if (getModel().isRollover()) g2.setColor(new Color(50, 255, 50));
+                        else g2.setColor(new Color(0, 200, 0));
                     } else if (k.equals("<-")) {
-                        g2.setColor(getModel().isPressed() ? new Color(200, 50, 50) : (getModel().isRollover() ? new Color(255, 100, 100) : new Color(220, 80, 80)));
+                        if (getModel().isPressed()) g2.setColor(new Color(200, 50, 50));
+                        else if (getModel().isRollover()) g2.setColor(new Color(255, 100, 100));
+                        else g2.setColor(new Color(220, 80, 80));
                     } else {
-                        g2.setColor(getModel().isPressed() ? new Color(200, 200, 200) : (getModel().isRollover() ? new Color(240, 240, 240) : Color.WHITE));
+                        if (getModel().isPressed()) g2.setColor(new Color(200, 200, 200));
+                        else if (getModel().isRollover()) g2.setColor(new Color(240, 240, 240));
+                        else g2.setColor(Color.WHITE);
                     }
+
                     g2.fillRect(0, 0, getWidth(), getHeight());
                     g2.setColor(new Color(150, 150, 150));
                     g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
@@ -244,20 +308,29 @@ public class BazalaSimulator extends JPanel {
                     super.paintComponent(g);
                 }
             };
+
             btn.setContentAreaFilled(false);
             btn.setFocusPainted(false);
             btn.setBorder(BorderFactory.createEmptyBorder());
             btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            btn.setFont(new Font("Arial", Font.BOLD, isFs ? 34 : 18));
 
-            // Speciální fonty pro šipku a enter
-            if (k.equals("↵")) btn.setFont(new Font("Segoe UI Symbol", Font.BOLD, isFs ? 40 : 22));
-            if (k.equals("<-")) btn.setFont(new Font("Arial", Font.BOLD, isFs ? 30 : 18));
+            if (k.equals("↵")) {
+                btn.setFont(new Font("Segoe UI Symbol", Font.BOLD, isFs ? 40 : 22));
+                btn.setForeground(Color.WHITE);
+            } else if (k.equals("<-")) {
+                btn.setFont(new Font("Arial", Font.BOLD, isFs ? 30 : 18));
+                btn.setForeground(Color.WHITE);
+            } else {
+                btn.setFont(new Font("Arial", Font.BOLD, isFs ? 34 : 18));
+                btn.setForeground(new Color(40, 40, 40));
+            }
 
             btn.addActionListener(e -> {
                 String aktualniText = numpadDisplay.getText();
                 if (k.equals("<-")) {
-                    if (!aktualniText.isEmpty()) numpadDisplay.setText(aktualniText.substring(0, aktualniText.length() - 1));
+                    if (!aktualniText.isEmpty()) {
+                        numpadDisplay.setText(aktualniText.substring(0, aktualniText.length() - 1));
+                    }
                 } else if (k.equals("↵")) {
                     numpadDisplay.setText("");
                 } else {
@@ -273,14 +346,23 @@ public class BazalaSimulator extends JPanel {
         numpadDisplay.setHorizontalAlignment(JTextField.RIGHT);
         numpadDisplay.setBackground(Color.WHITE);
         numpadDisplay.setFont(new Font("Monospaced", Font.BOLD, isFs ? 40 : 20));
-
-        // ZMĚNA: Zvýšení výšky displeje na 45 pro zamezení ořezu textu
         numpadDisplay.setPreferredSize(new Dimension(0, isFs ? 70 : 45));
+
+        numpadDisplay.addKeyListener(new java.awt.event.KeyAdapter(){
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e){
+                char c = e.getKeyChar();
+                if(c == '.') e.setKeyChar(',');
+                else if (!Character.isDigit(c) && c != '*' && c != '#' && c != ',') e.consume();
+            }
+        });
+
+        numpadDisplay.addActionListener(e -> numpadDisplay.setText(""));
 
         numpadWrapper.add(numpadDisplay, BorderLayout.SOUTH);
 
-        // ZMĚNA: Střední část dostala 40% (místo 35%)
-        gbc.gridx = 1; gbc.weightx = isFs ? 0.25 : 0.40;
+        // ZMĚNA: Klávesnice má 28 % (je to kompromis, aby se produkty vešly)
+        gbc.gridx = 1; gbc.weightx = isFs ? 0.20 : 0.28;
         screen.add(numpadWrapper, gbc);
 
         // 3. PRAVÁ ČÁST (Účtenka)
@@ -290,6 +372,7 @@ public class BazalaSimulator extends JPanel {
         JTextArea uctenka = new JTextArea("NÁZEV OBCHODU\n----------------\n1x Rohlík   3 Kč\n\nCENA: 3 Kč");
         uctenka.setEditable(false);
         uctenka.setBackground(new Color(100, 120, 200));
+        uctenka.setForeground(Color.BLACK);
         uctenka.setFont(new Font("Monospaced", Font.BOLD, isFs ? 18 : 9));
         rightPanel.add(uctenka, BorderLayout.CENTER);
 
@@ -311,10 +394,11 @@ public class BazalaSimulator extends JPanel {
         tlacitka.add(btnObchod);
         tlacitka.add(btnFullscreen);
         spodniCast.add(tlacitka, BorderLayout.SOUTH);
+
         rightPanel.add(spodniCast, BorderLayout.SOUTH);
 
-        // ZMĚNA: Pravá část zmenšena na 20% (místo 25%)
-        gbc.gridx = 2; gbc.weightx = isFs ? 0.25 : 0.20;
+        // ZMĚNA: Účtenka má 24 %
+        gbc.gridx = 2; gbc.weightx = isFs ? 0.35 : 0.24;
         screen.add(rightPanel, gbc);
 
         return screen;
@@ -392,8 +476,8 @@ public class BazalaSimulator extends JPanel {
         panel.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Obrázek - ZVĚTŠENÍ PRO FULLSCREEN (z 40 na 80 pixelů)
-        int imgSize = isFs ? 80 : 40;
+        // ZMĚNA: V malém režimu zmenšíme obrázek na 32 px, ať se tam 3 sloupce vlezou
+        int imgSize = isFs ? 80 : 32;
 
         JLabel lblObrazek = new JLabel("", SwingConstants.CENTER);
         try {
@@ -404,11 +488,11 @@ public class BazalaSimulator extends JPanel {
                 lblObrazek.setIcon(new ImageIcon(img));
             } else {
                 lblObrazek.setText("🖼️");
-                lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 50 : 28));
+                lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 50 : 24));
             }
         } catch (Exception e) {
             lblObrazek.setText("🖼️");
-            lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 50 : 28));
+            lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 50 : 24));
         }
         panel.add(lblObrazek, BorderLayout.CENTER);
 
@@ -419,12 +503,14 @@ public class BazalaSimulator extends JPanel {
 
         JLabel lblIdCena = new JLabel(id + " | " + cena);
         lblIdCena.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblIdCena.setFont(new Font("Arial", Font.PLAIN, isFs ? 18 : 10));
+        // ZMĚNA: Extra malý font (8) pro malou obrazovku, aby neroztahoval buňku
+        lblIdCena.setFont(new Font("Arial", Font.PLAIN, isFs ? 18 : 8));
         lblIdCena.setForeground(new Color(100, 100, 100));
 
         JLabel lblNazev = new JLabel(nazev);
         lblNazev.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblNazev.setFont(new Font("Arial", Font.BOLD, isFs ? 22 : 11));
+        // ZMĚNA: Zmenšení názvu pro malý monitor na 10
+        lblNazev.setFont(new Font("Arial", Font.BOLD, isFs ? 22 : 10));
         lblNazev.setForeground(Color.BLACK);
 
         textPanel.add(Box.createVerticalStrut(2));

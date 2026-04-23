@@ -64,11 +64,21 @@ public class SpravceSouboru {
             while ((radek = br.readLine()) != null) {
                 if (radek.trim().isEmpty()) continue;
                 if (radek.contains(":")) {
-                    String hodnota = radek.substring(radek.indexOf(":") + 1).replace(";", "").trim();
                     String[] slova = radek.split(";");
-                    Zbozi zbozi = new Zbozi(slova[0], Integer.valueOf(slova[1]), Integer.valueOf(slova[2]), Integer.valueOf(slova[3]), Integer.valueOf(slova[4]), Integer.valueOf(slova[5]), Integer.valueOf(slova[6]), Integer.valueOf(slova[7]), Integer.valueOf(slova[8]), Integer.valueOf(slova[9]));
-
-
+                    Zbozi zbozi = new Zbozi(
+                            slova[0],
+                            Integer.valueOf(slova[1]),
+                            Integer.valueOf(slova[2]),
+                            Integer.valueOf(slova[3]),
+                            Integer.valueOf(slova[4]),
+                            Integer.valueOf(slova[5]),
+                            Integer.valueOf(slova[6]),
+                            Integer.valueOf(slova[7]),
+                            Integer.valueOf(slova[8]),
+                            Integer.valueOf(slova[9]),
+                            slova[10]
+                    );
+                    zboziVsechny.add(zbozi);
                 }
             }
 

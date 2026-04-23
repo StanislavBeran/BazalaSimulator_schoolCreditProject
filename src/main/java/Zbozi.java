@@ -9,7 +9,8 @@ public class Zbozi {
     int maxPocet;
     int xp;
     int lvlOdemknuti;
-    public Zbozi(String nazev, int id, int typ, int cena, int minVaha, int maxVaha, int sance, int maxPocet, int xp, int lvlOdemknuti){
+    String zkracenyNazev;
+    public Zbozi(String nazev, int id, int typ, int cena, int minVaha, int maxVaha, int sance, int maxPocet, int xp, int lvlOdemknuti, String zkracenyNazev) {
         //typ ostatni=0 pecivo=1 ovoce=2 zelenina=3
         this.nazev = nazev;
         this.id = id;
@@ -21,5 +22,7 @@ public class Zbozi {
         this.maxPocet = maxPocet;
         this.xp = xp;
         this.lvlOdemknuti = lvlOdemknuti;
+        this.zkracenyNazev = zkracenyNazev;
+
     }
 }
