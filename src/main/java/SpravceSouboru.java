@@ -50,8 +50,8 @@ public class SpravceSouboru {
             return "Chyba při čtení";
         }
     }
-    public static List<Zbozi> nactiZbozi(String cesta) {
-        File soubor = new File(cesta);
+    public static List<Zbozi> nactiZbozi() {
+        File soubor = new File("src/main/resources/zbozi.txt");
 
         if (!soubor.exists() || soubor.length() == 0) {
             System.out.println("Nenačetlo se zboží.");
@@ -62,29 +62,50 @@ public class SpravceSouboru {
         try (BufferedReader br = new BufferedReader(new FileReader(soubor))) {
             String radek;
             while ((radek = br.readLine()) != null) {
+                // Přeskočíme prázdné řádky
                 if (radek.trim().isEmpty()) continue;
-                if (radek.contains(":")) {
+
+                // Odstranění případného "" tagu, pokud v texťáku uvízl
+                radek = radek.replace("", "");
+
+                // OPRAVA: Soubor zbozi.txt používá jako oddělovač středník
+                if (radek.contains(";")) {
                     String[] slova = radek.split(";");
-                    Zbozi zbozi = new Zbozi(
-                            slova[0],
-                            Integer.valueOf(slova[1]),
-                            Integer.valueOf(slova[2]),
-                            Integer.valueOf(slova[3]),
-                            Integer.valueOf(slova[4]),
-                            Integer.valueOf(slova[5]),
-                            Integer.valueOf(slova[6]),
-                            Integer.valueOf(slova[7]),
-                            Integer.valueOf(slova[8]),
-                            Integer.valueOf(slova[9]),
-                            slova[10]
-                    );
-                    zboziVsechny.add(zbozi);
+
+                    // Bezpečnostní kontrola, abychom měli všechny potřebné parametry (11)
+                    if (slova.length >= 11) {
+                        Zbozi zbozi = new Zbozi(
+                                slova[0].trim(),
+                                Integer.parseInt(slova[1].trim()),
+                                Integer.parseInt(slova[2].trim()),
+                                Integer.parseInt(slova[3].trim()),
+                                Integer.parseInt(slova[4].trim()),
+                                Integer.parseInt(slova[5].trim()),
+                                Integer.parseInt(slova[6].trim()),
+                                Integer.parseInt(slova[7].trim()),
+                                Integer.parseInt(slova[8].trim()),
+                                Integer.parseInt(slova[9].trim()),
+                                slova[10].trim()
+                        );
+                        zboziVsechny.add(zbozi);
+                    }
                 }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Ochrana proti pádu IndexOutOfBoundsException, pokud je list prázdný
+        if (!zboziVsechny.isEmpty()) {
+            System.out.println(zboziVsechny.get(0).zkracenyNazev);
+            if(zboziVsechny.size() > 1) {
+                System.out.println(zboziVsechny.get(1).zkracenyNazev);
+            }
+        } else {
+            System.out.println("Seznam zboží je prázdný, žádné platné řádky nebyly nalezeny.");
+        }
+
         return zboziVsechny;
     }
     public static String nactiZboziObrazky(String cesta) {

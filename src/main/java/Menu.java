@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL; // Přidáno pro načítání z resources
+import java.util.ArrayList;
 
 public class Menu extends JFrame {
     private CardLayout karty;

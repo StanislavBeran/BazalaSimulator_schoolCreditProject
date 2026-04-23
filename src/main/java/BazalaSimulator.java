@@ -13,6 +13,8 @@ public class BazalaSimulator extends JPanel {
     private Menu.BackgroundPanel bgPanel;
     private JLabel settingsLabel;
 
+    List<Zbozi> zboziList = new ArrayList<>();
+
     private JPanel panelObrazovky;
     private JTextField numpadDisplay;
     private Boolean vypinacObrazovky = true;
@@ -37,10 +39,10 @@ public class BazalaSimulator extends JPanel {
         this.hlavniOkno = okno;
         setLayout(new BorderLayout());
         vrstvy = new JLayeredPane();
+        zboziList = SpravceSouboru.nactiZbozi();
         try {
             bgPanel = okno.new BackgroundPanel(backgroundPath);
             vrstvy.add(bgPanel, JLayeredPane.DEFAULT_LAYER);
-
             ImageIcon settingsIcon = new ImageIcon(getClass().getResource(iconPath));
             Image scaledImg = settingsIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
             settingsLabel = new JLabel(new ImageIcon(scaledImg));
@@ -201,13 +203,13 @@ public class BazalaSimulator extends JPanel {
         JTextField vyhledavac = new JTextField();
         vyhledavac.setFont(new Font("Arial", Font.PLAIN, isFs ? 18 : 11));
         vyhledavac.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY), // Jemná spodní linka
-                BorderFactory.createEmptyBorder(4, 4, 4, 4) // Vnitřní odsazení
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(4, 4, 4, 4)
         ));
 
         JPanel searchPanel = new JPanel(new BorderLayout());
         searchPanel.setBackground(Color.WHITE);
-        JLabel searchIcon = new JLabel(" 🔍 "); // Ikonka lupy
+        JLabel searchIcon = new JLabel(" 🔍 ");
         searchIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 18 : 12));
         searchPanel.add(searchIcon, BorderLayout.WEST);
         searchPanel.add(vyhledavac, BorderLayout.CENTER);
@@ -219,13 +221,12 @@ public class BazalaSimulator extends JPanel {
         JPanel seznamZbozi = new JPanel(new GridLayout(0, 3, 2, 2));
         seznamZbozi.setBackground(Color.WHITE);
 
-        // ZMĚNA: Vytvoříme obalovací panel, který zarovná produkty nahoru a zakáže jejich roztahování
+        // obalovací panel, který zarovná produkty nahoru a zakáže jejich roztahování
         JPanel obalovaciPanel = new JPanel(new BorderLayout());
         obalovaciPanel.setBackground(Color.WHITE);
-        obalovaciPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2)); // Přesunuli jsme okraj sem
-        obalovaciPanel.add(seznamZbozi, BorderLayout.NORTH); // Přilepení nahoru!
+        obalovaciPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        obalovaciPanel.add(seznamZbozi, BorderLayout.NORTH);
 
-        // Databáze všech produktů {Cesta_k_obrázku, ID, Cena, Název}
         String[][] vsechnyProdukty = {
                 {"Rohlík", "101", "3 Kč", "Rohlík"},
                 {"Chleba_Šumava", "102", "35 Kč", "Šumava"},
@@ -241,9 +242,9 @@ public class BazalaSimulator extends JPanel {
             String hledanyText = vyhledavac.getText().toLowerCase();
             seznamZbozi.removeAll();
 
-            for (String[] p : vsechnyProdukty) {
-                if (p[3].toLowerCase().contains(hledanyText) || p[1].contains(hledanyText)) {
-                    seznamZbozi.add(vytvorProduktPanel(p[0], p[1], p[2], p[3], isFs));
+            for (Zbozi z : zboziList) {
+                if (z.nazev.toLowerCase().contains(hledanyText) || (z.id + "").contains(hledanyText)) {
+                    seznamZbozi.add(vytvorProduktPanel(z.nazev, z.id, z.cena, z.zkracenyNazev, isFs));
                 }
             }
             // ZMĚNA: Musíme říct i obalovacímu panelu, ať se přepočítá
@@ -470,7 +471,7 @@ public class BazalaSimulator extends JPanel {
     // ========================================================
     // POMOCNÁ METODA PRO VYTVOŘENÍ KARTIČKY PRODUKTU
     // ========================================================
-    private JPanel vytvorProduktPanel(String obrazekCesta, String id, String cena, String nazev, boolean isFs) {
+    private JPanel vytvorProduktPanel(String obrazekCesta, int id, int cena, String nazev, boolean isFs) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
@@ -501,7 +502,7 @@ public class BazalaSimulator extends JPanel {
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setOpaque(false);
 
-        JLabel lblIdCena = new JLabel(id + " | " + cena);
+        JLabel lblIdCena = new JLabel(id + " | " + cena + " Kč");
         lblIdCena.setAlignmentX(Component.CENTER_ALIGNMENT);
         // ZMĚNA: Extra malý font (8) pro malou obrazovku, aby neroztahoval buňku
         lblIdCena.setFont(new Font("Arial", Font.PLAIN, isFs ? 18 : 8));
@@ -525,7 +526,7 @@ public class BazalaSimulator extends JPanel {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                numpadDisplay.setText(id);
+                numpadDisplay.setText(id + "");
             }
             @Override
             public void mouseEntered(MouseEvent e) {
