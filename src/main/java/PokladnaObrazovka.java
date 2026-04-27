@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.BiPredicate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,15 +17,18 @@ public class PokladnaObrazovka extends JPanel {
 
     // NOVÉ: Seznam pro ukládání nákupu
     private List<Zbozi> polozkyNaUctence;
+    private Runnable prekresliUctenku;
+    private BiPredicate<Integer, Integer> kontrolaScanneru;
 
     // UPRAVENÝ KONSTRUKTOR: Přijímá stav z minulé obrazovky (včetně účtenky)
     public PokladnaObrazovka(boolean isFs, List<Zbozi> zboziList, Runnable onToggleFullscreen,
+                             BiPredicate<Integer, Integer> kontrolaScanneru,
                              int startKategorie, String startHledani, String startNumpad,
                              List<Zbozi> startUctenka) {
         this.isFs = isFs;
         this.zboziList = zboziList;
         this.onToggleFullscreen = onToggleFullscreen;
-
+        this.kontrolaScanneru = kontrolaScanneru;
         this.aktualniKategorie = startKategorie;
         this.polozkyNaUctence = startUctenka != null ? new ArrayList<>(startUctenka) : new ArrayList<>();
 
@@ -92,9 +96,9 @@ public class PokladnaObrazovka extends JPanel {
         JPanel kategorie = new JPanel(new GridLayout(1, 4, 1, 1));
         kategorie.setBackground(Color.BLACK);
         kategorie.add(vytvorZalozku("PEČIVO", 1));
-        kategorie.add(vytvorZalozku("ZELENINA", 3));
-        kategorie.add(vytvorZalozku("OVOCE", 2));
-        kategorie.add(vytvorZalozku("OSTATNÍ", 0));
+        kategorie.add(vytvorZalozku("ZELENINA", 2));
+        kategorie.add(vytvorZalozku("OVOCE", 3));
+        kategorie.add(vytvorZalozku("OSTATNÍ", 4));
         hlavickaLevy.add(kategorie, BorderLayout.NORTH);
 
         JPanel searchPanel = new JPanel(new BorderLayout());
@@ -131,7 +135,7 @@ public class PokladnaObrazovka extends JPanel {
         rightPanel.add(new JScrollPane(uctenkaText), BorderLayout.CENTER);
 
 
-        Runnable prekresliUctenku = () -> {
+        prekresliUctenku = () -> {
             StringBuilder sb = new StringBuilder("NÁZEV OBCHODU\n----------------\n");
             int celkem = 0;
             for(Zbozi z : polozkyNaUctence) {
@@ -231,26 +235,27 @@ public class PokladnaObrazovka extends JPanel {
                         try {
                             // Rozdělení textu podle hvězdičky
                             String[] casti = aktualniText.split("\\*");
-                            int zadaneMnozstvi;
-                            if (casti.length == 2 || casti.length == 1) {
-                                int hledaneId = Integer.parseInt(casti[0]);
+                            int hledaneId = Integer.parseInt(casti[0]);
+                            int zadaneMnozstvi = (casti.length == 1) ? 1 : Integer.parseInt(casti[1]);
 
-                                if(casti.length == 1){
-                                    zadaneMnozstvi = 1;
-                                } else{
-                                    zadaneMnozstvi = Integer.parseInt(casti[1]);
-                                }
-                                for (Zbozi z : zboziList) {
-                                    if (z.id == hledaneId && z.maxPocet >= zadaneMnozstvi) {
+                            for (Zbozi z : zboziList) {
+                                if (z.id == hledaneId && z.maxPocet >= zadaneMnozstvi) {
+                                    boolean muzuPridat = true;
 
-                                        Zbozi polozka = new Zbozi(z.nazev, z.id, z.typ, z.cena, z.minVaha,
-                                                z.maxVaha, zadaneMnozstvi,
-                                                z.xp, z.lvlOdemknuti, z.zkracenyNazev);
-                                        polozka.nazev = polozka.nazev.replace('_', ' ');
-                                        polozkyNaUctence.add(polozka);
-                                        prekresliUctenku.run();
-                                        break;
+                                    // POKUD JE TO ZBOŽÍ, KTERÉ SE MUSÍ VÁŽIT/SKENOVAT, ZEPTÁME SE PÁSU
+                                    if (z.typ >= 1 && z.typ <= 4) {
+                                        if (kontrolaScanneru != null) {
+                                            muzuPridat = kontrolaScanneru.test(hledaneId, zadaneMnozstvi);
+                                        }
                                     }
+
+                                    if (muzuPridat) {
+                                        pridejPolozkuNaUctenku(z, zadaneMnozstvi);
+                                    } else {
+                                        System.out.println("Zboží není na scanneru nebo nesouhlasí množství!");
+                                        // Zde by mohl být zvuk chyby: SpravceZvuku.prehraj("/chyba.wav");
+                                    }
+                                    break;
                                 }
                             }
                         } catch (NumberFormatException ex) {
@@ -439,5 +444,21 @@ public class PokladnaObrazovka extends JPanel {
 
     public List<Zbozi> getPolozkyNaUctence() {
         return polozkyNaUctence;
+    }
+
+    public void pridejPolozkuNaUctenku(Zbozi z, int mnozstvi) {
+        // Vytvoříme novou instanci zboží, abychom neupravovali původní databázi
+        Zbozi polozka = new Zbozi(z.nazev, z.id, z.typ, z.cena, z.minVaha,
+                z.maxVaha, mnozstvi, z.lvlOdemknuti, z.zkracenyNazev);
+
+        // Odstranění podtržítek pro hezčí výpis (stejně jak to máš v numpad logice)
+        polozka.nazev = polozka.nazev.replace('_', ' ');
+
+        polozkyNaUctence.add(polozka);
+
+        // Aktualizujeme UI
+        if (prekresliUctenku != null) {
+            prekresliUctenku.run();
+        }
     }
 }

@@ -54,7 +54,7 @@ public class BazalaSimulator extends JPanel {
             pasGif = new AnimovanyGif("/pas.gif");
             vrstvy.add(pasGif, Integer.valueOf(2));
 
-            spravcePasu = new SpravcePasu(zboziList);
+            spravcePasu = new SpravcePasu(zboziList, pasGif, this);
             vrstvy.add(spravcePasu, Integer.valueOf(3)); // Pás je vrstva 3
 
             ImageIcon settingsIcon = new ImageIcon(getClass().getResource(iconPath));
@@ -70,7 +70,7 @@ public class BazalaSimulator extends JPanel {
             vrstvy.add(settingsLabel, JLayeredPane.PALETTE_LAYER);
 
             // ZMĚNA ZDE: Vytvoření naší nové třídy a předání "přepínače" pro Fullscreen
-            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, 5, "", "", new ArrayList<>());
+            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this::overZboziZeScanneru, 5, "", "", new ArrayList<>());
             vrstvy.add(panelObrazovky, Integer.valueOf(4));
 
 
@@ -132,8 +132,9 @@ public class BazalaSimulator extends JPanel {
 
 
             if (spravcePasu != null) {
-                spravcePasu.setBounds(scaledX, scaledY, scaledW, scaledH);
+                spravcePasu.setBounds(scaledX, scaledY, (int)(1280 * scaleW), scaledH);
             }
+
         }
         double scaleW = (double) w / 1280;
         double scaleH = (double) h / 720;
@@ -155,7 +156,17 @@ public class BazalaSimulator extends JPanel {
         revalidate();
         repaint();
     }
-
+    public void pridejZboziNaUctenku(Zbozi z, int mnozstvi) {
+        if (panelObrazovky != null) {
+            panelObrazovky.pridejPolozkuNaUctenku(z, mnozstvi);
+        }
+    }
+    public boolean overZboziZeScanneru(int id, int mnozstvi) {
+        if (spravcePasu != null) {
+            return spravcePasu.overAOdjedZeScanneru(id, mnozstvi);
+        }
+        return false;
+    }
     private void toggleFullscreen() {
         // 1. ZACHRÁNÍME AKTUÁLNÍ STAV ZE STARÉ OBRAZOVKY (Včetně účtenky!)
         int ulozenaKategorie = panelObrazovky.getAktualniKategorie();
@@ -174,8 +185,7 @@ public class BazalaSimulator extends JPanel {
             vrstvy.remove(panelObrazovky);
 
             // 2. VYTVOŘÍME VELKOU OBRAZOVKU A PŘEDÁME JÍ ZACHRÁNĚNÝ STAV
-            panelObrazovky = new PokladnaObrazovka(true, zboziList, this::toggleFullscreen,
-                    ulozenaKategorie, ulozeneHledani, ulozenyNumpad, ulozenaUctenka);
+            panelObrazovky = new PokladnaObrazovka(true, zboziList, this::toggleFullscreen, this::overZboziZeScanneru, ulozenaKategorie, ulozeneHledani, ulozenyNumpad, ulozenaUctenka);
             fullscreenOverlay.removeAll();
             fullscreenOverlay.add(panelObrazovky, BorderLayout.CENTER);
 
@@ -187,8 +197,7 @@ public class BazalaSimulator extends JPanel {
                 vrstvy.remove(fullscreenOverlay);
                 fullscreenOverlay.setVisible(false);
             }
-            // 3. VYTVOŘÍME MALOU OBRAZOVKU A PŘEDÁME JÍ ZACHRÁNĚNÝ STAV
-            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen,
+            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this::overZboziZeScanneru,
                     ulozenaKategorie, ulozeneHledani, ulozenyNumpad, ulozenaUctenka);
             vrstvy.add(panelObrazovky, Integer.valueOf(3));
         }

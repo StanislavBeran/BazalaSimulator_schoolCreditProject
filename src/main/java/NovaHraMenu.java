@@ -74,7 +74,7 @@ public class NovaHraMenu extends JPanel {
             String penizeText = ((String) cbPenize.getSelectedItem()).replace(" Kč", "");
 
             if (!jmenoHry.isEmpty()) {
-                ulozNovouHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText);
+                SpravceSouboru.ulozNovouHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText);
                 hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");
                 SpravceZvuku.zastav("obchodak_theme_sound");
             } else {
@@ -94,31 +94,6 @@ public class NovaHraMenu extends JPanel {
         add(bgPanel, BorderLayout.CENTER);
     }
 
-    private void ulozNovouHruDoSouboru(int slot, String jmeno, int obtiznost, String penize) {
-        try {
-            // Vytvoření složky, pokud neexistuje
-            File slozka = new File("ulozeneHry");
-            if (!slozka.exists()) {
-                slozka.mkdir();
-            }
-
-            File soubor = new File("src/main/resources/ulozeneHry/ulozenaHra" + slot + ".txt");
-            PrintWriter writer = new PrintWriter(new FileWriter(soubor));
-
-            writer.println("Jmeno: \"" + jmeno + "\";");
-            writer.println("Obtiznost: " + obtiznost + ";");
-            writer.println("Penize: " + penize + ";");
-
-            writer.close();
-            System.out.println("Hra uložena do slotu: " + slot);
-
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Chyba při ukládání hry: " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-
-    // Pomocné metody pro vzhled, aby se kód neopakoval
     private void stylizujLabel(JLabel l) {
         l.setFont(new Font("Segoe UI", Font.BOLD, 18));
         l.setForeground(Color.WHITE);

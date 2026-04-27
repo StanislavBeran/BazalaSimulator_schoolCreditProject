@@ -1,21 +1,20 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.swing.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SpravceSouboru {
-    public static String nactiUlozeneHryZeSouboru(String cesta) {
+    public static UlozenaHra nactiUlozeneHryZeSouboru(String cesta) {
         File soubor = new File(cesta);
 
         if (!soubor.exists() || soubor.length() == 0) {
-            return "Prázdná pozice";
+            return new UlozenaHra("Prázdné", 0, 0, 0);
         }
 
-        String jmeno = "Neznámé";
-        String obtiznost = "Neznámá";
-        String penize = "0";
+        String jmenoObchodu = "Neznámé";
+        int obtiznost = 0;
+        int penize = 0;
+        int xp = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(soubor))) {
             String radek;
@@ -29,30 +28,52 @@ public class SpravceSouboru {
                     }
 
                     if (radek.startsWith("Jmeno")) {
-                        jmeno = hodnota;
+                        jmenoObchodu = hodnota;
                     } else if (radek.startsWith("Obtiznost")) {
-                        switch (hodnota) {
-                            case "0": obtiznost = "Lehká"; break;
-                            case "1": obtiznost = "Střední"; break;
-                            case "2": obtiznost = "Obtížná"; break;
-                            case "3": obtiznost = "Adam (Hardcore)"; break;
-                            default: obtiznost = hodnota; break;
-                        }
+                        obtiznost = Integer.parseInt(hodnota);
                     } else if (radek.startsWith("Penize")) {
-                        penize = hodnota;
+                        penize = Integer.parseInt(hodnota);
+                        //switch (hodnota) {
+                        //                            case "0": obtiznost = "Lehká"; break;
+                        //                            case "1": obtiznost = "Střední"; break;
+                        //                            case "2": obtiznost = "Obtížná"; break;
+                        //                            case "3": obtiznost = "Adam (Hardcore)"; break;
+                        //                            default: obtiznost = hodnota; break;
+                        //                        }
+                    } else if (radek.startsWith("XP")){
+                        xp = Integer.parseInt(hodnota);
                     }
                 }
             }
-            return jmeno;
+            UlozenaHra ulozenaHra = new UlozenaHra(jmenoObchodu, obtiznost, penize, xp);
+            return ulozenaHra;
 
         } catch (IOException e) {
             e.printStackTrace();
-            return "Chyba při čtení";
+            return new UlozenaHra("ERROR", 0, 0, 0);
         }
     }
+
+    public static void ulozNovouHruDoSouboru(int slot, String jmeno, int obtiznost, String penize) {
+        try {
+            File slozka = new File("ulozeneHry");
+            if (!slozka.exists()) {
+                slozka.mkdir();
+            }
+            File soubor = new File("src/main/resources/ulozeneHry/ulozenaHra" + slot + ".txt");
+            PrintWriter writer = new PrintWriter(new FileWriter(soubor));
+            writer.println("Jmeno: \"" + jmeno + "\";");
+            writer.println("Obtiznost: " + obtiznost + ";");
+            writer.println("Penize: " + penize + ";");
+            writer.close();
+            System.out.println("Hra uložena do slotu: " + slot);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static List<Zbozi> nactiZbozi() {
         File soubor = new File("src/main/resources/zbozi.txt");
-
         if (!soubor.exists() || soubor.length() == 0) {
             System.out.println("Nenačetlo se zboží.");
             System.exit(0);
@@ -62,18 +83,11 @@ public class SpravceSouboru {
         try (BufferedReader br = new BufferedReader(new FileReader(soubor))) {
             String radek;
             while ((radek = br.readLine()) != null) {
-                // Přeskočíme prázdné řádky
                 if (radek.trim().isEmpty()) continue;
-
-                // Odstranění případného "" tagu, pokud v texťáku uvízl
                 radek = radek.replace("", "");
-
-                // OPRAVA: Soubor zbozi.txt používá jako oddělovač středník
                 if (radek.contains(";")) {
                     String[] slova = radek.split(";");
-
-                    // Bezpečnostní kontrola, abychom měli všechny potřebné parametry (11)
-                    if (slova.length >= 11) {
+                    if (slova.length >= 9) {
                         Zbozi zbozi = new Zbozi(
                                 slova[0].trim(),
                                 Integer.parseInt(slova[1].trim()),
@@ -83,8 +97,7 @@ public class SpravceSouboru {
                                 Integer.parseInt(slova[5].trim()),
                                 Integer.parseInt(slova[6].trim()),
                                 Integer.parseInt(slova[7].trim()),
-                                Integer.parseInt(slova[8].trim()),
-                                slova[10].trim()
+                                slova[8].trim()
                         );
                         zboziVsechny.add(zbozi);
                     }
@@ -94,8 +107,6 @@ public class SpravceSouboru {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Ochrana proti pádu IndexOutOfBoundsException, pokud je list prázdný
         if (!zboziVsechny.isEmpty()) {
             System.out.println(zboziVsechny.get(0).zkracenyNazev);
             if(zboziVsechny.size() > 1) {
