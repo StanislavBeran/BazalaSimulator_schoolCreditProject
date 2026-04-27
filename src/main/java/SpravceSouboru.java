@@ -84,7 +84,6 @@ public class SpravceSouboru {
                                 Integer.parseInt(slova[6].trim()),
                                 Integer.parseInt(slova[7].trim()),
                                 Integer.parseInt(slova[8].trim()),
-                                Integer.parseInt(slova[9].trim()),
                                 slova[10].trim()
                         );
                         zboziVsechny.add(zbozi);

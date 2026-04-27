@@ -241,12 +241,12 @@ public class PokladnaObrazovka extends JPanel {
                                     zadaneMnozstvi = Integer.parseInt(casti[1]);
                                 }
                                 for (Zbozi z : zboziList) {
-                                    if (z.id == hledaneId) {
-                                        // VYTVOŘENÍ KOPIE: Abychom nezměnili původní maxPocet v databázi
-                                        Zbozi polozka = new Zbozi(z.nazev, z.id, z.typ, z.cena, z.minVaha,
-                                                z.maxVaha, z.sance, zadaneMnozstvi,
-                                                z.xp, z.lvlOdemknuti, z.zkracenyNazev);
+                                    if (z.id == hledaneId && z.maxPocet >= zadaneMnozstvi) {
 
+                                        Zbozi polozka = new Zbozi(z.nazev, z.id, z.typ, z.cena, z.minVaha,
+                                                z.maxVaha, zadaneMnozstvi,
+                                                z.xp, z.lvlOdemknuti, z.zkracenyNazev);
+                                        polozka.nazev = polozka.nazev.replace('_', ' ');
                                         polozkyNaUctence.add(polozka);
                                         prekresliUctenku.run();
                                         break;

@@ -40,6 +40,8 @@ public class BazalaSimulator extends JPanel {
     private static final String iconPath = "/nastaveni.png";
     private static final String backgroundPath = "/pokladna.png";
 
+    private SpravcePasu spravcePasu;
+
     public BazalaSimulator(Menu okno) {
         this.hlavniOkno = okno;
         setLayout(new BorderLayout());
@@ -51,6 +53,10 @@ public class BazalaSimulator extends JPanel {
             vrstvy.add(bgPanel, JLayeredPane.DEFAULT_LAYER);
             pasGif = new AnimovanyGif("/pas.gif");
             vrstvy.add(pasGif, Integer.valueOf(2));
+
+            spravcePasu = new SpravcePasu(zboziList);
+            vrstvy.add(spravcePasu, Integer.valueOf(3)); // Pás je vrstva 3
+
             ImageIcon settingsIcon = new ImageIcon(getClass().getResource(iconPath));
             Image scaledImg = settingsIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
             settingsLabel = new JLabel(new ImageIcon(scaledImg));
@@ -65,8 +71,8 @@ public class BazalaSimulator extends JPanel {
 
             // ZMĚNA ZDE: Vytvoření naší nové třídy a předání "přepínače" pro Fullscreen
             panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, 5, "", "", new ArrayList<>());
-            vrstvy.add(panelObrazovky, Integer.valueOf(3));
-            panelObrazovky.setVisible(vypinacObrazovky);
+            vrstvy.add(panelObrazovky, Integer.valueOf(4));
+
 
             hotspoty.add(new InteraktivniZona(745, 476, 41, 72, "Platební terminál", this));
             hotspoty.add(new InteraktivniZona(800, 330, 20, 20, "vypínač", true, this));
@@ -118,8 +124,16 @@ public class BazalaSimulator extends JPanel {
         if (pasGif != null) {
             double scaleW = (double) getWidth() / 1280;
             double scaleH = (double) getHeight() / 720;
-            pasGif.setBounds((int)(PAS_X * scaleW), (int)(PAS_Y * scaleH),
-                    (int)(PAS_W * scaleW), (int)(PAS_H * scaleH));
+            int scaledX = (int)(PAS_X * scaleW);
+            int scaledY = (int)(PAS_Y * scaleH);
+            int scaledW = (int)(PAS_W * scaleW);
+            int scaledH = (int)(PAS_H * scaleH);
+            pasGif.setBounds(scaledX, scaledY, scaledW, scaledH);
+
+
+            if (spravcePasu != null) {
+                spravcePasu.setBounds(scaledX, scaledY, scaledW, scaledH);
+            }
         }
         double scaleW = (double) w / 1280;
         double scaleH = (double) h / 720;
