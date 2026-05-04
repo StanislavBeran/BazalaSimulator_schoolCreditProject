@@ -231,38 +231,7 @@ public class PokladnaObrazovka extends JPanel {
                 if (k.equals("<-")) {
                     if (!aktualniText.isEmpty()) numpadDisplay.setText(aktualniText.substring(0, aktualniText.length() - 1));
                 } else if (k.equals("↵")) {
-                    if (!aktualniText.isEmpty()) {
-                        try {
-                            // Rozdělení textu podle hvězdičky
-                            String[] casti = aktualniText.split("\\*");
-                            int hledaneId = Integer.parseInt(casti[0]);
-                            int zadaneMnozstvi = (casti.length == 1) ? 1 : Integer.parseInt(casti[1]);
-
-                            for (Zbozi z : zboziList) {
-                                if (z.id == hledaneId && z.maxPocet >= zadaneMnozstvi) {
-                                    boolean muzuPridat = true;
-
-                                    // POKUD JE TO ZBOŽÍ, KTERÉ SE MUSÍ VÁŽIT/SKENOVAT, ZEPTÁME SE PÁSU
-                                    if (z.typ >= 1 && z.typ <= 4) {
-                                        if (kontrolaScanneru != null) {
-                                            muzuPridat = kontrolaScanneru.test(hledaneId, zadaneMnozstvi);
-                                        }
-                                    }
-
-                                    if (muzuPridat) {
-                                        pridejPolozkuNaUctenku(z, zadaneMnozstvi);
-                                    } else {
-                                        System.out.println("Zboží není na scanneru nebo nesouhlasí množství!");
-                                        // Zde by mohl být zvuk chyby: SpravceZvuku.prehraj("/chyba.wav");
-                                    }
-                                    break;
-                                }
-                            }
-                        } catch (NumberFormatException ex) {
-
-                        }
-                    }
-                    numpadDisplay.setText("");
+                    zpracujVstupZNumpadu();
                 } else {
                     numpadDisplay.setText(aktualniText + k);
                 }
@@ -285,6 +254,9 @@ public class PokladnaObrazovka extends JPanel {
                 if(c == '.') e.setKeyChar(',');
                 else if (!Character.isDigit(c) && c != '*' && c != '#' && c != ',') e.consume();
             }
+        });
+        numpadDisplay.addActionListener(e -> {
+            zpracujVstupZNumpadu();
         });
         numpadWrapper.add(numpadDisplay, BorderLayout.SOUTH);
 
@@ -460,5 +432,36 @@ public class PokladnaObrazovka extends JPanel {
         if (prekresliUctenku != null) {
             prekresliUctenku.run();
         }
+    }
+    private void zpracujVstupZNumpadu() {
+        String aktualniText = numpadDisplay.getText();
+        if (!aktualniText.isEmpty()) {
+            try {
+                String[] casti = aktualniText.split("\\*");
+                int hledaneId = Integer.parseInt(casti[0]);
+                int zadaneMnozstvi = (casti.length == 1) ? 1 : Integer.parseInt(casti[1]);
+
+                for (Zbozi z : zboziList) {
+                    if (z.id == hledaneId && z.maxPocet >= zadaneMnozstvi) {
+                        boolean muzuPridat = true;
+                        if (z.typ >= 1 && z.typ <= 4) {
+                            if (kontrolaScanneru != null) {
+                                muzuPridat = kontrolaScanneru.test(hledaneId, zadaneMnozstvi);
+                            }
+                        }
+
+                        if (muzuPridat) {
+                            pridejPolozkuNaUctenku(z, zadaneMnozstvi);
+                        } else {
+                            System.out.println("Zboží není na scanneru nebo nesouhlasí množství!");
+                        }
+                        break;
+                    }
+                }
+            } catch (NumberFormatException ex) {
+                // Ignorujeme špatný formát
+            }
+        }
+        numpadDisplay.setText("");
     }
 }

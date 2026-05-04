@@ -7,6 +7,8 @@ public class Menu extends JFrame {
     private CardLayout karty;
     private JPanel hlavniContainer;
 
+    private BazalaSimulator bazalaSimulator;
+
     public Menu() {
         setTitle("Bazala Simulator");
         setSize(1280, 720);
@@ -35,7 +37,7 @@ public class Menu extends JFrame {
         NovaHraMenu novaHraObrazovka = new NovaHraMenu(this);
         NacistHruMenu nacistHruMenu = new NacistHruMenu(this);
         NastaveniMenu nastaveniMenu = new NastaveniMenu(this);
-        BazalaSimulator bazalaSimulator = new BazalaSimulator(this);
+        bazalaSimulator = new BazalaSimulator(this);
 
         hlavniContainer.add(hlavniMenu, "HLAVNI_MENU");
         hlavniContainer.add(novaHraObrazovka, "NOVA_HRA");
@@ -57,7 +59,6 @@ public class Menu extends JFrame {
         menuContainer.setLayout(new BoxLayout(menuContainer, BoxLayout.Y_AXIS));
         menuContainer.setOpaque(false);
 
-        // 3. OPRAVA: Relativní cesta k logu a prázdný catch blok
         try {
             URL logoUrl = getClass().getResource("/logo.png");
             if (logoUrl != null) {
@@ -163,6 +164,9 @@ public class Menu extends JFrame {
             }
         }
     }
+    public BazalaSimulator getSimulator() {
+        return bazalaSimulator;
+    }
 
     public static void main(String[] args) {
         try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception e) {}
@@ -171,4 +175,5 @@ public class Menu extends JFrame {
             new Menu().setVisible(true);
         });
     }
+
 }

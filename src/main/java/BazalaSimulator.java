@@ -17,6 +17,9 @@ public class BazalaSimulator extends JPanel {
 
     // ZMĚNA ZDE: Nyní používáme naši novou třídu!
     private PokladnaObrazovka panelObrazovky;
+    private HerniPanel panelPenez;
+    private HerniPanel panelXp;
+    private InformacniOkno informacniOkno;
     private Boolean vypinacObrazovky = true;
 
     private JPanel fullscreenOverlay;
@@ -56,6 +59,17 @@ public class BazalaSimulator extends JPanel {
 
             spravcePasu = new SpravcePasu(zboziList, pasGif, this);
             vrstvy.add(spravcePasu, Integer.valueOf(3)); // Pás je vrstva 3
+
+            panelPenez = new HerniPanel(false);
+            panelPenez.setPenize(1500);
+            vrstvy.add(panelPenez, Integer.valueOf(5));
+
+            panelXp = new HerniPanel(true);
+            panelXp.setXpData(1, 45, 100);
+            vrstvy.add(panelXp, Integer.valueOf(5));
+
+            informacniOkno = new InformacniOkno("LMAO");
+            vrstvy.add(informacniOkno, Integer.valueOf(6));
 
             ImageIcon settingsIcon = new ImageIcon(getClass().getResource(iconPath));
             Image scaledImg = settingsIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
@@ -129,13 +143,24 @@ public class BazalaSimulator extends JPanel {
             int scaledW = (int)(PAS_W * scaleW);
             int scaledH = (int)(PAS_H * scaleH);
             pasGif.setBounds(scaledX, scaledY, scaledW, scaledH);
-
-
             if (spravcePasu != null) {
                 spravcePasu.setBounds(scaledX, scaledY, (int)(1280 * scaleW), scaledH);
             }
+            if (panelPenez != null) {
+                int sirkaBaru = (int)(280 * scaleW);
+                int vyskaBaru = (int)(60 * scaleH);
+                // Umístění vlevo nahoře s malým odsazením
+                panelPenez.setBounds((int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
+            }
 
+            if (panelXp != null) {
+                int sirkaBaru = (int)(280 * scaleW);
+                int vyskaBaru = (int)(60 * scaleH);
+                // Umístění vpravo nahoře s malým odsazením
+                panelXp.setBounds(w - sirkaBaru - (int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
+            }
         }
+
         double scaleW = (double) w / 1280;
         double scaleH = (double) h / 720;
 
@@ -210,6 +235,11 @@ public class BazalaSimulator extends JPanel {
         vypinacObrazovky = !vypinacObrazovky;
         if (panelObrazovky != null) {
             panelObrazovky.setVisible(vypinacObrazovky);
+        }
+    }
+    public void spustSimulaci() {
+        if (spravcePasu != null) {
+            spravcePasu.odstartujPas();
         }
     }
 }

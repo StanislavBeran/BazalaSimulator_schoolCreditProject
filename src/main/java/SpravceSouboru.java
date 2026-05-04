@@ -33,13 +33,6 @@ public class SpravceSouboru {
                         obtiznost = Integer.parseInt(hodnota);
                     } else if (radek.startsWith("Penize")) {
                         penize = Integer.parseInt(hodnota);
-                        //switch (hodnota) {
-                        //                            case "0": obtiznost = "Lehká"; break;
-                        //                            case "1": obtiznost = "Střední"; break;
-                        //                            case "2": obtiznost = "Obtížná"; break;
-                        //                            case "3": obtiznost = "Adam (Hardcore)"; break;
-                        //                            default: obtiznost = hodnota; break;
-                        //                        }
                     } else if (radek.startsWith("XP")){
                         xp = Integer.parseInt(hodnota);
                     }

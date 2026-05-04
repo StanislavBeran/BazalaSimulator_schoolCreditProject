@@ -74,6 +74,8 @@ public class NacistHruMenu extends JPanel {
                     System.out.println("Načítám hru ze slotu " + pozice);
                     hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");
                     SpravceZvuku.zastav("obchodak_theme_sound");
+
+                    hlavniOkno.getSimulator().spustSimulaci();
                 });
             }
 

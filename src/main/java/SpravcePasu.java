@@ -23,7 +23,7 @@ public class SpravcePasu extends JPanel {
     private BazalaSimulator bazalaSimulator;
 
     // Proměnné pro dělítko
-    private int zbyvaVygenerovatPolozek;
+    private int velikostNakupu;
     private boolean cekaNaDelitko = false;
     private boolean delitkoJeNaPase = false;
 
@@ -32,24 +32,25 @@ public class SpravcePasu extends JPanel {
         this.aktivniPolozky = new ArrayList<>();
         this.pasGif = pasGif;
         this.bazalaSimulator = bazalaSimulator;
-
-        // POZOR: random se musí vytvořit PŘEDTÍM, než ho použijeme na další řádku!
         this.random = new Random();
-
-        // Pro testování sníženo na 3 až 5 položek. Pak si to přepiš na: random.nextInt(25) + 1;
-        this.zbyvaVygenerovatPolozek = random.nextInt(3) + 3;
-        System.out.println("🛒 Nový zákazník! Bude kupovat " + this.zbyvaVygenerovatPolozek + " položek.");
 
         setOpaque(false);
         setLayout(null);
 
         pohybTimer = new Timer(16, e -> pohniSPolozkami());
-        pohybTimer.start();
-
-        spawnTimer = new Timer(2000, e -> zkusPridatZbozi());
-        spawnTimer.start();
+        spawnTimer = new Timer(400, e -> zkusPridatZbozi());
     }
-
+    public void odstartujPas() {
+        this.velikostNakupu = random.nextInt(25) + 1; // Změň si podle libosti (např. random.nextInt(3) + 3; pro testování)
+        System.out.println("🛒 Nový zákazník! Bude kupovat " + this.velikostNakupu + " položek.");
+        if (!pohybTimer.isRunning()) {
+            pohybTimer.start();
+        }
+        if (!spawnTimer.isRunning()) {
+            spawnTimer.start();
+        }
+        System.out.println("Pás byl spuštěn!");
+    }
     private Zbozi vyberNahodneZbozi() {
         int nahodnaHodnota = random.nextInt(zboziList.size());
         return zboziList.get(nahodnaHodnota);
@@ -58,7 +59,7 @@ public class SpravcePasu extends JPanel {
     private void zkusPridatZbozi() {
         boolean jeMisto = true;
         for (PolozkaNaPase p : aktivniPolozky) {
-            if (p.stav == PolozkaNaPase.Stav.NA_PASE && p.getX() < p.getWidth() + 20) {
+            if (p.stav == PolozkaNaPase.Stav.NA_PASE && p.getX() < 30) {
                 jeMisto = false;
                 break;
             }
@@ -110,12 +111,9 @@ public class SpravcePasu extends JPanel {
             aktivniPolozky.add(novaPolozka);
             add(novaPolozka);
             repaint();
+            velikostNakupu--;
 
-            // ODEČTEME POLOŽKU A ZKONTROLUJEME KONEC NÁKUPU
-            zbyvaVygenerovatPolozek--;
-            System.out.println("Vygenerováno. Zákazníkovi zbývá na pás položit: " + zbyvaVygenerovatPolozek + " věcí.");
-
-            if (zbyvaVygenerovatPolozek <= 0) {
+            if (velikostNakupu <= 0) {
                 cekaNaDelitko = true;
             }
         }
@@ -148,10 +146,7 @@ public class SpravcePasu extends JPanel {
                         System.out.println("✅ Nákup ukončen (dělítko odstraněno). Začíná další zákazník.");
                         cekaNaDelitko = false;
                         delitkoJeNaPase = false;
-
-                        // Generování nového zákazníka
-                        zbyvaVygenerovatPolozek = random.nextInt(25) + 1;
-                        System.out.println("🛒 Nový zákazník! Bude kupovat " + zbyvaVygenerovatPolozek + " položek.");
+                        velikostNakupu = random.nextInt(25) + 1;
                     } else {
                         // Pokud je dělítko moc daleko, nic se nestane (nebo to napíše zprávu)
                         System.out.println("❌ Na dělítko nelze kliknout, ještě nedojelo ke scanneru!");
@@ -192,7 +187,7 @@ public class SpravcePasu extends JPanel {
                     if (i > 0) {
                         PolozkaNaPase predchozi = aktivniPolozky.get(i - 1);
                         if (predchozi.stav == PolozkaNaPase.Stav.NA_PASE) {
-                            limit = predchozi.getX() - p.getWidth() - 10;
+                            limit = predchozi.getX() - p.getWidth();
                         }
                     }
 
