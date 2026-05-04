@@ -9,31 +9,33 @@ public class PolozkaNaPase extends JLabel {
     Stav stav = Stav.NA_PASE;
 
     private Image img;
-    private int velikostZakladni;
+    private int sirkaZakladni;
+    private int vyskaZakladni;
 
     int cilX, cilY;
 
     // UPRAVENÝ KONSTRUKTOR: Přijímá parametr navíc (pocetKusu)
-    public PolozkaNaPase(Zbozi z, int x, int y, int velikost, int pocetKusu) {
+    public PolozkaNaPase(Zbozi z, int x, int y, int sirka, int vyska, int pocetKusu) {
         this.zboziData = z;
         this.pocetKusu = pocetKusu;
-        this.velikostZakladni = velikost;
+        this.sirkaZakladni = sirka;
+        this.vyskaZakladni = vyska;
 
-        // Nastavení offsetu (o kolik pixelů se každý další kus posune)
         int offset = 6;
-        int sirkaCelkem = velikost + ((pocetKusu - 1) * offset);
-        int vyskaCelkem = velikost + ((pocetKusu - 1) * offset);
+        int sirkaCelkem = sirka + ((pocetKusu - 1) * offset);
+        int vyskaCelkem = vyska + ((pocetKusu - 1) * offset);
+
 
         // Zvětšíme velikost komponenty tak, aby se do ní "hromádka" vešla a neosekla se
         setBounds(x, y - ((pocetKusu - 1) * offset), sirkaCelkem, vyskaCelkem);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         setToolTipText(pocetKusu + "x " + z.nazev + " (" + z.cena + " Kč / ks)");
 
-        // Místo setIcon() si obrázek jen uložíme do proměnné img
         try {
             java.net.URL imgUrl = getClass().getResource("/zboziObrazky/" + z.nazev + ".png");
             if (imgUrl != null) {
-                img = new ImageIcon(imgUrl).getImage().getScaledInstance(velikost, velikost, Image.SCALE_SMOOTH);
+                img = new ImageIcon(imgUrl).getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
+
             }
         } catch (Exception e) {
             System.err.println("Obrázek pro " + z.nazev + " nenalezen.");
@@ -53,17 +55,16 @@ public class PolozkaNaPase extends JLabel {
         int offset = 6;
 
         if (img != null) {
-            // Vykreslujeme od prvního kusu po poslední s posunem
             for (int i = 0; i < pocetKusu; i++) {
                 int drawX = i * offset;
                 int drawY = i * offset;
                 g2.drawImage(img, drawX, drawY, null);
             }
         } else {
-            // Pokud obrázek chybí, vykreslí se textově tolik krabic, kolik je kusů
-            g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, velikostZakladni / 2));
+            // Pokud chybí obrázek, krabice se přizpůsobí menšímu z rozměrů
+            g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, Math.min(sirkaZakladni, vyskaZakladni) / 2));
             for (int i = 0; i < pocetKusu; i++) {
-                g2.drawString("📦", i * offset, (velikostZakladni / 2) + (i * offset));
+                g2.drawString("📦", i * offset, (vyskaZakladni / 2) + (i * offset));
             }
         }
     }

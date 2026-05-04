@@ -139,8 +139,6 @@ public class Menu extends JFrame {
 
         return btn;
     }
-
-    // 4. OPRAVA: BackgroundPanel nyní používá getResource místo File
     class BackgroundPanel extends JPanel {
         private Image backgroundImage;
 
