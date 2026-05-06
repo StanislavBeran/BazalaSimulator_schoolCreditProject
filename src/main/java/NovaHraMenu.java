@@ -70,14 +70,19 @@ public class NovaHraMenu extends JPanel {
             String jmenoHry = txtNazev.getText();
             int indexSlotu = cbSlot.getSelectedIndex() + 1;
             int indexObtiznosti = cbObtiznost.getSelectedIndex();
-            // Odstraníme " Kč" a převedeme na číslo
             String penizeText = ((String) cbPenize.getSelectedItem()).replace(" Kč", "");
 
             if (!jmenoHry.isEmpty()) {
-                SpravceSouboru.ulozNovouHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText);
-                hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");
+                SpravceSouboru.ulozHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText, 0);
+                BazalaSimulator simulator = hlavniOkno.getSimulator();
+                simulator.nactiPenize(Integer.parseInt(penizeText));
+                simulator.nactiXp(0);
+                simulator.nastavDetailyHry(indexSlotu, jmenoHry, indexObtiznosti);
                 SpravceZvuku.zastav("obchodak_theme_sound");
-                hlavniOkno.getSimulator().spustSimulaci();
+                SpravceZvuku.prehraj("hra_hudba_v_pozadi","obchod_theme.wav", 0, true);
+                hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");
+
+                simulator.zobrazNavodANastartujHru();
             } else {
                 JOptionPane.showMessageDialog(this, "Musíš zadat název!");
             }

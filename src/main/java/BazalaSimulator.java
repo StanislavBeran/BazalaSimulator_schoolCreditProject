@@ -21,6 +21,9 @@ public class BazalaSimulator extends JPanel {
     private HerniPanel panelXp;
     private InformacniOkno informacniOkno;
     private Boolean vypinacObrazovky = true;
+    private HerniPanel panelKonzole;
+    private VracenePenize panelVracenychPenez;
+    private HerniMenu herniMenu;
 
     private JPanel fullscreenOverlay;
     private boolean isFullscreen = false;
@@ -45,6 +48,18 @@ public class BazalaSimulator extends JPanel {
 
     private SpravcePasu spravcePasu;
 
+    private boolean cekaNaPlatbu = false;
+    private boolean platbaKartou = false;
+    private int cenaNakupu = 0;
+    private int castkaVratit = 0;
+    private int castkaVraceno = 0;
+    private int aktualniPenize = 0;
+
+    private int aktualniSlot = 1;
+    private String jmenoObchodu = "Můj Obchod";
+    private int obtiznost = 0;
+    private int celkoveXp = 0;
+
     public BazalaSimulator(Menu okno) {
         this.hlavniOkno = okno;
         setLayout(new BorderLayout());
@@ -60,15 +75,32 @@ public class BazalaSimulator extends JPanel {
             spravcePasu = new SpravcePasu(zboziList, pasGif, this);
             vrstvy.add(spravcePasu, Integer.valueOf(3)); // Pás je vrstva 3
 
-            panelPenez = new HerniPanel(false);
+            panelPenez = new HerniPanel(HerniPanel.Typ.PENIZE);
             panelPenez.setPenize(1500);
             vrstvy.add(panelPenez, Integer.valueOf(5));
 
-            panelXp = new HerniPanel(true);
+            // MÍSTO PŮVODNÍHO: panelXp = new HerniPanel(true);
+            panelXp = new HerniPanel(HerniPanel.Typ.XP);
             panelXp.setXpData(1, 45, 100);
             vrstvy.add(panelXp, Integer.valueOf(5));
 
-            informacniOkno = new InformacniOkno("LMAO");
+            // NOVÝ PANEL KONZOLE
+            panelKonzole = new HerniPanel(HerniPanel.Typ.KONZOLE);
+            vrstvy.add(panelKonzole, Integer.valueOf(5));
+
+            panelVracenychPenez = new VracenePenize();
+            vrstvy.add(panelVracenychPenez, Integer.valueOf(4));
+
+            herniMenu = new HerniMenu(this, hlavniOkno);
+            herniMenu.setVisible(false);
+            vrstvy.add(herniMenu, Integer.valueOf(8));
+
+            informacniOkno = new InformacniOkno(() -> {
+                if (spravcePasu != null) {
+                    spravcePasu.odstartujPas();
+                }
+            });
+            informacniOkno.setVisible(false);
             vrstvy.add(informacniOkno, Integer.valueOf(6));
 
             ImageIcon settingsIcon = new ImageIcon(getClass().getResource(iconPath));
@@ -78,15 +110,15 @@ public class BazalaSimulator extends JPanel {
             settingsLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    hlavniOkno.zobrazObrazovku("HLAVNI_MENU");
+                    if (herniMenu != null) {
+                        herniMenu.setVisible(true);
+                    }
                 }
             });
             vrstvy.add(settingsLabel, JLayeredPane.PALETTE_LAYER);
 
-            // ZMĚNA ZDE: Vytvoření naší nové třídy a předání "přepínače" pro Fullscreen
-            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this::overZboziZeScanneru, 5, "", "", new ArrayList<>());
+            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this, 5, "", "", new ArrayList<>());
             vrstvy.add(panelObrazovky, Integer.valueOf(4));
-
 
             hotspoty.add(new InteraktivniZona(745, 476, 41, 72, "Platební terminál", this));
             hotspoty.add(new InteraktivniZona(800, 330, 20, 20, "vypínač", true, this));
@@ -146,19 +178,7 @@ public class BazalaSimulator extends JPanel {
             if (spravcePasu != null) {
                 spravcePasu.setBounds(scaledX, scaledY, (int)(1280 * scaleW), scaledH);
             }
-            if (panelPenez != null) {
-                int sirkaBaru = (int)(280 * scaleW);
-                int vyskaBaru = (int)(60 * scaleH);
-                // Umístění vlevo nahoře s malým odsazením
-                panelPenez.setBounds((int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
-            }
 
-            if (panelXp != null) {
-                int sirkaBaru = (int)(280 * scaleW);
-                int vyskaBaru = (int)(60 * scaleH);
-                // Umístění vpravo nahoře s malým odsazením
-                panelXp.setBounds(w - sirkaBaru - (int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
-            }
         }
 
         double scaleW = (double) w / 1280;
@@ -173,11 +193,35 @@ public class BazalaSimulator extends JPanel {
             panelObrazovky.setBounds((int)(SCREEN_X * scaleW), (int)(SCREEN_Y * scaleH),
                     (int)(SCREEN_W * scaleW), (int)(SCREEN_H * scaleH));
         }
-
+        if (panelPenez != null) {
+            int sirkaBaru = (int)(280 * scaleW);
+            int vyskaBaru = (int)(60 * scaleH);
+            // Umístění vlevo nahoře s malým odsazením
+            panelPenez.setBounds((int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
+        }
+        if (panelXp != null) {
+            int sirkaBaru = (int)(280 * scaleW);
+            int vyskaBaru = (int)(60 * scaleH);
+            // Umístění vpravo nahoře s malým odsazením
+            panelXp.setBounds(w - sirkaBaru - (int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
+        }
+        if (panelKonzole != null) {
+            int sirkaBaru = (int)(380 * scaleW);
+            int vyskaBaru = (int)(110 * scaleH);
+            panelKonzole.setBounds((int)(20 * scaleW), h - vyskaBaru - (int)(20 * scaleH), sirkaBaru, vyskaBaru);
+        }
+        if (panelVracenychPenez != null) {
+            panelVracenychPenez.setBounds((int)(1090 * scaleW), (int)(320 * scaleH), (int)(210 * scaleW), (int)(150 * scaleH));
+        }
+        if (herniMenu != null) {
+            herniMenu.setBounds(0, 0, w, h);
+        }
         for (InteraktivniZona zona : hotspoty) {
             zona.aktualizujPozici(scaleW, scaleH);
         }
-
+        if (informacniOkno != null) {
+            informacniOkno.setBounds(0, 0, w, h);
+        }
         revalidate();
         repaint();
     }
@@ -209,9 +253,7 @@ public class BazalaSimulator extends JPanel {
 
             vrstvy.remove(panelObrazovky);
 
-            // 2. VYTVOŘÍME VELKOU OBRAZOVKU A PŘEDÁME JÍ ZACHRÁNĚNÝ STAV
-            panelObrazovky = new PokladnaObrazovka(true, zboziList, this::toggleFullscreen, this::overZboziZeScanneru, ulozenaKategorie, ulozeneHledani, ulozenyNumpad, ulozenaUctenka);
-            fullscreenOverlay.removeAll();
+            panelObrazovky = new PokladnaObrazovka(true, zboziList, this::toggleFullscreen, this, ulozenaKategorie, ulozeneHledani, ulozenyNumpad, ulozenaUctenka);
             fullscreenOverlay.add(panelObrazovky, BorderLayout.CENTER);
 
             vrstvy.add(fullscreenOverlay, JLayeredPane.DRAG_LAYER);
@@ -222,7 +264,7 @@ public class BazalaSimulator extends JPanel {
                 vrstvy.remove(fullscreenOverlay);
                 fullscreenOverlay.setVisible(false);
             }
-            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this::overZboziZeScanneru,
+            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this,
                     ulozenaKategorie, ulozeneHledani, ulozenyNumpad, ulozenaUctenka);
             vrstvy.add(panelObrazovky, Integer.valueOf(3));
         }
@@ -241,5 +283,134 @@ public class BazalaSimulator extends JPanel {
         if (spravcePasu != null) {
             spravcePasu.odstartujPas();
         }
+    }
+    public void nactiPenize(int penize) {
+        this.aktualniPenize = penize;
+        if (panelPenez != null) {
+            panelPenez.setPenize(penize);
+        }
+    }
+    public String getJmenoObchodu(){
+        return jmenoObchodu;
+    }
+    public void nactiXp(int celkoveXp) {
+        this.celkoveXp = celkoveXp; // NOVÉ: Zapamatujeme si to pro ukládání
+
+        if (panelXp != null) {
+            int level = (celkoveXp / 100) + 1;
+            int zbyvajiciXpDoDalsihoLevelu = celkoveXp % 100;
+            int maxXp = 100;
+            panelXp.setXpData(level, zbyvajiciXpDoDalsihoLevelu, maxXp);
+        }
+    }
+    public void zobrazNavodANastartujHru() {
+        if (informacniOkno != null) {
+            informacniOkno.setVisible(true);
+        }
+    }
+    public void vypisDoKonzole(String text) {
+        System.out.println(text);
+        if (panelKonzole != null) {
+            panelKonzole.pridejZpravu(text);
+        }
+    }
+    public void zahajPlatbu() {
+        cenaNakupu = panelObrazovky.getCelkovaCena();
+        if (cenaNakupu == 0) {
+            vypisDoKonzole("Zákazník nic nekoupil. Odchází...");
+            dokonciPlatbu(false);
+            return;
+        }
+
+        cekaNaPlatbu = true;
+        platbaKartou = Math.random() < 0.5;
+        if (platbaKartou) {
+            vypisDoKonzole("Zákazník chce platit KARTOU (" + cenaNakupu + " Kč).");
+            vypisDoKonzole("Klikni na Platební terminál.");
+            panelObrazovky.nastavStavPlatby(false, 0, 0);
+        } else {
+            int[] bankovky = {100, 200, 500, 1000, 2000, 5000};
+            int dalZakanik = 0;
+            for (int b : bankovky) {
+                if (b > cenaNakupu) {
+                    dalZakanik = b;
+                    break;
+                }
+            }
+            if (dalZakanik == 0) dalZakanik = cenaNakupu + 1000; // Pojistka pro obří nákupy
+
+            castkaVratit = dalZakanik - cenaNakupu;
+            castkaVraceno = 0;
+
+            vypisDoKonzole("Zákazník platí HOTOVĚ. Dal ti " + dalZakanik + " Kč.");
+            vypisDoKonzole("Vrať mu " + castkaVratit + " Kč naklikáním mincí a bankovek.");
+            panelObrazovky.nastavStavPlatby(true, castkaVratit, castkaVraceno);
+        }
+    }
+
+    public void zpracujKliknutiNaPolozku(String nazev) {
+        if (!cekaNaPlatbu) return;
+
+        if (platbaKartou) {
+            if (nazev.equals("Platební terminál")) {
+                vypisDoKonzole("Pip... Platba kartou PŘIJATA!");
+                dokonciPlatbu(true);
+            } else {
+                vypisDoKonzole("Zákazník platí kartou! Nemusíš sahat na peníze.");
+            }
+        } else {
+            if (nazev.equals("Platební terminál")) {
+                vypisDoKonzole("Zákazník platí hotově, terminál nepotřebuješ.");
+                return;
+            }
+            try {
+                int hodnota = Integer.parseInt(nazev.replace(" Kč", "").trim());
+                castkaVraceno += hodnota;
+                panelObrazovky.nastavStavPlatby(true, castkaVratit, castkaVraceno);
+                if (panelVracenychPenez != null) {
+                    panelVracenychPenez.pridejPenize(hodnota);
+                }
+                if (castkaVraceno == castkaVratit) {
+                    vypisDoKonzole("Nákup zaplacen.");
+                    dokonciPlatbu(true);
+                } else if (castkaVraceno > castkaVratit) {
+                    vypisDoKonzole("Chyba: Vracíš moc! Částka se resetuje na 0.");
+                    castkaVraceno = 0;
+                    panelObrazovky.nastavStavPlatby(true, castkaVratit, castkaVraceno);
+                    if (panelVracenychPenez != null) {
+                        panelVracenychPenez.vycistiHromadku();
+                    }
+                }
+            } catch (Exception e) {}
+        }
+    }
+
+    private void dokonciPlatbu(boolean uspesne) {
+        cekaNaPlatbu = false;
+        if (panelVracenychPenez != null) {
+            panelVracenychPenez.vycistiHromadku();
+        }
+        if (uspesne) {
+            nactiPenize(aktualniPenize + cenaNakupu);
+            vypisDoKonzole("Získáno " + cenaNakupu + " Kč. Další zákazník na řadě!");
+        }
+        panelObrazovky.vycistiUctenku();
+
+        if (spravcePasu != null) {
+            spravcePasu.dokonciNakupAZacniNovy(); // Řekneme pásu, že může uklidit a jet dál
+        }
+    }
+    public void nastavDetailyHry(int slot, String jmeno, int obtiznost) {
+        this.aktualniSlot = slot;
+        this.jmenoObchodu = jmeno;
+        this.obtiznost = obtiznost;
+        if (panelObrazovky != null) {
+            panelObrazovky.vycistiUctenku();
+        }
+    }
+
+    public void ulozHru() {
+        SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, obtiznost, String.valueOf(aktualniPenize), celkoveXp);
+        System.out.println("Hra byla úspěšně uložena!");
     }
 }

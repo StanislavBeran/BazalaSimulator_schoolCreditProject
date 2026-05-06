@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PolozkaNaPase extends JLabel {
-    public enum Stav { NA_PASE, JEDE_NA_SCANNER, CEKA_NA_SCANNERU, JEDE_DO_ODSTAVU, NASKENOVANO }
+    public enum Stav { NA_PASE, JEDE_NA_SCANNER, CEKA_NA_SCANNERU, JEDE_DO_ODSTAVNEHO_MISTA, V_ODSTAVNEM_MISTE, NASKENOVANO }
 
     Zbozi zboziData;
     int pocetKusu;

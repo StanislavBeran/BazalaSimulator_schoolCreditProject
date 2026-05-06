@@ -44,18 +44,19 @@ public class InteraktivniZona extends JPanel {
             }
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("Kliknuto na předmět: " + nazev);
-
                 if (nazev.equals("vypínač")) {
-                    // Zavoláme veřejnou metodu ze simulátoru
-                    simulator.prepniVypinac();
-                } else if (nazev.equals("Platební terminál")) {
-                    SpravceZvuku.prehraj("/pipnuti.wav");
+                    if (simulator != null) simulator.prepniVypinac();
                 } else {
-                    if (jeKulaty) {
-                        SpravceZvuku.prehraj("/mince.wav");
+                    if (simulator != null) simulator.zpracujKliknutiNaPolozku(nazev);
+
+                    if (nazev.equals("Platební terminál")) {
+                        SpravceZvuku.prehraj("/pipnuti.wav");
                     } else {
-                        SpravceZvuku.prehraj("/bankovka.wav");
+                        if (jeKulaty) {
+                            SpravceZvuku.prehraj("/mince.wav");
+                        } else {
+                            SpravceZvuku.prehraj("/bankovka.wav");
+                        }
                     }
                 }
             }

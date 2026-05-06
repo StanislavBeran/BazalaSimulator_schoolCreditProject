@@ -1,43 +1,55 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HerniPanel extends JPanel {
-    private Image bgImage;
-    private boolean isXpBar;
+    public enum Typ { PENIZE, XP, KONZOLE }
 
-    // Data, která budeme zobrazovat
+    private Image bgImage;
+    private Typ typPanelu;
+
+    // Data pro Peníze a XP
     private int penize = 0;
     private int xp = 0;
     private int maxXp = 100;
     private int level = 1;
 
-    public HerniPanel(boolean isXpBar) {
-        this.isXpBar = isXpBar;
-        setOpaque(false); // Aby bylo vidět pozadí simulátoru pod panelem
+    // Seznam zpráv pro Konzoli
+    private List<String> zpravy = new ArrayList<>();
+
+    public HerniPanel(Typ typPanelu) {
+        this.typPanelu = typPanelu;
+        setOpaque(false);
 
         try {
             java.net.URL imgUrl = getClass().getResource("/UI.png");
             if (imgUrl != null) {
                 bgImage = new ImageIcon(imgUrl).getImage();
-            } else {
-                System.err.println("Chyba: Obrázek UI.jpg nebyl nalezen!");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Metoda pro aktualizaci peněz
     public void setPenize(int penize) {
         this.penize = penize;
         repaint();
     }
 
-    // Metoda pro aktualizaci levelu a XP
     public void setXpData(int level, int xp, int maxXp) {
         this.level = level;
         this.xp = xp;
         this.maxXp = maxXp;
+        repaint();
+    }
+
+    // Přidá text a umaže starý
+    public void pridejZpravu(String zprava) {
+        zpravy.add(zprava);
+        if (zpravy.size() > 4) {
+            zpravy.remove(0);
+        }
         repaint();
     }
 
@@ -47,52 +59,50 @@ public class HerniPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // 1. Vykreslení kovového pozadí (tvůj obrázek)
         if (bgImage != null) {
             g2.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
         }
 
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        FontMetrics fm = g2.getFontMetrics();
+        FontMetrics fm;
 
-        if (!isXpBar) {
-            // --- VYKRESLENÍ PANELU PRO PENÍZE ---
+        if (typPanelu == Typ.PENIZE) {
+            g2.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            fm = g2.getFontMetrics();
             String text = penize + " Kč";
             int textX = (getWidth() - fm.stringWidth(text)) / 2;
             int textY = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
-
-            // Text nakreslíme bíle
             g2.setColor(Color.WHITE);
             g2.drawString(text, textX, textY);
 
-        } else {
-            // --- OPRAVENÉ VYKRESLENÍ XP BARU ---
-
-            // Pevné okraje (v pixelech). Zabráníme přetečení přes kovový rám.
-            int okrajX = 12; // Zleva a zprava vynecháme 12 pixelů
-            int okrajY = 15;  // Shora a zdola vynecháme 8 pixelů
-
+        } else if (typPanelu == Typ.XP) {
+            g2.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            fm = g2.getFontMetrics();
+            int okrajX = 12;
+            int okrajY = 15;
             int vnitrniSirka = getWidth() - (2 * okrajX);
             int vnitrniVyska = getHeight() - (2 * okrajY);
-
-            // Kolik pixelů se má vybarvit podle XP
             int fillWidth = (int) (((double) xp / maxXp) * vnitrniSirka);
 
-            // Vykreslení modrého pruhu přesně do černého pole
-            // Přidal jsem i zaoblení rohů (poslední dvě čísla 6, 6) pro hezčí vzhled
             g2.setColor(new Color(50, 150, 255, 180));
             g2.fillRoundRect(okrajX, okrajY, fillWidth, vnitrniVyska, 6, 6);
 
-            // Vykreslení textu s levelem uprostřed
             String text = "Level " + level;
             int textX = (getWidth() - fm.stringWidth(text)) / 2;
             int textY = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
-
-            // Stín textu (černý obrys pro lepší čitelnost)
             g2.setColor(Color.BLACK);
             g2.drawString(text, textX + 1, textY + 1);
             g2.setColor(Color.WHITE);
             g2.drawString(text, textX, textY);
+
+        } else if (typPanelu == Typ.KONZOLE) {
+            // Vykreslení konzole (jako v opravdovém terminálu)
+            g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+            g2.setColor(new Color(180, 255, 180));
+            int y = 25; // Počáteční Y pozice shora (uvnitř černého pole)
+            for (String zprava : zpravy) {
+                g2.drawString("> " + zprava, 20, y); // Každý řádek začne šipkou
+                y += 20; // Posuneme se o 20 pixelů níž pro další řádek
+            }
         }
     }
 }

@@ -109,7 +109,6 @@ public class Menu extends JFrame {
         karty.show(hlavniContainer, nazev);
     }
 
-    // Tvoje metoda pro tlačítko zůstává nezměněna, je super!
     public static JButton vytvorTlacitko(String text) {
         JButton btn = new JButton(text) {
             @Override

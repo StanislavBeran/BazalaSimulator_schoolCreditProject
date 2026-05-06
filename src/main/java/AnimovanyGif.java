@@ -15,6 +15,7 @@ public class AnimovanyGif extends JPanel {
                 gifImage = new ImageIcon(imgUrl).getImage();
             } else {
                 System.err.println("Chyba: Soubor " + cestaKObrazku + " nebyl nalezen v resources.");
+
             }
         } catch (Exception e) {
             e.printStackTrace();

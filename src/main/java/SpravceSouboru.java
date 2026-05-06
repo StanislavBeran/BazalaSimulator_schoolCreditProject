@@ -47,7 +47,7 @@ public class SpravceSouboru {
         }
     }
 
-    public static void ulozNovouHruDoSouboru(int slot, String jmeno, int obtiznost, String penize) {
+    public static void ulozHruDoSouboru(int slot, String jmeno, int obtiznost, String penize, int xp) {
         try {
             File slozka = new File("ulozeneHry");
             if (!slozka.exists()) {
@@ -58,6 +58,7 @@ public class SpravceSouboru {
             writer.println("Jmeno: \"" + jmeno + "\";");
             writer.println("Obtiznost: " + obtiznost + ";");
             writer.println("Penize: " + penize + ";");
+            writer.println("XP: " + xp + ";");
             writer.close();
             System.out.println("Hra uložena do slotu: " + slot);
         } catch (IOException ex) {

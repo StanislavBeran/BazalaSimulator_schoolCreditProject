@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.function.BiPredicate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,17 +17,22 @@ public class PokladnaObrazovka extends JPanel {
     // NOVÉ: Seznam pro ukládání nákupu
     private List<Zbozi> polozkyNaUctence;
     private Runnable prekresliUctenku;
-    private BiPredicate<Integer, Integer> kontrolaScanneru;
+    private BazalaSimulator simulator;
+
+    private boolean zobrazovatPlatbu = false;
+    private int castkaVratit = 0;
+    private int castkaVraceno = 0;
+
 
     // UPRAVENÝ KONSTRUKTOR: Přijímá stav z minulé obrazovky (včetně účtenky)
     public PokladnaObrazovka(boolean isFs, List<Zbozi> zboziList, Runnable onToggleFullscreen,
-                             BiPredicate<Integer, Integer> kontrolaScanneru,
+                             BazalaSimulator simulator, // Tady přijímáme simulator
                              int startKategorie, String startHledani, String startNumpad,
                              List<Zbozi> startUctenka) {
         this.isFs = isFs;
         this.zboziList = zboziList;
         this.onToggleFullscreen = onToggleFullscreen;
-        this.kontrolaScanneru = kontrolaScanneru;
+        this.simulator = simulator;
         this.aktualniKategorie = startKategorie;
         this.polozkyNaUctence = startUctenka != null ? new ArrayList<>(startUctenka) : new ArrayList<>();
 
@@ -136,7 +140,8 @@ public class PokladnaObrazovka extends JPanel {
 
 
         prekresliUctenku = () -> {
-            StringBuilder sb = new StringBuilder("NÁZEV OBCHODU\n----------------\n");
+
+            StringBuilder sb = new StringBuilder(simulator.getJmenoObchodu() + "\n----------------\n");
             int celkem = 0;
             for(Zbozi z : polozkyNaUctence) {
                 // Cena za položku * počet kusů
@@ -146,6 +151,11 @@ public class PokladnaObrazovka extends JPanel {
                 celkem += cenaZaVsechny;
             }
             sb.append("\n----------------\nCENA: ").append(celkem).append(" Kč");
+
+            if (zobrazovatPlatbu) {
+                sb.append("\nVRÁTIT:  ").append(castkaVratit).append(" Kč");
+                sb.append("\nVRÁCENO: ").append(castkaVraceno).append(" Kč");
+            }
             uctenkaText.setText(sb.toString());
         };
         prekresliUctenku.run();
@@ -441,27 +451,65 @@ public class PokladnaObrazovka extends JPanel {
                 int hledaneId = Integer.parseInt(casti[0]);
                 int zadaneMnozstvi = (casti.length == 1) ? 1 : Integer.parseInt(casti[1]);
 
+                boolean zboziNalezeno = false; // Přidáme pro lepší výpisy
+
                 for (Zbozi z : zboziList) {
-                    if (z.id == hledaneId && z.maxPocet >= zadaneMnozstvi) {
-                        boolean muzuPridat = true;
-                        if (z.typ >= 1 && z.typ <= 4) {
-                            if (kontrolaScanneru != null) {
-                                muzuPridat = kontrolaScanneru.test(hledaneId, zadaneMnozstvi);
+                    if (z.id == hledaneId) {
+                        zboziNalezeno = true;
+                        if (z.maxPocet >= zadaneMnozstvi) {
+                            boolean muzuPridat = true;
+
+                            // NOVÉ: Použijeme simulator
+                            if (z.typ >= 1 && z.typ <= 4) {
+                                if (simulator != null) {
+                                    muzuPridat = simulator.overZboziZeScanneru(hledaneId, zadaneMnozstvi);
+                                }
+                            }
+
+                            if (muzuPridat) {
+                                pridejPolozkuNaUctenku(z, zadaneMnozstvi);
+                            } else {
+                                if (simulator != null) {
+                                    simulator.vypisDoKonzole("Chyba: Špatné zadání zboží nebo množství na scanneru!");
+                                }
+                            }
+                        } else {
+                            if (simulator != null) {
+                                simulator.vypisDoKonzole("Chyba: Zboží může být v max množství " + z.maxPocet + " ks!");
                             }
                         }
-
-                        if (muzuPridat) {
-                            pridejPolozkuNaUctenku(z, zadaneMnozstvi);
-                        } else {
-                            System.out.println("Zboží není na scanneru nebo nesouhlasí množství!");
-                        }
-                        break;
+                        break; // Našli jsme ho, dál nehledáme
                     }
                 }
+
+                if (!zboziNalezeno && simulator != null) {
+                    simulator.vypisDoKonzole("Chyba: Neznámé ID zboží (" + hledaneId + ")!");
+                }
+
             } catch (NumberFormatException ex) {
                 // Ignorujeme špatný formát
             }
         }
         numpadDisplay.setText("");
+    }
+    public int getCelkovaCena() {
+        int celkem = 0;
+        for (Zbozi z : polozkyNaUctence) {
+            celkem += z.cena * z.maxPocet;
+        }
+        return celkem;
+    }
+
+    public void vycistiUctenku() {
+        polozkyNaUctence.clear();
+        zobrazovatPlatbu = false;
+        if (prekresliUctenku != null) prekresliUctenku.run();
+    }
+
+    public void nastavStavPlatby(boolean zobrazit, int vratit, int vraceno) {
+        this.zobrazovatPlatbu = zobrazit;
+        this.castkaVratit = vratit;
+        this.castkaVraceno = vraceno;
+        if (prekresliUctenku != null) prekresliUctenku.run();
     }
 }
