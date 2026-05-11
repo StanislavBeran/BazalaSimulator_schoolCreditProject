@@ -1,3 +1,4 @@
-Jmeno: "wef";
+Jmeno: "erger";
 Obtiznost: 0;
-Penize: 1000;
+Penize: 5412;
+XP: 0;

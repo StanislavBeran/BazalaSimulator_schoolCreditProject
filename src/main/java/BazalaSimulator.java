@@ -20,7 +20,7 @@ public class BazalaSimulator extends JPanel {
     private HerniPanel panelPenez;
     private HerniPanel panelXp;
     private InformacniOkno informacniOkno;
-    private Boolean vypinacObrazovky = true;
+    private Boolean vypinacObrazovky = (Boolean) true;
     private HerniPanel panelKonzole;
     private VracenePenize panelVracenychPenez;
     private HerniMenu herniMenu;
@@ -211,7 +211,7 @@ public class BazalaSimulator extends JPanel {
             panelKonzole.setBounds((int)(20 * scaleW), h - vyskaBaru - (int)(20 * scaleH), sirkaBaru, vyskaBaru);
         }
         if (panelVracenychPenez != null) {
-            panelVracenychPenez.setBounds((int)(1090 * scaleW), (int)(320 * scaleH), (int)(210 * scaleW), (int)(150 * scaleH));
+            panelVracenychPenez.setBounds((int)(1120 * scaleW), (int)(320 * scaleH), (int)(150 * scaleW), (int)(150 * scaleH));
         }
         if (herniMenu != null) {
             herniMenu.setBounds(0, 0, w, h);
@@ -237,7 +237,6 @@ public class BazalaSimulator extends JPanel {
         return false;
     }
     private void toggleFullscreen() {
-        // 1. ZACHRÁNÍME AKTUÁLNÍ STAV ZE STARÉ OBRAZOVKY (Včetně účtenky!)
         int ulozenaKategorie = panelObrazovky.getAktualniKategorie();
         String ulozeneHledani = panelObrazovky.getHledanyText();
         String ulozenyNumpad = panelObrazovky.getNumpadText();
@@ -274,7 +273,7 @@ public class BazalaSimulator extends JPanel {
     }
 
     public void prepniVypinac() {
-        vypinacObrazovky = !vypinacObrazovky;
+        vypinacObrazovky = (Boolean) !vypinacObrazovky;
         if (panelObrazovky != null) {
             panelObrazovky.setVisible(vypinacObrazovky);
         }

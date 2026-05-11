@@ -44,7 +44,6 @@ public class Menu extends JFrame {
         hlavniContainer.add(nacistHruMenu, "NACIST_HRU");
         hlavniContainer.add(bazalaSimulator, "BAZALA_SIMULATOR");
 
-        // POZNÁMKA: Odkomentuj si toto, pokud chceš, aby fungovalo tlačítko "Nastavení"
         hlavniContainer.add(nastaveniMenu, "NASTAVENI");
 
         setContentPane(hlavniContainer);
@@ -158,7 +157,6 @@ public class Menu extends JFrame {
             if (backgroundImage != null) {
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             } else {
-                // Pokud obrázek chybí, použijeme barvu
                 setBackground(new Color(30, 30, 30));
             }
         }
@@ -174,5 +172,4 @@ public class Menu extends JFrame {
             new Menu().setVisible(true);
         });
     }
-
 }

@@ -135,14 +135,12 @@ public class SpravcePasu extends JPanel {
         delitko.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                // Podmínka zajistí, že na něj jde kliknout jen jednou
                 if (delitko.stav == PolozkaNaPase.Stav.NA_PASE) {
                     if (delitko.getX() >= BOD_ZASTAVENI) {
 
                         // 1. Opošleme dělítko pryč
                         delitko.nastavCil(ODSTAV_X, delitko.getY(), PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA);
 
-                        // 2. Řekneme simulátoru, že může spustit proces platby (PÁS ČEKÁ)
                         System.out.println("✅ Kliknuto na dělítko, čekáme na platbu.");
                         if (simulator != null) {
                             simulator.zahajPlatbu();
@@ -242,7 +240,6 @@ public class SpravcePasu extends JPanel {
         cekaNaDelitko = false;
         delitkoJeNaPase = false;
 
-        // Zde se vygeneruje fronta věcí pro dalšího zákazníka!
         velikostNakupu = random.nextInt(5) + 1;
         simulator.vypisDoKonzole("🛒 Nový zákazník! Bude kupovat " + velikostNakupu + " položek.");
     }
