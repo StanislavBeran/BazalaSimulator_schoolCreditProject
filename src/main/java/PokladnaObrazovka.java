@@ -22,12 +22,10 @@ public class PokladnaObrazovka extends JPanel {
     private boolean zobrazovatPlatbu = false;
     private int castkaVratit = 0;
     private int castkaVraceno = 0;
+    private JLabel vahaLabel;
 
-
-    // UPRAVENÝ KONSTRUKTOR: Přijímá stav z minulé obrazovky (včetně účtenky)
     public PokladnaObrazovka(boolean isFs, List<Zbozi> zboziList, Runnable onToggleFullscreen,
-                             BazalaSimulator simulator, // Tady přijímáme simulator
-                             int startKategorie, String startHledani, String startNumpad,
+                             BazalaSimulator simulator, int startKategorie, String startHledani, String startNumpad,
                              List<Zbozi> startUctenka) {
         this.isFs = isFs;
         this.zboziList = zboziList;
@@ -79,7 +77,9 @@ public class PokladnaObrazovka extends JPanel {
                 boolean odpovidaKategorii = (aktualniKategorie == 5) || (z.typ == aktualniKategorie);
 
                 if (odpovidaTextu && odpovidaKategorii) {
-                    seznamZbozi.add(vytvorProduktPanel(z.nazev, z.id, z.cena, z.zkracenyNazev));
+                    if(z.typ != 0){
+                        seznamZbozi.add(vytvorProduktPanel(z.nazev, z.id, z.cena, z.zkracenyNazev));
+                    }
                 }
             }
             obalovaciPanel.revalidate();
@@ -140,13 +140,20 @@ public class PokladnaObrazovka extends JPanel {
 
 
         prekresliUctenku = () -> {
-
             StringBuilder sb = new StringBuilder(simulator.getJmenoObchodu() + "\n----------------\n");
             int celkem = 0;
             for(Zbozi z : polozkyNaUctence) {
-                // Cena za položku * počet kusů
-                int cenaZaVsechny = z.cena * z.maxPocet;
-                sb.append(z.maxPocet).append("x ").append(z.nazev).append("\n")
+                int cenaZaVsechny;
+                String jednotka;
+                if (z.minVaha > 0 && z.maxVaha > 0) {
+                    cenaZaVsechny = (int) Math.round((z.cena / 1000.0) * z.maxPocet);
+                    jednotka = "g ";
+                } else {
+                    cenaZaVsechny = z.cena * z.maxPocet;
+                    jednotka = "x ";
+                }
+
+                sb.append(z.maxPocet).append(jednotka).append(z.nazev).append("\n")
                         .append(cenaZaVsechny).append(" Kč\n");
                 celkem += cenaZaVsechny;
             }
@@ -163,9 +170,9 @@ public class PokladnaObrazovka extends JPanel {
         JPanel spodniCast = new JPanel(new BorderLayout(0, 2));
         spodniCast.setBackground(new Color(100, 120, 200));
 
-        JLabel vaha = new JLabel("Váha: -- kg", SwingConstants.CENTER);
-        vaha.setFont(new Font("Monospaced", Font.BOLD, isFs ? 22 : 11));
-        spodniCast.add(vaha, BorderLayout.NORTH);
+        vahaLabel = new JLabel("Váha: -- kg", SwingConstants.CENTER);
+        vahaLabel.setFont(new Font("Monospaced", Font.BOLD, isFs ? 22 : 11));
+        spodniCast.add(vahaLabel, BorderLayout.NORTH);
 
         JPanel tlacitka = new JPanel(new GridLayout(1, 2, 4, 0));
         tlacitka.setBackground(new Color(100, 120, 200));
@@ -237,6 +244,7 @@ public class PokladnaObrazovka extends JPanel {
             }
 
             btn.addActionListener(e -> {
+                SpravceZvuku.prehraj("kliknuti_na_obrazovku");
                 String aktualniText = numpadDisplay.getText();
                 if (k.equals("<-")) {
                     if (!aktualniText.isEmpty()) numpadDisplay.setText(aktualniText.substring(0, aktualniText.length() - 1));
@@ -260,12 +268,14 @@ public class PokladnaObrazovka extends JPanel {
         numpadDisplay.addKeyListener(new java.awt.event.KeyAdapter(){
             @Override
             public void keyTyped(java.awt.event.KeyEvent e){
+                SpravceZvuku.prehraj("kliknuti_na_obrazovku");
                 char c = e.getKeyChar();
                 if(c == '.') e.setKeyChar(',');
                 else if (!Character.isDigit(c) && c != '*' && c != '#' && c != ',') e.consume();
             }
         });
         numpadDisplay.addActionListener(e -> {
+            SpravceZvuku.prehraj("kliknuti_na_obrazovku");
             zpracujVstupZNumpadu();
         });
         numpadWrapper.add(numpadDisplay, BorderLayout.SOUTH);
@@ -308,15 +318,13 @@ public class PokladnaObrazovka extends JPanel {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btn.addActionListener(e -> {
+            SpravceZvuku.prehraj("kliknuti_na_obrazovku");
             if (aktualniKategorie == idKategorie) aktualniKategorie = 5;
             else aktualniKategorie = idKategorie;
-
             aktualizujSeznam.run();
-
             Container parent = btn.getParent();
             if (parent != null) parent.repaint();
         });
-
         return btn;
     }
 
@@ -398,6 +406,7 @@ public class PokladnaObrazovka extends JPanel {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                SpravceZvuku.prehraj("kliknuti_na_obrazovku");
                 if (numpadDisplay != null) numpadDisplay.setText(id + "");
             }
             @Override
@@ -429,16 +438,13 @@ public class PokladnaObrazovka extends JPanel {
     }
 
     public void pridejPolozkuNaUctenku(Zbozi z, int mnozstvi) {
-        // Vytvoříme novou instanci zboží, abychom neupravovali původní databázi
         Zbozi polozka = new Zbozi(z.nazev, z.id, z.typ, z.cena, z.minVaha,
                 z.maxVaha, mnozstvi, z.lvlOdemknuti, z.zkracenyNazev);
 
-        // Odstranění podtržítek pro hezčí výpis (stejně jak to máš v numpad logice)
         polozka.nazev = polozka.nazev.replace('_', ' ');
 
         polozkyNaUctence.add(polozka);
 
-        // Aktualizujeme UI
         if (prekresliUctenku != null) {
             prekresliUctenku.run();
         }
@@ -449,17 +455,23 @@ public class PokladnaObrazovka extends JPanel {
             try {
                 String[] casti = aktualniText.split("\\*");
                 int hledaneId = Integer.parseInt(casti[0]);
-                int zadaneMnozstvi = (casti.length == 1) ? 1 : Integer.parseInt(casti[1]);
-
-                boolean zboziNalezeno = false; // Přidáme pro lepší výpisy
+                boolean zboziNalezeno = false;
 
                 for (Zbozi z : zboziList) {
                     if (z.id == hledaneId) {
                         zboziNalezeno = true;
-                        if (z.maxPocet >= zadaneMnozstvi) {
+                        boolean pouzivaVahu = (z.minVaha > 0 && z.maxVaha > 0);
+                        if (pouzivaVahu && casti.length == 1) {
+                            if (simulator != null) {
+                                simulator.vypisDoKonzole("Chyba: Toto zboží se váží! Zadej ID*VÁHA (např. " + hledaneId + "*500).");
+                            }
+                            break;
+                        }
+                        int zadaneMnozstvi = (casti.length == 1) ? 1 : Integer.parseInt(casti[1]);
+
+                        if (pouzivaVahu || z.maxPocet >= zadaneMnozstvi) {
                             boolean muzuPridat = true;
 
-                            // NOVÉ: Použijeme simulator
                             if (z.typ >= 1 && z.typ <= 4) {
                                 if (simulator != null) {
                                     muzuPridat = simulator.overZboziZeScanneru(hledaneId, zadaneMnozstvi);
@@ -470,7 +482,7 @@ public class PokladnaObrazovka extends JPanel {
                                 pridejPolozkuNaUctenku(z, zadaneMnozstvi);
                             } else {
                                 if (simulator != null) {
-                                    simulator.vypisDoKonzole("Chyba: Špatné zadání zboží nebo množství na scanneru!");
+                                    simulator.vypisDoKonzole("Chyba: Zadaná váha/množství nesouhlasí se scannerem!");
                                 }
                             }
                         } else {
@@ -478,7 +490,7 @@ public class PokladnaObrazovka extends JPanel {
                                 simulator.vypisDoKonzole("Chyba: Zboží může být v max množství " + z.maxPocet + " ks!");
                             }
                         }
-                        break; // Našli jsme ho, dál nehledáme
+                        break;
                     }
                 }
 
@@ -487,7 +499,6 @@ public class PokladnaObrazovka extends JPanel {
                 }
 
             } catch (NumberFormatException ex) {
-                // Ignorujeme špatný formát
             }
         }
         numpadDisplay.setText("");
@@ -495,7 +506,11 @@ public class PokladnaObrazovka extends JPanel {
     public int getCelkovaCena() {
         int celkem = 0;
         for (Zbozi z : polozkyNaUctence) {
-            celkem += z.cena * z.maxPocet;
+            if (z.minVaha > 0 && z.maxVaha > 0) {
+                celkem += (int) Math.round((z.cena / 1000.0) * z.maxPocet);
+            } else {
+                celkem += z.cena * z.maxPocet;
+            }
         }
         return celkem;
     }
@@ -505,7 +520,15 @@ public class PokladnaObrazovka extends JPanel {
         zobrazovatPlatbu = false;
         if (prekresliUctenku != null) prekresliUctenku.run();
     }
-
+    public void nastavVahu(int vaha) {
+        if (vahaLabel != null) {
+            if (vaha > 0) {
+                vahaLabel.setText("Váha: " + vaha + " g");
+            } else {
+                vahaLabel.setText("Váha: -- kg");
+            }
+        }
+    }
     public void nastavStavPlatby(boolean zobrazit, int vratit, int vraceno) {
         this.zobrazovatPlatbu = zobrazit;
         this.castkaVratit = vratit;

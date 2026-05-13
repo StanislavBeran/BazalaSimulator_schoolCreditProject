@@ -11,7 +11,9 @@ public class HerniMenu extends JPanel {
         this.hlavniOkno = hlavniOkno;
 
         setLayout(new GridBagLayout());
-        setBackground(new Color(0, 0, 0, 200)); // Tmavé poloprůhledné pozadí
+
+        // NOVÉ: Musíme říct Javě, ať pod tím vykresluje hru!
+        setOpaque(false);
 
         // Zabrání klikání "skrz" menu na herní pult
         addMouseListener(new MouseAdapter() {});
@@ -28,26 +30,21 @@ public class HerniMenu extends JPanel {
         oknoPanel.add(nadpis);
         oknoPanel.add(Box.createVerticalStrut(40));
 
-        // Využijeme tvoji stávající metodu z Menu.java pro stejný design tlačítek
         JButton btnPokracovat = Menu.vytvorTlacitko("Pokračovat");
         btnPokracovat.addActionListener(e -> setVisible(false));
 
         JButton btnNastaveni = Menu.vytvorTlacitko("Nastavení");
         btnNastaveni.addActionListener(e -> {
-            // Zavře in-game menu a přepne na obrazovku nastavení v hlavním okně
-            setVisible(false);
+            hlavniOkno.setPredchoziObrazovka("BAZALA_SIMULATOR");
             hlavniOkno.zobrazObrazovku("NASTAVENI");
         });
 
         JButton btnUlozitOdejit = Menu.vytvorTlacitko("Uložit a odejít");
         btnUlozitOdejit.addActionListener(e -> {
             simulator.ulozHru();
-
             setVisible(false);
-
             SpravceZvuku.zastavVsechnuHudbu();
-            SpravceZvuku.prehraj("obchodak_theme_sound", "/zvuk_v_pozadi.wav", 0, true);
-
+            SpravceZvuku.prehraj("obchodak_theme_sound", "zvuk_v_pozadi", 0, true);
             hlavniOkno.zobrazObrazovku("HLAVNI_MENU");
         });
 
@@ -58,5 +55,13 @@ public class HerniMenu extends JPanel {
         oknoPanel.add(btnUlozitOdejit);
 
         add(oknoPanel);
+    }
+
+    // NOVÉ: Tahle metoda se postará o ten krásný tmavý průhledný efekt přes celou hru
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.setColor(new Color(0, 0, 0, 200)); // 200 určuje sílu ztmavení (0 je neviditelné, 255 úplná tma)
+        g.fillRect(0, 0, getWidth(), getHeight());
+        super.paintComponent(g);
     }
 }

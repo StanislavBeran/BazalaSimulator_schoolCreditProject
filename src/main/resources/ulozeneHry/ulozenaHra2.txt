@@ -1,4 +1,4 @@
-Jmeno: "Moulis shop";
-Obtiznost: 1;
-Penize: 10000;
-XP: 50;
+Jmeno: "111";
+Obtiznost: 2;
+Penize: 5446;
+XP: 0;

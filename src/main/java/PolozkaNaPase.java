@@ -12,15 +12,21 @@ public class PolozkaNaPase extends JLabel {
     private int sirkaZakladni;
     private int vyskaZakladni;
 
+    public int vaha = 0;
+
     int cilX, cilY;
+    public int idZakaznika;
 
     // UPRAVENÝ KONSTRUKTOR: Přijímá parametr navíc (pocetKusu)
-    public PolozkaNaPase(Zbozi z, int x, int y, int sirka, int vyska, int pocetKusu) {
+    public PolozkaNaPase(Zbozi z, int x, int y, int sirka, int vyska, int pocetKusu, int idZakaznika) {
         this.zboziData = z;
         this.pocetKusu = pocetKusu;
         this.sirkaZakladni = sirka;
         this.vyskaZakladni = vyska;
-
+        if (z.minVaha > 0 && z.maxVaha > 0) {
+            this.vaha = new java.util.Random().nextInt(z.maxVaha - z.minVaha + 1) + z.minVaha;
+        }
+        this.idZakaznika = idZakaznika;
         int offset = 6;
         int sirkaCelkem = sirka + ((pocetKusu - 1) * offset);
         int vyskaCelkem = vyska + ((pocetKusu - 1) * offset);

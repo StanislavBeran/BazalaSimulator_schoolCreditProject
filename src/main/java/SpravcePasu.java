@@ -21,6 +21,8 @@ public class SpravcePasu extends JPanel {
 
     private AnimovanyGif pasGif;
     private BazalaSimulator simulator;
+    private int aktualniSpawnovanyZakaznik = 1;
+    private int obsluhovanyZakaznik = 1;
 
     // Proměnné pro dělítko
     private int velikostNakupu;
@@ -65,27 +67,35 @@ public class SpravcePasu extends JPanel {
         }
 
         if (jeMisto) {
-            // LOGIKA PRO DĚLÍTKO
             if (cekaNaDelitko) {
                 if (!delitkoJeNaPase) {
                     vygenerujDelitko();
                 }
                 return;
             }
-
-            // BĚŽNÉ GENEROVÁNÍ ZBOŽÍ
             Zbozi vybrane = vyberNahodneZbozi();
             int pocetKusu = random.nextInt(vybrane.maxPocet) + 1;
             int startY = (getHeight() / 2) - (VELIKOST_POLOZKY / 2);
             if(getHeight() == 0) startY = 40;
 
-            PolozkaNaPase novaPolozka = new PolozkaNaPase(vybrane, -VELIKOST_POLOZKY, startY, VELIKOST_POLOZKY, VELIKOST_POLOZKY, pocetKusu);
+            // Vytvorenie položky s priradením ID aktuálne generovaného zákazníka
+            PolozkaNaPase novaPolozka = new PolozkaNaPase(vybrane, -VELIKOST_POLOZKY, startY, VELIKOST_POLOZKY, VELIKOST_POLOZKY, pocetKusu, aktualniSpawnovanyZakaznik);
 
             novaPolozka.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
+                    if (novaPolozka.idZakaznika != obsluhovanyZakaznik) {
+                        if (simulator != null) simulator.vypisDoKonzole("Chyba: Nesahej na nákup dalšího zákazníka!");
+                        return;
+                    }
+                    if (simulator != null && simulator.cekaNaPlatbu()) {
+                        simulator.vypisDoKonzole("Chyba: Nejdřív musíš dokončit platbu!");
+                        return;
+                    }
+
                     if (novaPolozka.stav == PolozkaNaPase.Stav.NA_PASE) {
                         if (novaPolozka.zboziData.typ == 0) {
+                            // Logika pre položky typu "Ostatné"
                             if (simulator != null) {
                                 simulator.pridejZboziNaUctenku(novaPolozka.zboziData, novaPolozka.pocetKusu);
                             }
@@ -102,12 +112,13 @@ public class SpravcePasu extends JPanel {
                             if (scannerVolny) {
                                 novaPolozka.nastavCil(SCANNER_X, SCANNER_Y, PolozkaNaPase.Stav.JEDE_NA_SCANNER);
                             } else {
-                                System.out.println("Scanner je momentálně obsazený!");
+                                if (simulator != null) simulator.vypisDoKonzole("Chyba: Scanner je momentálně obsazený!");
                             }
                         }
                     }
                 }
             });
+
             aktivniPolozky.add(novaPolozka);
             add(novaPolozka);
             repaint();
@@ -120,7 +131,6 @@ public class SpravcePasu extends JPanel {
     }
 
     private void vygenerujDelitko() {
-        System.out.println("⚠️ Generuji dělítko nákupu!");
         Zbozi delitkoData = new Zbozi("delitko_nakupu", -1, -1, 0, 0, 0, 1, 0, "delitko_nakupu");
 
         // ROZMĚRY DĚLÍTKA
@@ -130,24 +140,26 @@ public class SpravcePasu extends JPanel {
         int startY = (getHeight() / 2) - (vyskaDelitka / 2);
         if(getHeight() == 0) startY = 40;
 
-        PolozkaNaPase delitko = new PolozkaNaPase(delitkoData, -sirkaDelitka, startY, sirkaDelitka, vyskaDelitka, 1);
+        PolozkaNaPase delitko = new PolozkaNaPase(delitkoData, -sirkaDelitka, startY, sirkaDelitka, vyskaDelitka, 1, aktualniSpawnovanyZakaznik);
 
         delitko.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (delitko.idZakaznika != obsluhovanyZakaznik) return;
+                if (simulator != null && simulator.cekaNaPlatbu()) return;
+
                 if (delitko.stav == PolozkaNaPase.Stav.NA_PASE) {
                     if (delitko.getX() >= BOD_ZASTAVENI) {
-
-                        // 1. Opošleme dělítko pryč
-                        delitko.nastavCil(ODSTAV_X, delitko.getY(), PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA);
-
-                        System.out.println("✅ Kliknuto na dělítko, čekáme na platbu.");
+                        aktivniPolozky.remove(delitko);
+                        remove(delitko);
+                        repaint();
                         if (simulator != null) {
                             simulator.zahajPlatbu();
                         }
-
                     } else {
-                        System.out.println("❌ Na dělítko nelze kliknout, ještě nedojelo ke scanneru!");
+                        if (simulator != null) {
+                            simulator.vypisDoKonzole("Chyba: Dělítko ještě nedojelo ke scanneru!");
+                        }
                     }
                 }
             }
@@ -156,7 +168,15 @@ public class SpravcePasu extends JPanel {
         aktivniPolozky.add(delitko);
         add(delitko);
         repaint();
-        delitkoJeNaPase = true;
+
+        cekaNaDelitko = false;
+        delitkoJeNaPase = false;
+        aktualniSpawnovanyZakaznik++;
+
+        velikostNakupu = random.nextInt(5) + 1;
+        if (simulator != null) {
+            simulator.vypisDoKonzole("🛒 Další zákazník skládá věci na pás (" + velikostNakupu + " položek).");
+        }
     }
 
     private void pohniSPolozkami() {
@@ -207,28 +227,39 @@ public class SpravcePasu extends JPanel {
         if (Math.abs(dx) <= rychlost && Math.abs(dy) <= rychlost) {
             if (p.stav == PolozkaNaPase.Stav.JEDE_NA_SCANNER) {
                 p.stav = PolozkaNaPase.Stav.CEKA_NA_SCANNERU;
+                if (simulator != null) simulator.zobrazVahu(p.vaha);
             } else if (p.stav == PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA) {
                 p.stav = PolozkaNaPase.Stav.V_ODSTAVNEM_MISTE;
             }
         }
     }
 
-    public boolean overAOdjedZeScanneru(int idZbozi, int mnozstvi) {
+    public boolean overAOdjedZeScanneru(int idZbozi, int zadanaHodnota) {
         for (PolozkaNaPase p : aktivniPolozky) {
-            if (p.stav == PolozkaNaPase.Stav.CEKA_NA_SCANNERU && p.zboziData.id == idZbozi && p.pocetKusu == mnozstvi) {
-                int nahodneY = p.getY() + (random.nextInt(101) - 50);
-                p.nastavCil(ODSTAV_X, nahodneY, PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA);
-                return true;
+            if (p.stav == PolozkaNaPase.Stav.CEKA_NA_SCANNERU && p.zboziData.id == idZbozi) {
+
+                boolean jeSpravne = false;
+                if (p.vaha > 0) {
+                    jeSpravne = (p.vaha == zadanaHodnota);
+                } else {
+                    jeSpravne = (p.pocetKusu == zadanaHodnota);
+                }
+
+                if (jeSpravne) {
+                    int nahodneY = p.getY() + (random.nextInt(101) - 50);
+                    p.nastavCil(ODSTAV_X, nahodneY, PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA);
+                    if (simulator != null) simulator.zobrazVahu(0); // Vynuluje váhu na displeji
+                    return true;
+                }
             }
         }
         return false;
     }
     public void dokonciNakupAZacniNovy() {
-        simulator.vypisDoKonzole("✅ Nákup zaplacen. Čistím odstavný prostor.");
-
+        if (simulator != null) simulator.vypisDoKonzole("✅ Nákup zaplacen. Čistím odstavný prostor.");
+        obsluhovanyZakaznik++;
         List<PolozkaNaPase> keSmazani = new ArrayList<>();
         for (PolozkaNaPase p : aktivniPolozky) {
-            // Smažeme všechno zboží i dělítko, co čeká v odstavu
             if (p.stav == PolozkaNaPase.Stav.V_ODSTAVNEM_MISTE || p.stav == PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA) {
                 keSmazani.add(p);
                 remove(p);
@@ -236,11 +267,5 @@ public class SpravcePasu extends JPanel {
         }
         aktivniPolozky.removeAll(keSmazani);
         repaint();
-
-        cekaNaDelitko = false;
-        delitkoJeNaPase = false;
-
-        velikostNakupu = random.nextInt(5) + 1;
-        simulator.vypisDoKonzole("🛒 Nový zákazník! Bude kupovat " + velikostNakupu + " položek.");
     }
 }

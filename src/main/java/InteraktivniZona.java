@@ -50,12 +50,12 @@ public class InteraktivniZona extends JPanel {
                     if (simulator != null) simulator.zpracujKliknutiNaPolozku(nazev);
 
                     if (nazev.equals("Platební terminál")) {
-                        SpravceZvuku.prehraj("/pipnuti.wav");
+                        SpravceZvuku.prehraj("pipnuti");
                     } else {
                         if (jeKulaty) {
-                            SpravceZvuku.prehraj("/mince.wav");
+                            SpravceZvuku.prehraj("mince");
                         } else {
-                            SpravceZvuku.prehraj("/bankovka.wav");
+                            SpravceZvuku.prehraj("bankovka");
                         }
                     }
                 }

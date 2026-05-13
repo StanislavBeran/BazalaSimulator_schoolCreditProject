@@ -97,11 +97,15 @@ public class HerniPanel extends JPanel {
         } else if (typPanelu == Typ.KONZOLE) {
             // Vykreslení konzole (jako v opravdovém terminálu)
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
-            g2.setColor(new Color(180, 255, 180));
-            int y = 25; // Počáteční Y pozice shora (uvnitř černého pole)
+            int y = 25;
             for (String zprava : zpravy) {
-                g2.drawString("> " + zprava, 20, y); // Každý řádek začne šipkou
-                y += 20; // Posuneme se o 20 pixelů níž pro další řádek
+                if(zprava.contains("Chyba")){
+                    g2.setColor(Color.red);
+                }else{
+                    g2.setColor(new Color(180, 255, 180));
+                }
+                g2.drawString("> " + zprava, 20, y);
+                y += 20;
             }
         }
     }

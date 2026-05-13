@@ -307,11 +307,22 @@ public class BazalaSimulator extends JPanel {
             informacniOkno.setVisible(true);
         }
     }
+    public void zobrazVahu(int vaha) {
+        if (panelObrazovky != null) {
+            panelObrazovky.nastavVahu(vaha);
+        }
+    }
     public void vypisDoKonzole(String text) {
+        if(text.contains("Chyba")){
+            SpravceZvuku.prehraj("chyba");
+        }
         System.out.println(text);
         if (panelKonzole != null) {
             panelKonzole.pridejZpravu(text);
         }
+    }
+    public boolean cekaNaPlatbu() {
+        return cekaNaPlatbu;
     }
     public void zahajPlatbu() {
         cenaNakupu = panelObrazovky.getCelkovaCena();

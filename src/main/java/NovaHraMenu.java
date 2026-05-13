@@ -79,7 +79,7 @@ public class NovaHraMenu extends JPanel {
                 simulator.nactiXp(0);
                 simulator.nastavDetailyHry(indexSlotu, jmenoHry, indexObtiznosti);
                 SpravceZvuku.zastav("obchodak_theme_sound");
-                SpravceZvuku.prehraj("hra_hudba_v_pozadi","obchod_theme.wav", 0, true);
+                SpravceZvuku.prehraj("hra_hudba_v_pozadi","obchod_theme", 0, true);
                 hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");
 
                 simulator.zobrazNavodANastartujHru();

@@ -8,6 +8,14 @@ public class Menu extends JFrame {
     private JPanel hlavniContainer;
 
     private BazalaSimulator bazalaSimulator;
+    private String predchoziObrazovka = "HLAVNI_MENU";
+    public void setPredchoziObrazovka(String obrazovka) {
+        this.predchoziObrazovka = obrazovka;
+    }
+    public String getPredchoziObrazovka() {
+        return predchoziObrazovka;
+    }
+
 
     public Menu() {
         setTitle("Bazala Simulator");
@@ -16,7 +24,7 @@ public class Menu extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        SpravceZvuku.prehraj("obchodak_theme_sound","zvuk_v_pozadi.wav", 0, true);
+        SpravceZvuku.prehraj("obchodak_theme_sound","zvuk_v_pozadi", 0, true);
 
         try {
             URL iconUrl = getClass().getResource("/logoAplikace.png");
@@ -91,6 +99,7 @@ public class Menu extends JFrame {
                         zobrazObrazovku("NACIST_HRU");
                         break;
                     case "Nastavení":
+                        setPredchoziObrazovka("HLAVNI_MENU");
                         zobrazObrazovku("NASTAVENI");
                         break;
                     case "Exit":
@@ -142,7 +151,6 @@ public class Menu extends JFrame {
         private Image backgroundImage;
 
         public BackgroundPanel(String path) {
-            // Načtení přes URL umožňuje fungování i zabalené v JARu
             URL imgUrl = getClass().getResource(path);
             if (imgUrl != null) {
                 this.backgroundImage = new ImageIcon(imgUrl).getImage();
