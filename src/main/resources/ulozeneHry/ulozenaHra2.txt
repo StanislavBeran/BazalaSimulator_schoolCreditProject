@@ -1,4 +1,4 @@
 Jmeno: "111";
 Obtiznost: 2;
-Penize: 5446;
+Penize: 6039;
 XP: 0;

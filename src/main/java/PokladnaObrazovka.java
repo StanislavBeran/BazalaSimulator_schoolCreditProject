@@ -179,6 +179,11 @@ public class PokladnaObrazovka extends JPanel {
         tlacitka.setPreferredSize(new Dimension(0, isFs ? 70 : 40));
 
         JButton btnObchod = vytvorModreTlacitko("Obchod");
+        btnObchod.addActionListener(e -> {
+            if (simulator != null) {
+                simulator.zobrazObchod();
+            }
+        });
         JButton btnFullscreen = vytvorModreTlacitko("Fullscreen");
         btnFullscreen.addActionListener(e -> onToggleFullscreen.run());
 

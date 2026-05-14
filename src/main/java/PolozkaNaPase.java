@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Random;
 
 public class PolozkaNaPase extends JLabel {
     public enum Stav { NA_PASE, JEDE_NA_SCANNER, CEKA_NA_SCANNERU, JEDE_DO_ODSTAVNEHO_MISTA, V_ODSTAVNEM_MISTE, NASKENOVANO }
@@ -23,8 +24,10 @@ public class PolozkaNaPase extends JLabel {
         this.pocetKusu = pocetKusu;
         this.sirkaZakladni = sirka;
         this.vyskaZakladni = vyska;
+
+        Random rand = new Random();
         if (z.minVaha > 0 && z.maxVaha > 0) {
-            this.vaha = new java.util.Random().nextInt(z.maxVaha - z.minVaha + 1) + z.minVaha;
+            this.vaha = (rand.nextInt(z.maxVaha - z.minVaha + 1) + z.minVaha) * pocetKusu;
         }
         this.idZakaznika = idZakaznika;
         int offset = 6;

@@ -24,6 +24,7 @@ public class BazalaSimulator extends JPanel {
     private HerniPanel panelKonzole;
     private VracenePenize panelVracenychPenez;
     private HerniMenu herniMenu;
+    private ObchodMenu obchodMenu;
 
     private JPanel fullscreenOverlay;
     private boolean isFullscreen = false;
@@ -94,6 +95,10 @@ public class BazalaSimulator extends JPanel {
             herniMenu = new HerniMenu(this, hlavniOkno);
             herniMenu.setVisible(false);
             vrstvy.add(herniMenu, Integer.valueOf(8));
+
+            obchodMenu = new ObchodMenu(this);
+            obchodMenu.setVisible(false);
+            vrstvy.add(obchodMenu, Integer.valueOf(9));
 
             informacniOkno = new InformacniOkno(() -> {
                 if (spravcePasu != null) {
@@ -215,6 +220,9 @@ public class BazalaSimulator extends JPanel {
         }
         if (herniMenu != null) {
             herniMenu.setBounds(0, 0, w, h);
+        }
+        if (obchodMenu != null) {
+            obchodMenu.setBounds(0, 0, w, h);
         }
         for (InteraktivniZona zona : hotspoty) {
             zona.aktualizujPozici(scaleW, scaleH);
@@ -422,5 +430,10 @@ public class BazalaSimulator extends JPanel {
     public void ulozHru() {
         SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, obtiznost, String.valueOf(aktualniPenize), celkoveXp);
         System.out.println("Hra byla úspěšně uložena!");
+    }
+    public void zobrazObchod() {
+        if (obchodMenu != null) {
+            obchodMenu.setVisible(true);
+        }
     }
 }
