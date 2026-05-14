@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NovaHraMenu extends JPanel {
     private Menu hlavniOkno;
@@ -73,10 +75,12 @@ public class NovaHraMenu extends JPanel {
             String penizeText = ((String) cbPenize.getSelectedItem()).replace(" Kč", "");
 
             if (!jmenoHry.isEmpty()) {
-                SpravceSouboru.ulozHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText, 0);
+                SpravceSouboru.ulozHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText, 0, "00000", null);
                 BazalaSimulator simulator = hlavniOkno.getSimulator();
                 simulator.nactiPenize(Integer.parseInt(penizeText));
                 simulator.nactiXp(0);
+                simulator.nactiVylepseni("00000");
+                simulator.nactiOdemceneZbozi(null);
                 simulator.nastavDetailyHry(indexSlotu, jmenoHry, indexObtiznosti);
                 SpravceZvuku.zastav("obchodak_theme_sound");
                 SpravceZvuku.prehraj("hra_hudba_v_pozadi","obchod_theme", 0, true);

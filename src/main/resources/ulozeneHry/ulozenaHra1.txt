@@ -2,3 +2,5 @@ Jmeno: "erger";
 Obtiznost: 0;
 Penize: 5412;
 XP: 0;
+Vylepseni: 001000000;
+OdemceneZbozi: 1,

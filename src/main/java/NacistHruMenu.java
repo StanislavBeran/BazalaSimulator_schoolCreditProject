@@ -75,6 +75,8 @@ public class NacistHruMenu extends JPanel {
                     BazalaSimulator simulator = hlavniOkno.getSimulator();
                     simulator.nactiPenize(ulozenaHra.pocetPenez);
                     simulator.nactiXp(ulozenaHra.xp);
+                    simulator.nactiVylepseni(ulozenaHra.vylepseni);
+                    simulator.nactiOdemceneZbozi(ulozenaHra.odemceneZbozi);
                     simulator.nastavDetailyHry(pozice, ulozenaHra.nazevObchodu, ulozenaHra.obtiznost);
                     SpravceZvuku.zastav("obchodak_theme_sound");
                     SpravceZvuku.prehraj("hra_hudba_v_pozadi", "obchod_theme", 0, true);

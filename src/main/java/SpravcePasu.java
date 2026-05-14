@@ -36,6 +36,7 @@ public class SpravcePasu extends JPanel {
         this.simulator = simulator;
         this.random = new Random();
 
+
         setOpaque(false);
         setLayout(null);
 
@@ -43,7 +44,7 @@ public class SpravcePasu extends JPanel {
         spawnTimer = new Timer(400, e -> zkusPridatZbozi());
     }
     public void odstartujPas() {
-        this.velikostNakupu = random.nextInt(5) + 1; // Změň si podle libosti (např. random.nextInt(3) + 3; pro testování)
+        this.velikostNakupu = random.nextInt(5) + 1;
         simulator.vypisDoKonzole("🛒 Nový zákazník! Bude kupovat " + this.velikostNakupu + " položek.");
         if (!pohybTimer.isRunning()) {
             pohybTimer.start();
@@ -53,8 +54,12 @@ public class SpravcePasu extends JPanel {
         }
     }
     private Zbozi vyberNahodneZbozi() {
-        int nahodnaHodnota = random.nextInt(zboziList.size());
-        return zboziList.get(nahodnaHodnota);
+        Zbozi vybrane;
+        do {
+            int nahodnyIndex = random.nextInt(zboziList.size());
+            vybrane = zboziList.get(nahodnyIndex);
+        } while (!simulator.getOdemceneZbozi().contains(vybrane.id));
+        return vybrane;
     }
 
     private void zkusPridatZbozi() {

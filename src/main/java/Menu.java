@@ -58,7 +58,6 @@ public class Menu extends JFrame {
     }
 
     private BackgroundPanel vytvorHlavniMenu() {
-        // 2. OPRAVA: Relativní cesta pro pozadí
         BackgroundPanel panel = new BackgroundPanel("/pozadi.png");
         panel.setLayout(new GridLayout());
 

@@ -75,8 +75,9 @@ public class PokladnaObrazovka extends JPanel {
             for (Zbozi z : zboziList) {
                 boolean odpovidaTextu = z.nazev.toLowerCase().contains(hledanyText) || (z.id + "").contains(hledanyText);
                 boolean odpovidaKategorii = (aktualniKategorie == 5) || (z.typ == aktualniKategorie);
+                boolean odpovinaOdemcenemuZbozi = simulator.getOdemceneZbozi().contains(z.id);
 
-                if (odpovidaTextu && odpovidaKategorii) {
+                if (odpovidaTextu && odpovidaKategorii && odpovinaOdemcenemuZbozi) {
                     if(z.typ != 0){
                         seznamZbozi.add(vytvorProduktPanel(z.nazev, z.id, z.cena, z.zkracenyNazev));
                     }
@@ -125,9 +126,6 @@ public class PokladnaObrazovka extends JPanel {
         gbc.gridx = 0; gbc.weightx = isFs ? 0.45 : 0.42;
         add(levyPanel, gbc);
 
-        // ==========================================
-        // 3. PRAVÁ ČÁST (Účtenka) - Přesunuto výše kvůli klávesnici
-        // ==========================================
         JPanel rightPanel = new JPanel(new BorderLayout(0, 2));
         rightPanel.setBackground(new Color(100, 120, 200));
 
@@ -452,6 +450,11 @@ public class PokladnaObrazovka extends JPanel {
 
         if (prekresliUctenku != null) {
             prekresliUctenku.run();
+        }
+    }
+    public void obnovSeznamZbozi() {
+        if (aktualizujSeznam != null) {
+            aktualizujSeznam.run();
         }
     }
     private void zpracujVstupZNumpadu() {

@@ -1,4 +1,6 @@
-Jmeno: "xdddd";
-Obtiznost: 2;
-Penize: 10000;
+Jmeno: "Karel";
+Obtiznost: 0;
+Penize: 1000;
 XP: 0;
+Vylepseni: 00000;
+OdemceneZbozi: 16,

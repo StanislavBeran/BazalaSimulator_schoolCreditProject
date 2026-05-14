@@ -6,16 +6,16 @@ import java.util.List;
 public class SpravceSouboru {
     public static UlozenaHra nactiUlozeneHryZeSouboru(String cesta) {
         File soubor = new File(cesta);
-
         if (!soubor.exists() || soubor.length() == 0) {
-            return new UlozenaHra("Prázdné", 0, 0, 0);
+            return new UlozenaHra("Prázdné", 0, 0, 0, "00000",null);
         }
 
         String jmenoObchodu = "Neznámé";
         int obtiznost = 0;
         int penize = 0;
         int xp = 0;
-
+        String vylepseni = "00000";
+        ArrayList<Integer> odemceneZbozi = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(soubor))) {
             String radek;
             while ((radek = br.readLine()) != null) {
@@ -35,19 +35,24 @@ public class SpravceSouboru {
                         penize = Integer.parseInt(hodnota);
                     } else if (radek.startsWith("XP")){
                         xp = Integer.parseInt(hodnota);
+                    } else if (radek.startsWith("Vylepseni")) {
+                        vylepseni = hodnota;
+                    } else if (radek.startsWith("OdemceneZbozi")) {
+                        String[] ids = hodnota.split(",");
+                        for (String id : ids) {
+                            if (!id.trim().isEmpty())odemceneZbozi.add(Integer.parseInt(id.trim()));
+                        }
                     }
                 }
             }
-            UlozenaHra ulozenaHra = new UlozenaHra(jmenoObchodu, obtiznost, penize, xp);
-            return ulozenaHra;
-
+            return new UlozenaHra(jmenoObchodu, obtiznost, penize, xp, vylepseni,odemceneZbozi);
         } catch (IOException e) {
             e.printStackTrace();
-            return new UlozenaHra("ERROR", 0, 0, 0);
+            return new UlozenaHra("ERROR", 0, 0, 0, "00000", null);
         }
     }
 
-    public static void ulozHruDoSouboru(int slot, String jmeno, int obtiznost, String penize, int xp) {
+    public static void ulozHruDoSouboru(int slot, String jmeno, int obtiznost, String penize, int xp, String vylepseni, List<Integer> odemceneZbozi) {
         try {
             File slozka = new File("ulozeneHry");
             if (!slozka.exists()) {
@@ -59,7 +64,12 @@ public class SpravceSouboru {
             writer.println("Obtiznost: " + obtiznost + ";");
             writer.println("Penize: " + penize + ";");
             writer.println("XP: " + xp + ";");
-            writer.close();
+            writer.println("Vylepseni: " + vylepseni + ";");
+            String odemceneZboziText = "";
+            for(int i=0; i < odemceneZbozi.size(); i++) {
+                odemceneZboziText += odemceneZbozi.get(i) + (i == odemceneZbozi.size()-1 ? "" : ",");
+            }
+            writer.println("OdemceneZbozi: " + odemceneZboziText + ";");
             System.out.println("Hra uložena do slotu: " + slot);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -112,50 +122,4 @@ public class SpravceSouboru {
 
         return zboziVsechny;
     }
-    public static String nactiZboziObrazky(String cesta) {
-        File soubor = new File(cesta);
-
-        if (!soubor.exists() || soubor.length() == 0) {
-            return "Prázdná pozice";
-        }
-
-        String jmeno = "Neznámé";
-        String obtiznost = "Neznámá";
-        String penize = "0";
-
-        try (BufferedReader br = new BufferedReader(new FileReader(soubor))) {
-            String radek;
-            while ((radek = br.readLine()) != null) {
-                if (radek.trim().isEmpty()) continue;
-                if (radek.contains(":")) {
-                    String hodnota = radek.substring(radek.indexOf(":") + 1).replace(";", "").trim();
-
-                    if (hodnota.startsWith("\"") && hodnota.endsWith("\"")) {
-                        hodnota = hodnota.substring(1, hodnota.length() - 1);
-                    }
-
-                    if (radek.startsWith("Jmeno")) {
-                        jmeno = hodnota;
-                    } else if (radek.startsWith("Obtiznost")) {
-                        switch (hodnota) {
-                            case "0": obtiznost = "Lehká"; break;
-                            case "1": obtiznost = "Střední"; break;
-                            case "2": obtiznost = "Obtížná"; break;
-                            case "3": obtiznost = "Adam (Hardcore)"; break;
-                            default: obtiznost = hodnota; break;
-                        }
-                    } else if (radek.startsWith("Penize")) {
-                        penize = hodnota;
-                    }
-                }
-            }
-            return jmeno + " | Obtížnost: " + obtiznost + " | Peníze: " + penize;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Chyba při čtení";
-        }
-    }
-
-
 }

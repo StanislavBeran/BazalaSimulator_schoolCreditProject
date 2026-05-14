@@ -2,3 +2,5 @@ Jmeno: "111";
 Obtiznost: 2;
 Penize: 6039;
 XP: 0;
+Vylepseni: 00000;
+OdemceneZbozi: 1,

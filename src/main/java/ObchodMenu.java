@@ -29,19 +29,17 @@ public class ObchodMenu extends JPanel {
 
         kategorie.add(vytvorZalozku("NOVÉ ZBOŽÍ", 1));
         kategorie.add(vytvorZalozku("VYLEPŠENÍ", 2));
-        kategorie.add(vytvorZalozku("DEKORACE", 3));
-        kategorie.add(vytvorZalozku("OSTATNÍ", 4));
+        kategorie.add(vytvorZalozku("OSTATNÍ", 3));
         hlavicka.add(kategorie, BorderLayout.NORTH);
 
         // Nadpis sekce
-        JLabel nadpis = new JLabel(" IN-GAME OBCHOD", SwingConstants.LEFT);
+        JLabel nadpis = new JLabel("OBCHOD", SwingConstants.LEFT);
         nadpis.setFont(new Font("Arial", Font.BOLD, 24));
         nadpis.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         hlavicka.add(nadpis, BorderLayout.SOUTH);
 
         oknoPanel.add(hlavicka, BorderLayout.NORTH);
 
-        // --- TĚLO (Seznam věcí ke koupi) ---
         seznamVylepseni = new JPanel(new GridLayout(0, 3, 5, 5));
         seznamVylepseni.setBackground(Color.WHITE);
 
@@ -55,12 +53,11 @@ public class ObchodMenu extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         oknoPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // --- PATIČKA (Tlačítko Zavřít) ---
         JPanel paticka = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         paticka.setBackground(Color.WHITE);
         paticka.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
 
-        JButton btnZavrit = new JButton("Zpět do práce");
+        JButton btnZavrit = new JButton("Zpět");
         btnZavrit.setFont(new Font("Arial", Font.BOLD, 16));
         btnZavrit.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnZavrit.addActionListener(e -> setVisible(false));
@@ -83,9 +80,7 @@ public class ObchodMenu extends JPanel {
 
     private void aktualizujNabidku() {
         seznamVylepseni.removeAll();
-
         // TADY SE BUDOU GENEROVAT VĚCI DO OBCHODU PODLE KATEGORIE
-        // Pro ukázku tam dáme dočasné panely
         for (int i = 1; i <= 6; i++) {
             JPanel polozka = new JPanel(new BorderLayout());
             polozka.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));

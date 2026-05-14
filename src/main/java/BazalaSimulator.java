@@ -33,10 +33,10 @@ public class BazalaSimulator extends JPanel {
 
     private List<InteraktivniZona> hotspoty = new ArrayList<>();
 
-    private final int SCREEN_X = 467;
-    private final int SCREEN_Y = 96;
-    private final int SCREEN_W = 417;
-    private final int SCREEN_H = 215;
+    private final int SCREEN_X = 466;
+    private final int SCREEN_Y = 95;
+    private final int SCREEN_W = 420;
+    private final int SCREEN_H = 218;
 
     private AnimovanyGif pasGif;
     private final int PAS_X = 0;
@@ -60,12 +60,16 @@ public class BazalaSimulator extends JPanel {
     private String jmenoObchodu = "Můj Obchod";
     private int obtiznost = 0;
     private int celkoveXp = 0;
+    private String vylepseni = "00000";
+    private List<Integer> odemceneZbozi;
 
     public BazalaSimulator(Menu okno) {
         this.hlavniOkno = okno;
         setLayout(new BorderLayout());
         vrstvy = new JLayeredPane();
         zboziList = SpravceSouboru.nactiZbozi();
+        odemceneZbozi = new ArrayList<>();
+        odemceneZbozi.add(16);
 
         try {
             bgPanel = okno.new BackgroundPanel(backgroundPath);
@@ -301,7 +305,7 @@ public class BazalaSimulator extends JPanel {
         return jmenoObchodu;
     }
     public void nactiXp(int celkoveXp) {
-        this.celkoveXp = celkoveXp; // NOVÉ: Zapamatujeme si to pro ukládání
+        this.celkoveXp = celkoveXp;
 
         if (panelXp != null) {
             int level = (celkoveXp / 100) + 1;
@@ -310,10 +314,31 @@ public class BazalaSimulator extends JPanel {
             panelXp.setXpData(level, zbyvajiciXpDoDalsihoLevelu, maxXp);
         }
     }
+    public void nactiVylepseni(String vylepseni) {
+
+        this.vylepseni = vylepseni;
+    }
+    public void nactiOdemceneZbozi(List<Integer> odemceneZbozi) {
+        if (odemceneZbozi == null) {
+            this.odemceneZbozi = new ArrayList<>();
+            this.odemceneZbozi.add(16);
+        } else {
+            this.odemceneZbozi = odemceneZbozi;
+        }
+        if (panelObrazovky != null) {
+            panelObrazovky.obnovSeznamZbozi();
+        }
+    }
     public void zobrazNavodANastartujHru() {
         if (informacniOkno != null) {
             informacniOkno.setVisible(true);
         }
+    }
+    public String getVylepseni(){
+        return vylepseni;
+    }
+    public List<Integer> getOdemceneZbozi(){
+        return odemceneZbozi;
     }
     public void zobrazVahu(int vaha) {
         if (panelObrazovky != null) {
@@ -371,14 +396,14 @@ public class BazalaSimulator extends JPanel {
 
         if (platbaKartou) {
             if (nazev.equals("Platební terminál")) {
-                vypisDoKonzole("Pip... Platba kartou PŘIJATA!");
+                vypisDoKonzole("Platba kartou PŘIJATA!");
                 dokonciPlatbu(true);
             } else {
-                vypisDoKonzole("Zákazník platí kartou! Nemusíš sahat na peníze.");
+                vypisDoKonzole("Zákazník platí kartou.");
             }
         } else {
             if (nazev.equals("Platební terminál")) {
-                vypisDoKonzole("Zákazník platí hotově, terminál nepotřebuješ.");
+                vypisDoKonzole("Zákazník platí hotově.");
                 return;
             }
             try {
@@ -415,7 +440,7 @@ public class BazalaSimulator extends JPanel {
         panelObrazovky.vycistiUctenku();
 
         if (spravcePasu != null) {
-            spravcePasu.dokonciNakupAZacniNovy(); // Řekneme pásu, že může uklidit a jet dál
+            spravcePasu.dokonciNakupAZacniNovy();
         }
     }
     public void nastavDetailyHry(int slot, String jmeno, int obtiznost) {
@@ -428,7 +453,7 @@ public class BazalaSimulator extends JPanel {
     }
 
     public void ulozHru() {
-        SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, obtiznost, String.valueOf(aktualniPenize), celkoveXp);
+        SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, obtiznost, String.valueOf(aktualniPenize), celkoveXp, vylepseni, odemceneZbozi);
         System.out.println("Hra byla úspěšně uložena!");
     }
     public void zobrazObchod() {
