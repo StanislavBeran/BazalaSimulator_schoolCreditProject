@@ -7,6 +7,8 @@ public class NastaveniMenu extends JPanel {
     private Menu hlavniOkno;
     private JSlider hlasitostSlider;
     private JComboBox<String> hudbaComboBox;
+    private BazalaSimulator simulator;
+    private boolean nacitaniDat = false;
 
     public NastaveniMenu(Menu okno) {
         this.hlavniOkno = okno;
@@ -47,14 +49,20 @@ public class NastaveniMenu extends JPanel {
         mainContainer.add(hlasitostSlider);
         mainContainer.add(Box.createVerticalStrut(30));
 
+        JLabel hudbaLabel = new JLabel("Hudba:");
+        hudbaLabel.setForeground(Color.WHITE);
+        hudbaLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        hudbaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainContainer.add(hudbaLabel);
+
         hudbaComboBox = new JComboBox<>();
         hudbaComboBox.setMaximumSize(new Dimension(300, 35));
         hudbaComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         hudbaComboBox.setBackground(new Color(200, 200, 200));
         hudbaComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         hudbaComboBox.addActionListener(e -> {
             if (hudbaComboBox.getSelectedItem() != null) {
+                if (nacitaniDat) return;
                 String vybranaZobrazena = (String) hudbaComboBox.getSelectedItem();
                 BazalaSimulator sim = hlavniOkno.getSimulator();
                 if (sim != null && sim.getOdemcenaHudba() != null) {
@@ -95,17 +103,19 @@ public class NastaveniMenu extends JPanel {
         });
     }
     private void obnovNabidkuHudby() {
+        nacitaniDat = true;
         hudbaComboBox.removeAllItems();
-        BazalaSimulator sim = hlavniOkno.getSimulator();
-        if (sim != null && sim.getOdemcenaHudba() != null) {
-            for (String h : sim.getOdemcenaHudba()){
+        simulator = hlavniOkno.getSimulator();
+        if (simulator != null && simulator.getOdemcenaHudba() != null) {
+            for (String h : simulator.getOdemcenaHudba()){
                 hudbaComboBox.addItem(h.replace('_', ' '));
             }
-            if (sim.getVybranaHudba() != null) {
-                hudbaComboBox.setSelectedItem(sim.getVybranaHudba().replace('_', ' '));
+            if (simulator.getVybranaHudba() != null) {
+                hudbaComboBox.setSelectedItem(simulator.getVybranaHudba().replace('_', ' '));
             }
         } else {
             hudbaComboBox.addItem("obchod theme");
         }
+        nacitaniDat = false;
     }
 }

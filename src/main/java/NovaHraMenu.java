@@ -43,11 +43,6 @@ public class NovaHraMenu extends JPanel {
         container.add(cbSlot);
         container.add(Box.createVerticalStrut(15));
 
-        JLabel lblObtiznost = new JLabel("Vyber obtížnost:");
-        stylizujLabel(lblObtiznost);
-        container.add(lblObtiznost);
-        container.add(Box.createVerticalStrut(5));
-
         JLabel lblPenize = new JLabel("Začáteční počet peněz:");
         stylizujLabel(lblPenize);
         container.add(lblPenize);
