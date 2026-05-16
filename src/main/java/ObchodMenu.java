@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObchodMenu extends JPanel {
     private BazalaSimulator simulator;
@@ -13,34 +15,31 @@ public class ObchodMenu extends JPanel {
         setLayout(new GridBagLayout());
         setOpaque(false); // Aby fungovalo ztmavení pozadí
 
-        // Zabrání klikání "skrz" obchod na herní pult
         addMouseListener(new MouseAdapter() {});
 
-        // HLAVNÍ BÍLÝ PANEL OBCHODU
         JPanel oknoPanel = new JPanel(new BorderLayout());
         oknoPanel.setBackground(Color.WHITE);
-        oknoPanel.setPreferredSize(new Dimension(800, 500)); // Velikost okna obchodu
+        oknoPanel.setPreferredSize(new Dimension(850, 550));
         oknoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 
-        // --- HLAVIČKA (Záložky jako v PokladnaObrazovka) ---
+        // --- HLAVIČKA ---
         JPanel hlavicka = new JPanel(new BorderLayout());
-        JPanel kategorie = new JPanel(new GridLayout(1, 4, 1, 1));
+        JPanel kategorie = new JPanel(new GridLayout(1, 3, 1, 1));
         kategorie.setBackground(Color.BLACK);
 
-        kategorie.add(vytvorZalozku("NOVÉ ZBOŽÍ", 1));
+        kategorie.add(vytvorZalozku("ZBOŽÍ", 1));
         kategorie.add(vytvorZalozku("VYLEPŠENÍ", 2));
         kategorie.add(vytvorZalozku("OSTATNÍ", 3));
         hlavicka.add(kategorie, BorderLayout.NORTH);
 
-        // Nadpis sekce
         JLabel nadpis = new JLabel("OBCHOD", SwingConstants.LEFT);
         nadpis.setFont(new Font("Arial", Font.BOLD, 24));
         nadpis.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         hlavicka.add(nadpis, BorderLayout.SOUTH);
-
         oknoPanel.add(hlavicka, BorderLayout.NORTH);
 
-        seznamVylepseni = new JPanel(new GridLayout(0, 3, 5, 5));
+        // --- TĚLO OBCHODU ---
+        seznamVylepseni = new JPanel(new GridLayout(0, 4, 10, 10)); // 4 sloupce
         seznamVylepseni.setBackground(Color.WHITE);
 
         JPanel obalovaciPanel = new JPanel(new BorderLayout());
@@ -53,24 +52,31 @@ public class ObchodMenu extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         oknoPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel paticka = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel paticka = new JPanel(new BorderLayout());
         paticka.setBackground(Color.WHITE);
         paticka.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
 
+        JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        infoPanel.setOpaque(false);
+        JLabel lblPenizeInfo = new JLabel();
+        lblPenizeInfo.setFont(new Font("Arial", Font.BOLD, 16));
+        infoPanel.add(lblPenizeInfo);
+        paticka.add(infoPanel, BorderLayout.WEST);
+        if (simulator != null && isVisible()) {
+            lblPenizeInfo.setText("Peníze: " + simulator.getAktualniPenize() + " Kč | Level: " + simulator.getLevel());
+        }
         JButton btnZavrit = new JButton("Zpět");
         btnZavrit.setFont(new Font("Arial", Font.BOLD, 16));
         btnZavrit.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnZavrit.addActionListener(e -> setVisible(false));
-        paticka.add(btnZavrit);
+        paticka.add(btnZavrit, BorderLayout.EAST);
 
         oknoPanel.add(paticka, BorderLayout.SOUTH);
-
         add(oknoPanel);
 
         aktualizujNabidku();
     }
 
-    // Metoda pro ztmavení pozadí hry
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
@@ -78,27 +84,217 @@ public class ObchodMenu extends JPanel {
         super.paintComponent(g);
     }
 
-    private void aktualizujNabidku() {
+    public void aktualizujNabidku() {
         seznamVylepseni.removeAll();
-        // TADY SE BUDOU GENEROVAT VĚCI DO OBCHODU PODLE KATEGORIE
-        for (int i = 1; i <= 6; i++) {
+
+        if (aktualniKategorie == 1) {
+            List<Zbozi> zbozi = simulator.getZboziList();
+            if (zbozi != null) {
+                List<Zbozi> setrideneZbozi = new java.util.ArrayList<>(zbozi);
+                setrideneZbozi.sort((z1, z2) -> Integer.compare(z1.lvlOdemknuti, z2.lvlOdemknuti));
+                for (Zbozi z : setrideneZbozi) {
+
+                    boolean vlastni = simulator.getOdemceneZbozi().contains(z.id);
+                    int cenaOdemknuti = vypocitejCenuOdemknuti(z);
+                    boolean maPenizeALevel = simulator.getAktualniPenize() >= cenaOdemknuti && simulator.getLevel() >= z.lvlOdemknuti;
+
+                    JPanel polozka = new JPanel(new BorderLayout());
+                    polozka.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+                    polozka.setBackground(vlastni ? Color.WHITE : new Color(220, 220, 220));
+
+                    JLabel lblObrazek = new JLabel("", SwingConstants.CENTER);
+                    lblObrazek.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+                    try {
+                        java.net.URL imgUrl = getClass().getResource("/zboziObrazky/" + z.nazev + ".png");
+                        if (imgUrl != null) {
+                            ImageIcon icon = new ImageIcon(imgUrl);
+                            Image img = icon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+                            if (!vlastni) {
+                                lblObrazek.setIcon(new ImageIcon(GrayFilter.createDisabledImage(img)));
+                            } else {
+                                lblObrazek.setIcon(new ImageIcon(img));
+                            }
+                        } else {
+                            lblObrazek.setText("🖼️");
+                            lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+                        }
+                    } catch (Exception e) {
+                        lblObrazek.setText("🖼️");
+                        lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+                    }
+
+                    String mnozstviText = (z.minVaha > 0) ? "Váha: " + z.minVaha + "-" + z.maxVaha + " g" : "Max kusů: " + z.maxPocet;
+                    String upozorneniLevel = (!vlastni && simulator.getLevel() < z.lvlOdemknuti) ? "<font color='red'>" : "";
+
+                    String infoHtml = "<html><div style='text-align: center; padding: 5px;'>"
+                            + "<b style='font-size:14px;'>" + z.nazev.replace('_', ' ') + "</b><br>"
+                            + "<i style='font-size:10px;'>" + getTypText(z.typ) + "</i><br><br>"
+                            + "<span style='font-size:11px;'>" + mnozstviText + "</span><br>"
+                            + upozorneniLevel + "<span style='font-size:11px;'>Od levelu: " + z.lvlOdemknuti + "</span>" + (upozorneniLevel.isEmpty() ? "" : "</font>") + "<br>"
+                            + "<span style='font-size:11px;'>Prodej za: " + z.cena + " Kč</span><br><br>"
+                            + "<b style='font-size:16px; color:#1a5276;'>" + (vlastni ? "ZAKOUPENO" : (simulator.getAktualniPenize()>=cenaOdemknuti ? cenaOdemknuti : "<font color='red'>" + cenaOdemknuti) + " Kč") + "</b>"
+                            + "</div></html>";
+
+                    JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
+                    JPanel stredPanel = new JPanel(new BorderLayout());
+                    stredPanel.setOpaque(false);
+                    stredPanel.add(lblObrazek, BorderLayout.NORTH);
+                    stredPanel.add(lblInfo, BorderLayout.CENTER);
+
+                    polozka.add(stredPanel, BorderLayout.CENTER);
+
+                    JButton btnKoupit = new JButton(vlastni ? "Vlastníš" : "Koupit");
+                    btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                    if (vlastni) {
+                        btnKoupit.setEnabled(false);
+                        btnKoupit.setBackground(new Color(150, 220, 150));
+                    } else {
+                        btnKoupit.setEnabled(maPenizeALevel);
+                        btnKoupit.addActionListener(e -> {
+                            simulator.odectiPenize(cenaOdemknuti);
+                            simulator.odemkniZbozi(z.id);
+                            aktualizujNabidku();
+                        });
+                    }
+                    polozka.add(btnKoupit, BorderLayout.SOUTH);
+                    seznamVylepseni.add(polozka);
+                }
+            }
+        } else if (aktualniKategorie == 2){
+            int uroven = simulator.getUrovenRychlostiPasu();
+            int cena = 5000 * (uroven + 1);
+            boolean jeMax = (uroven >= 4);
+            boolean maPenize = simulator.getAktualniPenize() >= cena;
             JPanel polozka = new JPanel(new BorderLayout());
-            polozka.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            polozka.setBackground(new Color(245, 245, 245));
-            polozka.setPreferredSize(new Dimension(200, 100));
+            polozka.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            polozka.setBackground(jeMax ? new Color(255, 235, 150) : Color.WHITE);
 
-            JLabel lblNazev = new JLabel("Položka " + i, SwingConstants.CENTER);
-            lblNazev.setFont(new Font("Arial", Font.BOLD, 16));
-            polozka.add(lblNazev, BorderLayout.CENTER);
+            String infoHtml = "<html><div style='text-align: center; padding: 5px;'>"
+                    + "<b style='font-size:16px;'>Nový motor pásu</b><br><br>"
+                    + "<span style='font-size:11px;'>Zrychlí pohyb zboží po<br>páse, zkrátí prodlevu<br>generování a urychlí<br>úklid do odstavného místa.</span><br><br>"
+                    + "<b style='font-size:14px;'>Úroveň: " + uroven + " / 4</b><br><br>"
+                    + "<b style='font-size:16px; color:#1a5276;'>" + (jeMax ? "MAXIMÁLNÍ ÚROVEŇ" : (maPenize ? cena : "<font color='red'>" + cena) + " Kč") + "</b>"
+                    + "</div></html>";
 
-            JButton btnKoupit = new JButton("Koupit (500 Kč)");
+            JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
+            polozka.add(lblInfo, BorderLayout.CENTER);
+            JButton btnKoupit = new JButton(jeMax ? "Vylepšeno naplno" : "Vylepšit");
+            btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+            if (jeMax) {
+                btnKoupit.setEnabled(false);
+                btnKoupit.setBackground(new Color(255, 215, 0));
+            } else {
+                btnKoupit.setEnabled(maPenize);
+                btnKoupit.addActionListener(e -> {
+                    simulator.odectiPenize(cena);
+                    simulator.zvysUrovenRychlostiPasu();
+                    aktualizujNabidku();
+                });
+            }
             polozka.add(btnKoupit, BorderLayout.SOUTH);
-
             seznamVylepseni.add(polozka);
+        } else {
+            String[][] dostupnaHudba = {
+                    {"Tereza Kerndlová - Schody z nebe", "Tereza_Kerndlová_-_Schody_z_nebe", "500"},
+                    {"Athena Chlebová - Večerka", "Athena_Chlebová_-_Večerka", "1000"},
+                    {"Filip Dang - Pojď nakoupit bejbe", "Filip_Dang_-_Pojď_nakoupit_bejbe", "1500"},
+                    {"Filip Dang - Štědrá večerka", "Filip_Dang_-_Štědrá_večerka", "2500"}
+            };
+
+            for (String[] h : dostupnaHudba) {
+                String nazev = h[0];
+                String soubor = h[1];
+                int cena = Integer.parseInt(h[2]);
+                boolean vlastni = simulator.getOdemcenaHudba().contains(soubor);
+                boolean maPenize = simulator.getAktualniPenize() >= cena;
+
+                JPanel polozka = new JPanel(new BorderLayout());
+                polozka.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+                polozka.setBackground(vlastni ? Color.WHITE : new Color(220, 220, 220));
+
+                JLabel lblObrazek = new JLabel("", SwingConstants.CENTER);
+                lblObrazek.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+                try {
+                    java.net.URL imgUrl = getClass().getResource("/hudbaObrazky/" + soubor + ".png");
+                    if (imgUrl != null) {
+                        ImageIcon icon = new ImageIcon(imgUrl);
+                        Image img = icon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+                        if (!vlastni) {
+                            lblObrazek.setIcon(new ImageIcon(GrayFilter.createDisabledImage(img)));
+                        } else {
+                            lblObrazek.setIcon(new ImageIcon(img));
+                        }
+                    } else {
+                        lblObrazek.setText("🖼️");
+                        lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+                    }
+                } catch (Exception e) {
+                    lblObrazek.setText("🖼️");
+                    lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
+                }
+                String[] casti = nazev.split(" - ");
+                String infoHtml = "<html><div style='text-align: center; padding: 5px;'>"
+                        + "<b style='font-size:14px;'>" + casti[1] + "</b><br>"
+                        + "<i style='font-size:10px;'>Hudba</i><br><br>"
+                        + "<span style='font-size:11px;'>" + casti[0] + "</span><br>"
+                        + "<span style='font-size:11px;'>|</span><br>"
+                        + "<span style='font-size:11px;'>Změna v Nastavení</span><br><br>"
+                        + "<b style='font-size:16px; color:#1a5276;'>" + (vlastni ? "ZAKOUPENO" : (maPenize ? cena : "<font color='red'>" + cena) + " Kč") + "</b>"
+                        + "</div></html>";
+
+                JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
+                JPanel stredPanel = new JPanel(new BorderLayout());
+                stredPanel.setOpaque(false);
+                stredPanel.add(lblObrazek, BorderLayout.NORTH);
+                stredPanel.add(lblInfo, BorderLayout.CENTER);
+
+                polozka.add(stredPanel, BorderLayout.CENTER);
+
+                JButton btnKoupit = new JButton(vlastni ? "Vlastníš" : "Koupit");
+                btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                if (vlastni) {
+                    btnKoupit.setEnabled(false);
+                    btnKoupit.setBackground(new Color(150, 220, 150));
+                } else {
+                    btnKoupit.setEnabled(maPenize);
+                    btnKoupit.addActionListener(e -> {
+                        if (simulator.kupHudbu(soubor, cena)) {
+                            aktualizujNabidku();
+                        }
+                    });
+                }
+
+                polozka.add(btnKoupit, BorderLayout.SOUTH);
+                seznamVylepseni.add(polozka);
+            }
         }
 
         seznamVylepseni.revalidate();
         seznamVylepseni.repaint();
+    }
+
+    private String getTypText(int typ) {
+        switch (typ) {
+            case 1: return "Pečivo";
+            case 2: return "Zelenina";
+            case 3: return "Ovoce";
+            case 4: return "Ostatní";
+            default: return "Má kód";
+        }
+    }
+
+    private int vypocitejCenuOdemknuti(Zbozi z) {
+        int zaklad = z.cena * z.maxPocet * 3; // Cena se odvíjí od toho, kolik na tom vyděláš
+        if (z.minVaha > 0 && z.maxVaha > 0) {
+            zaklad += 1000; // Vážené zboží je dražší
+        }
+        zaklad += z.typ * 200; // Malá přirážka za kategorii
+        zaklad += z.lvlOdemknuti * 1200; // Výrazná přirážka podle levelu
+
+        return Math.max(100, (zaklad / 50) * 50); // Zaokrouhleno na padesátikoruny
     }
 
     private JButton vytvorZalozku(String text, int idKategorie) {

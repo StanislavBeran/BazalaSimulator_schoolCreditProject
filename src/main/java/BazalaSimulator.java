@@ -58,10 +58,12 @@ public class BazalaSimulator extends JPanel {
 
     private int aktualniSlot = 1;
     private String jmenoObchodu = "Můj Obchod";
-    private int obtiznost = 0;
     private int celkoveXp = 0;
     private String vylepseni = "00000";
     private List<Integer> odemceneZbozi;
+    private String vybranaHudba = "obchod_theme";
+    private List<String> odemcenaHudba = new ArrayList<>(List.of("obchod_theme"));
+    private boolean hraJeNactena = false;
 
     public BazalaSimulator(Menu okno) {
         this.hlavniOkno = okno;
@@ -70,7 +72,6 @@ public class BazalaSimulator extends JPanel {
         zboziList = SpravceSouboru.nactiZbozi();
         odemceneZbozi = new ArrayList<>();
         odemceneZbozi.add(16);
-
         try {
             bgPanel = okno.new BackgroundPanel(backgroundPath);
             vrstvy.add(bgPanel, JLayeredPane.DEFAULT_LAYER);
@@ -257,14 +258,13 @@ public class BazalaSimulator extends JPanel {
         isFullscreen = !isFullscreen;
 
         if (isFullscreen) {
-            if (fullscreenOverlay == null) {
-                fullscreenOverlay = hlavniOkno.new BackgroundPanel("celaObrazovka.png");
-                fullscreenOverlay.setLayout(new BorderLayout());
-            }
-
             vrstvy.remove(panelObrazovky);
-
             panelObrazovky = new PokladnaObrazovka(true, zboziList, this::toggleFullscreen, this, ulozenaKategorie, ulozeneHledani, ulozenyNumpad, ulozenaUctenka);
+            if (fullscreenOverlay == null) {
+                fullscreenOverlay = new JPanel(new BorderLayout());
+                fullscreenOverlay.setOpaque(false);
+            }
+            fullscreenOverlay.removeAll();
             fullscreenOverlay.add(panelObrazovky, BorderLayout.CENTER);
 
             vrstvy.add(fullscreenOverlay, JLayeredPane.DRAG_LAYER);
@@ -315,8 +315,10 @@ public class BazalaSimulator extends JPanel {
         }
     }
     public void nactiVylepseni(String vylepseni) {
-
         this.vylepseni = vylepseni;
+        if (spravcePasu != null) {
+            spravcePasu.aplikujVylepseniRychlosti(getUrovenRychlostiPasu());
+        }
     }
     public void nactiOdemceneZbozi(List<Integer> odemceneZbozi) {
         if (odemceneZbozi == null) {
@@ -327,6 +329,9 @@ public class BazalaSimulator extends JPanel {
         }
         if (panelObrazovky != null) {
             panelObrazovky.obnovSeznamZbozi();
+        }
+        if (obchodMenu != null) {
+            obchodMenu.aktualizujNabidku();
         }
     }
     public void zobrazNavodANastartujHru() {
@@ -380,13 +385,12 @@ public class BazalaSimulator extends JPanel {
                     break;
                 }
             }
-            if (dalZakanik == 0) dalZakanik = cenaNakupu + 1000; // Pojistka pro obří nákupy
+            if (dalZakanik == 0) dalZakanik = cenaNakupu + 1000;
 
             castkaVratit = dalZakanik - cenaNakupu;
             castkaVraceno = 0;
 
-            vypisDoKonzole("Zákazník platí HOTOVĚ. Dal ti " + dalZakanik + " Kč.");
-            vypisDoKonzole("Vrať mu " + castkaVratit + " Kč naklikáním mincí a bankovek.");
+            vypisDoKonzole("Zákazník platí HOTOVĚ. Dal ti " + dalZakanik + " Kč. Vrať mu: " + castkaVratit + " Kč.");
             panelObrazovky.nastavStavPlatby(true, castkaVratit, castkaVraceno);
         }
     }
@@ -414,7 +418,7 @@ public class BazalaSimulator extends JPanel {
                     panelVracenychPenez.pridejPenize(hodnota);
                 }
                 if (castkaVraceno == castkaVratit) {
-                    vypisDoKonzole("Nákup zaplacen.");
+                    vypisDoKonzole("✅ Nákup zaplacen.");
                     dokonciPlatbu(true);
                 } else if (castkaVraceno > castkaVratit) {
                     vypisDoKonzole("Chyba: Vracíš moc! Částka se resetuje na 0.");
@@ -443,22 +447,111 @@ public class BazalaSimulator extends JPanel {
             spravcePasu.dokonciNakupAZacniNovy();
         }
     }
-    public void nastavDetailyHry(int slot, String jmeno, int obtiznost) {
+    public String getVybranaHudba() {
+        return vybranaHudba;
+    }
+    public List<String> getOdemcenaHudba() {
+        return odemcenaHudba;
+    }
+    public void nastavVybranouHudbu(String hudba) {
+        this.vybranaHudba = hudba;
+    }
+    public void nastavDetailyHry(int slot, String jmeno, String vybrana, List<String> odemcena) {
         this.aktualniSlot = slot;
         this.jmenoObchodu = jmeno;
-        this.obtiznost = obtiznost;
+        this.hraJeNactena = true;
         if (panelObrazovky != null) {
             panelObrazovky.vycistiUctenku();
         }
+        this.vybranaHudba = (vybrana != null && !vybrana.isEmpty()) ? vybrana : "obchod_theme";
+        if (odemcena != null && !odemcena.isEmpty()) {
+            this.odemcenaHudba = odemcena;
+        } else {
+            this.odemcenaHudba = new ArrayList<>(List.of("obchod_theme"));
+        }
+    }
+    public int getAktualniPenize() {
+        return aktualniPenize;
     }
 
+    public void odectiPenize(int castka) {
+        nactiPenize(aktualniPenize - castka);
+    }
+
+    public int getLevel() {
+        return (celkoveXp / 100) + 1;
+    }
+
+    public List<Zbozi> getZboziList() {
+        return zboziList;
+    }
+
+    public void odemkniZbozi(int id) {
+        if (!odemceneZbozi.contains(id)) {
+            odemceneZbozi.add(id);
+            if (panelObrazovky != null) {
+                panelObrazovky.obnovSeznamZbozi(); // Ihned přidá zboží do menu pokladny
+            }
+        }
+    }
     public void ulozHru() {
-        SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, obtiznost, String.valueOf(aktualniPenize), celkoveXp, vylepseni, odemceneZbozi);
+        if (!hraJeNactena) return;
+        SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, String.valueOf(aktualniPenize), celkoveXp, vylepseni, odemceneZbozi, vybranaHudba, odemcenaHudba);
         System.out.println("Hra byla úspěšně uložena!");
     }
     public void zobrazObchod() {
         if (obchodMenu != null) {
+            obchodMenu.aktualizujNabidku();
             obchodMenu.setVisible(true);
+        }
+    }
+    public int getUrovenRychlostiPasu() {
+        if (vylepseni == null || vylepseni.isEmpty()) return 0;
+        return Character.getNumericValue(vylepseni.charAt(0));
+    }
+
+    public void zvysUrovenRychlostiPasu() {
+        int current = getUrovenRychlostiPasu();
+        if (current < 4) {
+            current++;
+            StringBuilder sb = new StringBuilder(vylepseni);
+            sb.setCharAt(0, Character.forDigit(current, 10));
+            vylepseni = sb.toString();
+            if (spravcePasu != null) {
+                spravcePasu.aplikujVylepseniRychlosti(current);
+            }
+        }
+    }
+    public void resetujHerniPole() {
+        hraJeNactena = false;
+        cekaNaPlatbu = false;
+        platbaKartou = false;
+        if (spravcePasu != null) {
+            spravcePasu.vycistiVsechno();
+        }
+        if (panelObrazovky != null) {
+            panelObrazovky.vycistiUctenku();
+            panelObrazovky.nastavVahu(0);
+            panelObrazovky.nastavStavPlatby(false, 0, 0);
+        }
+        if (panelVracenychPenez != null) {
+            panelVracenychPenez.vycistiHromadku();
+        }
+
+    }
+    public boolean kupHudbu(String souborHudby, int cena) {
+        if (aktualniPenize >= cena && !odemcenaHudba.contains(souborHudby)) {
+            aktualniPenize -= cena;
+            nactiPenize(aktualniPenize); // Překreslí panel s penězi
+            odemcenaHudba.add(souborHudby);
+            vypisDoKonzole("Zakoupena nová hudba! Můžeš ji změnit v Nastavení.");
+            return true;
+        } else if (odemcenaHudba.contains(souborHudby)) {
+            vypisDoKonzole("Chyba: Tuto hudbu už vlastníš!");
+            return false;
+        } else {
+            vypisDoKonzole("Chyba: Nedostatek peněz!");
+            return false;
         }
     }
 }

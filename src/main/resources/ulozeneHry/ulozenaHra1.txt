@@ -1,6 +1,7 @@
 Jmeno: "erger";
-Obtiznost: 0;
-Penize: 5412;
+Penize: 808507;
 XP: 0;
-Vylepseni: 001000000;
-OdemceneZbozi: 1,
+Vylepseni: 20000;
+OdemceneZbozi: 16;
+VybranaHudba: obchod_theme;
+OdemcenaHudba: obchod_theme,Filip_Dang_-_Pojď_nakoupit_bejbe,Athena_Chlebová_-_Večerka,Tereza_Kerndlová_-_Schody_z_nebe,Filip_Dang_-_Štědrá_večerka;

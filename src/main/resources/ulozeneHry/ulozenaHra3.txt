@@ -1,6 +1,7 @@
 Jmeno: "Karel";
-Obtiznost: 0;
-Penize: 1000;
-XP: 0;
-Vylepseni: 00000;
-OdemceneZbozi: 16,
+Penize: 88508;
+XP: 5456;
+Vylepseni: 40000;
+OdemceneZbozi: 16;
+VybranaHudba: Tereza_Kerndlová_-_Schody_z_nebe;
+OdemcenaHudba: obchod_theme,Filip_Dang_-_Pojď_nakoupit_bejbe,Filip_Dang_-_Štědrá_večerka,Athena_Chlebová_-_Večerka,Tereza_Kerndlová_-_Schody_z_nebe;

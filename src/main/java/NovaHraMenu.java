@@ -48,12 +48,6 @@ public class NovaHraMenu extends JPanel {
         container.add(lblObtiznost);
         container.add(Box.createVerticalStrut(5));
 
-        String[] moznostiObtiznosti = {"Lehká", "Střední", "Obtížná", "Adam (Hardcore)"};
-        JComboBox<String> cbObtiznost = new JComboBox<>(moznostiObtiznosti);
-        stylizujKomponentu(cbObtiznost);
-        container.add(cbObtiznost);
-        container.add(Box.createVerticalStrut(15));
-
         JLabel lblPenize = new JLabel("Začáteční počet peněz:");
         stylizujLabel(lblPenize);
         container.add(lblPenize);
@@ -71,17 +65,19 @@ public class NovaHraMenu extends JPanel {
         btnVytvorit.addActionListener(e -> {
             String jmenoHry = txtNazev.getText();
             int indexSlotu = cbSlot.getSelectedIndex() + 1;
-            int indexObtiznosti = cbObtiznost.getSelectedIndex();
             String penizeText = ((String) cbPenize.getSelectedItem()).replace(" Kč", "");
 
             if (!jmenoHry.isEmpty()) {
-                SpravceSouboru.ulozHruDoSouboru(indexSlotu, jmenoHry, indexObtiznosti, penizeText, 0, "00000", null);
+                List<Integer> startovniZbozi = new ArrayList<>();
+                startovniZbozi.add(16);
+                SpravceSouboru.ulozHruDoSouboru(indexSlotu, jmenoHry, penizeText, 0, "00000", startovniZbozi, "obchod_theme", new ArrayList<>(List.of("obchod_theme")));
                 BazalaSimulator simulator = hlavniOkno.getSimulator();
                 simulator.nactiPenize(Integer.parseInt(penizeText));
                 simulator.nactiXp(0);
                 simulator.nactiVylepseni("00000");
-                simulator.nactiOdemceneZbozi(null);
-                simulator.nastavDetailyHry(indexSlotu, jmenoHry, indexObtiznosti);
+                simulator.nactiOdemceneZbozi(startovniZbozi);
+
+                simulator.nastavDetailyHry(indexSlotu, jmenoHry, "obchod_theme", null);
                 SpravceZvuku.zastav("obchodak_theme_sound");
                 SpravceZvuku.prehraj("hra_hudba_v_pozadi","obchod_theme", 0, true);
                 hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");

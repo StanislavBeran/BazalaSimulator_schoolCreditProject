@@ -138,7 +138,7 @@ public class PokladnaObrazovka extends JPanel {
 
 
         prekresliUctenku = () -> {
-            StringBuilder sb = new StringBuilder(simulator.getJmenoObchodu() + "\n----------------\n");
+            StringBuilder sb = new StringBuilder(simulator.getJmenoObchodu() + "\n---------------------\n");
             int celkem = 0;
             for(Zbozi z : polozkyNaUctence) {
                 int cenaZaVsechny;
@@ -155,7 +155,7 @@ public class PokladnaObrazovka extends JPanel {
                         .append(cenaZaVsechny).append(" Kč\n");
                 celkem += cenaZaVsechny;
             }
-            sb.append("\n----------------\nCENA: ").append(celkem).append(" Kč");
+            sb.append("\n---------------------\nCENA: ").append(celkem).append(" Kč");
 
             if (zobrazovatPlatbu) {
                 sb.append("\nVRÁTIT:  ").append(castkaVratit).append(" Kč");
@@ -175,17 +175,17 @@ public class PokladnaObrazovka extends JPanel {
         JPanel tlacitka = new JPanel(new GridLayout(1, 2, 4, 0));
         tlacitka.setBackground(new Color(100, 120, 200));
         tlacitka.setPreferredSize(new Dimension(0, isFs ? 70 : 40));
-
-        JButton btnObchod = vytvorModreTlacitko("Obchod");
-        btnObchod.addActionListener(e -> {
-            if (simulator != null) {
-                simulator.zobrazObchod();
-            }
-        });
+        if(!isFs){
+            JButton btnObchod = vytvorModreTlacitko("Obchod");
+            btnObchod.addActionListener(e -> {
+                if (simulator != null) {
+                    simulator.zobrazObchod();
+                }
+            });
+            tlacitka.add(btnObchod);
+        }
         JButton btnFullscreen = vytvorModreTlacitko("Fullscreen");
         btnFullscreen.addActionListener(e -> onToggleFullscreen.run());
-
-        tlacitka.add(btnObchod);
         tlacitka.add(btnFullscreen);
         spodniCast.add(tlacitka, BorderLayout.SOUTH);
 

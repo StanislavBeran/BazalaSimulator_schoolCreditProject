@@ -1,9 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class NastaveniMenu extends JPanel {
     private Menu hlavniOkno;
     private JSlider hlasitostSlider;
+    private JComboBox<String> hudbaComboBox;
 
     public NastaveniMenu(Menu okno) {
         this.hlavniOkno = okno;
@@ -40,11 +43,39 @@ public class NastaveniMenu extends JPanel {
 
         hlasitostSlider.addChangeListener(e -> {
             SpravceZvuku.nastavHlasitost(hlasitostSlider.getValue());
-            if (!hlasitostSlider.getValueIsAdjusting()) {
-                SpravceZvuku.prehraj("test_zvuk", "bankovka", 0, false);
-            }
         });
         mainContainer.add(hlasitostSlider);
+        mainContainer.add(Box.createVerticalStrut(30));
+
+        hudbaComboBox = new JComboBox<>();
+        hudbaComboBox.setMaximumSize(new Dimension(300, 35));
+        hudbaComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        hudbaComboBox.setBackground(new Color(200, 200, 200));
+        hudbaComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        hudbaComboBox.addActionListener(e -> {
+            if (hudbaComboBox.getSelectedItem() != null) {
+                String vybranaZobrazena = (String) hudbaComboBox.getSelectedItem();
+                BazalaSimulator sim = hlavniOkno.getSimulator();
+                if (sim != null && sim.getOdemcenaHudba() != null) {
+                    String vybranaPuvodni = null;
+                    for (String h : sim.getOdemcenaHudba()) {
+                        if (h.replace('_', ' ').equals(vybranaZobrazena)) {
+                            vybranaPuvodni = h;
+                            break;
+                        }
+                    }
+                    if (vybranaPuvodni != null && !vybranaPuvodni.equals(sim.getVybranaHudba())) {
+                        sim.nastavVybranouHudbu(vybranaPuvodni);
+                        if (hlavniOkno.getPredchoziObrazovka().equals("BAZALA_SIMULATOR")) {
+                            SpravceZvuku.zastavVsechnuHudbu();
+                            SpravceZvuku.prehraj(vybranaPuvodni, vybranaPuvodni, 0, true);
+                        }
+                    }
+                }
+            }
+        });
+        mainContainer.add(hudbaComboBox);
         mainContainer.add(Box.createVerticalStrut(50));
 
         JButton btnZpet = Menu.vytvorTlacitko("Zpět");
@@ -55,6 +86,26 @@ public class NastaveniMenu extends JPanel {
 
         bgPanel.add(mainContainer);
         add(bgPanel, BorderLayout.CENTER);
-    }
 
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                obnovNabidkuHudby();
+            }
+        });
+    }
+    private void obnovNabidkuHudby() {
+        hudbaComboBox.removeAllItems();
+        BazalaSimulator sim = hlavniOkno.getSimulator();
+        if (sim != null && sim.getOdemcenaHudba() != null) {
+            for (String h : sim.getOdemcenaHudba()){
+                hudbaComboBox.addItem(h.replace('_', ' '));
+            }
+            if (sim.getVybranaHudba() != null) {
+                hudbaComboBox.setSelectedItem(sim.getVybranaHudba().replace('_', ' '));
+            }
+        } else {
+            hudbaComboBox.addItem("obchod theme");
+        }
+    }
 }

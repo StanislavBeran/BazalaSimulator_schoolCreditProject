@@ -12,7 +12,8 @@ public class SpravcePasu extends JPanel {
     private Timer pohybTimer;
     private Timer spawnTimer;
 
-    private final int RYCHLOST_POSUVU = 2;
+    private int RYCHLOST_POSUVU = 1;
+    private int RYCHLOST_ANIMACE = 4;
     private final int BOD_ZASTAVENI = 480;
     private final int SCANNER_X = 610;
     private final int SCANNER_Y = 34;
@@ -54,12 +55,17 @@ public class SpravcePasu extends JPanel {
         }
     }
     private Zbozi vyberNahodneZbozi() {
-        Zbozi vybrane;
-        do {
-            int nahodnyIndex = random.nextInt(zboziList.size());
-            vybrane = zboziList.get(nahodnyIndex);
-        } while (!simulator.getOdemceneZbozi().contains(vybrane.id));
-        return vybrane;
+        List<Zbozi> dostupneZbozi = new ArrayList<>();
+        for (Zbozi z : zboziList) {
+            if (simulator.getOdemceneZbozi().contains(z.id)) {
+                dostupneZbozi.add(z);
+            }
+        }
+        if (dostupneZbozi.isEmpty()) {
+            return zboziList.get(0);
+        }
+        int nahodnyIndex = random.nextInt(dostupneZbozi.size());
+        return dostupneZbozi.get(nahodnyIndex);
     }
 
     private void zkusPridatZbozi() {
@@ -224,12 +230,11 @@ public class SpravcePasu extends JPanel {
     private void animujKTargetu(PolozkaNaPase p) {
         int dx = p.cilX - p.getX();
         int dy = p.cilY - p.getY();
-        int rychlost = 8;
 
-        if (Math.abs(dx) > rychlost) p.setLocation(p.getX() + (dx > 0 ? rychlost : -rychlost), p.getY());
-        if (Math.abs(dy) > rychlost) p.setLocation(p.getX(), p.getY() + (dy > 0 ? rychlost : -rychlost));
+        if (Math.abs(dx) > RYCHLOST_ANIMACE) p.setLocation(p.getX() + (dx > 0 ? RYCHLOST_ANIMACE : -RYCHLOST_ANIMACE), p.getY());
+        if (Math.abs(dy) > RYCHLOST_ANIMACE) p.setLocation(p.getX(), p.getY() + (dy > 0 ? RYCHLOST_ANIMACE : -RYCHLOST_ANIMACE));
 
-        if (Math.abs(dx) <= rychlost && Math.abs(dy) <= rychlost) {
+        if (Math.abs(dx) <= RYCHLOST_ANIMACE && Math.abs(dy) <= RYCHLOST_ANIMACE) {
             if (p.stav == PolozkaNaPase.Stav.JEDE_NA_SCANNER) {
                 p.stav = PolozkaNaPase.Stav.CEKA_NA_SCANNERU;
                 if (simulator != null) simulator.zobrazVahu(p.vaha);
@@ -261,7 +266,7 @@ public class SpravcePasu extends JPanel {
         return false;
     }
     public void dokonciNakupAZacniNovy() {
-        if (simulator != null) simulator.vypisDoKonzole("✅ Nákup zaplacen. Čistím odstavný prostor.");
+        if (simulator != null) simulator.vypisDoKonzole("✅ Nákup zaplacen.");
         obsluhovanyZakaznik++;
         List<PolozkaNaPase> keSmazani = new ArrayList<>();
         for (PolozkaNaPase p : aktivniPolozky) {
@@ -271,6 +276,28 @@ public class SpravcePasu extends JPanel {
             }
         }
         aktivniPolozky.removeAll(keSmazani);
+        repaint();
+    }
+    public void aplikujVylepseniRychlosti(int uroven) {
+        RYCHLOST_POSUVU = 2 + (uroven/2);
+        RYCHLOST_ANIMACE = 8 + (uroven * 2);
+
+        int novyDelay = 400 - (uroven * 50);
+        if (spawnTimer != null) {
+            spawnTimer.setDelay(novyDelay);
+        }
+    }
+    public void vycistiVsechno() {
+        if (pohybTimer != null) pohybTimer.stop();
+        if (spawnTimer != null) spawnTimer.stop();
+        for (PolozkaNaPase p : aktivniPolozky) {
+            remove(p);
+        }
+        aktivniPolozky.clear();
+        cekaNaDelitko = false;
+        delitkoJeNaPase = false;
+        aktualniSpawnovanyZakaznik = 1;
+        obsluhovanyZakaznik = 1;
         repaint();
     }
 }

@@ -1,6 +1,7 @@
-Jmeno: "111";
-Obtiznost: 2;
-Penize: 6039;
+Jmeno: "Karel";
+Penize: 124400;
 XP: 0;
 Vylepseni: 00000;
-OdemceneZbozi: 1,
+OdemceneZbozi: 16;
+VybranaHudba: obchod_theme;
+OdemcenaHudba: obchod_theme;

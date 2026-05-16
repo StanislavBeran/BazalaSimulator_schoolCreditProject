@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL; // Přidáno pro načítání z resources
-import java.util.ArrayList;
+import java.net.URL;
 
 public class Menu extends JFrame {
     private CardLayout karty;
@@ -21,11 +20,18 @@ public class Menu extends JFrame {
         setTitle("Bazala Simulator");
         setSize(1280, 720);
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
-
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                if (bazalaSimulator != null) {
+                    bazalaSimulator.ulozHru();
+                }
+                System.exit(0);
+            }
+        });
         SpravceZvuku.prehraj("obchodak_theme_sound","zvuk_v_pozadi", 0, true);
-
         try {
             URL iconUrl = getClass().getResource("/logoAplikace.png");
             if (iconUrl != null) {
@@ -83,7 +89,7 @@ public class Menu extends JFrame {
             System.err.println("Chyba při načítání loga: " + e.getMessage());
         }
 
-        menuContainer.add(Box.createVerticalStrut(50)); // Mezera pod logem
+        menuContainer.add(Box.createVerticalStrut(50));
 
         String[] texty = {"Začít novou hru", "Načíst hru", "Nastavení", "Exit"};
         for (String text : texty) {

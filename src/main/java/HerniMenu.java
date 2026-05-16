@@ -42,6 +42,7 @@ public class HerniMenu extends JPanel {
         JButton btnUlozitOdejit = Menu.vytvorTlacitko("Uložit a odejít");
         btnUlozitOdejit.addActionListener(e -> {
             simulator.ulozHru();
+            simulator.resetujHerniPole();
             setVisible(false);
             SpravceZvuku.zastavVsechnuHudbu();
             SpravceZvuku.prehraj("obchodak_theme_sound", "zvuk_v_pozadi", 0, true);
