@@ -287,14 +287,14 @@ public class ObchodMenu extends JPanel {
     }
 
     private int vypocitejCenuOdemknuti(Zbozi z) {
-        int zaklad = z.cena * z.maxPocet * 3; // Cena se odvíjí od toho, kolik na tom vyděláš
+        int zaklad = z.cena * z.maxPocet * 3;
         if (z.minVaha > 0 && z.maxVaha > 0) {
-            zaklad += 1000; // Vážené zboží je dražší
+            zaklad += 1000;
         }
-        zaklad += z.typ * 200; // Malá přirážka za kategorii
-        zaklad += z.lvlOdemknuti * 1200; // Výrazná přirážka podle levelu
+        zaklad += z.typ * 200;
+        zaklad += z.lvlOdemknuti * 1200;
 
-        return Math.max(100, (zaklad / 50) * 50); // Zaokrouhleno na padesátikoruny
+        return Math.max(100, (zaklad / 50) * 25);
     }
 
     private JButton vytvorZalozku(String text, int idKategorie) {

@@ -442,7 +442,7 @@ public class BazalaSimulator extends JPanel {
             nactiXp(celkoveXp + xpZaNakup);
 
             nactiPenize(aktualniPenize + cenaNakupu);
-            vypisDoKonzole("Získáno " + cenaNakupu + " Kč a " + xpZaNakup + "XP.");
+            vypisDoKonzole("Získáno " + cenaNakupu + " Kč a " + xpZaNakup + " XP.");
         }
         panelObrazovky.vycistiUctenku();
 
@@ -471,7 +471,7 @@ public class BazalaSimulator extends JPanel {
             }
         }
 
-        return Math.max(5, ziskaneXp);
+        return Math.max(5, ziskaneXp/4);
     }
     public String getVybranaHudba() {
         return vybranaHudba;

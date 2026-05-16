@@ -28,14 +28,17 @@ public class InformacniOkno extends JPanel {
         oknoPanel.add(Box.createVerticalStrut(20));
 
         // Text návodu (používáme HTML tagy pro odřádkování a ztučnění)
-        String navod = "<html><div style='text-align: center; width: 400px;'>" +
-                "Tady je rychlý návod k tvé první směně na pokladně:<br><br>" +
-                "1. Zboží na pásu <b>bez kódu</b> (např. typ 0) pouze rozklikni.<br>" +
-                "2. Zboží <b>s kódem</b> dojede na scanner a zastaví se.<br>" +
-                "3. Na číselníku zadej <b>[ID]*[POČET]</b> a stiskni <b>ENTER</b>.<br>" +
-                "4. Nákup zákazníka končí odkliknutím <b>dělítka nákupu</b>.<br><br>" +
+        String navod = "<html><div style='text-align: left; width: 400px;'>" +
+                "Tady je rychlý návod jak zmáknout směnu jak Bazala:<br><br>" +
+                "1. Zboží na pásu <b>S kódem (typ 0)</b> stačí pouze kliknout a máš vyřešíno.<br>" +
+                "2. Zboží <b>Bez kódu (pečivo, zelenina, ovoce, ...)</b> dojede na scanner a zastaví se.<br>" +
+                "3. Na číselníku pak musíš zadat <b>[ID]*[POČET]</b> nebo <b>[ID]*[VÁHA] (ta je vidět pod účtenkou)</b> a stisknout <b>ENTER</b>.<br>" +
+                "4. Nákup zákazníka končí kliknutím na krásné <b>dělítko nákupu</b>.<br><br>" +
+                "<b>Zákazník platí kartou či hotově</b><br>" +
+                "<b>Kartou</b> -> stačí kliknout na terminál a máš hotovo.<br>" +
+                "<b>Hotově</b> -> V kase musíš vrátit správné množství (informace vidíš kdyžtak v chatu vlevo a nebo na účtence).<br><br>" +
+                "Když budeš už za vodou, můžeš nakoupit nové zboží, upgrady či hudbu, co hojí rány.<br><br>" +
                 "Hodně štěstí a co nejméně naštvaných zákazníků!</div></html>";
-
         JLabel textLabel = new JLabel(navod);
         textLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         textLabel.setForeground(new Color(220, 220, 220));

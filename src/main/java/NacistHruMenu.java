@@ -62,7 +62,7 @@ public class NacistHruMenu extends JPanel {
         for (int i = 1; i <= 3; i++) {
             String cestaKSouboru = "src/main/resources/ulozeneHry/ulozenaHra" + i + ".txt";
             UlozenaHra ulozenaHra = SpravceSouboru.nactiUlozeneHryZeSouboru(cestaKSouboru);
-            String textTlacitka = ulozenaHra.nazevObchodu + " lvl: " + (ulozenaHra.xp/100) + " " + ulozenaHra.pocetPenez + " Kč";
+            String textTlacitka = ulozenaHra.nazevObchodu + " lvl: " + ((ulozenaHra.xp/100)+1) + " " + ulozenaHra.pocetPenez + " Kč";
 
             JButton btnUlozenaHra = Menu.vytvorTlacitko(textTlacitka);
 
