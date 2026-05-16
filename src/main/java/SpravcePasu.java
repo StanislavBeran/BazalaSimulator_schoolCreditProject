@@ -258,7 +258,7 @@ public class SpravcePasu extends JPanel {
                 if (jeSpravne) {
                     int nahodneY = p.getY() + (random.nextInt(101) - 50);
                     p.nastavCil(ODSTAV_X, nahodneY, PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA);
-                    if (simulator != null) simulator.zobrazVahu(0); // Vynuluje váhu na displeji
+                    if (simulator != null) simulator.zobrazVahu(0);
                     return true;
                 }
             }

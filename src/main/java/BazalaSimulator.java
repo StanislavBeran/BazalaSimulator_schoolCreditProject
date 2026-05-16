@@ -438,14 +438,40 @@ public class BazalaSimulator extends JPanel {
             panelVracenychPenez.vycistiHromadku();
         }
         if (uspesne) {
+            int xpZaNakup = vypocitejXpZaNakup(panelObrazovky.getPolozkyNaUctence());
+            nactiXp(celkoveXp + xpZaNakup);
+
             nactiPenize(aktualniPenize + cenaNakupu);
-            vypisDoKonzole("Získáno " + cenaNakupu + " Kč. Další zákazník na řadě!");
+            vypisDoKonzole("Získáno " + cenaNakupu + " Kč a " + xpZaNakup + "XP.");
         }
         panelObrazovky.vycistiUctenku();
 
         if (spravcePasu != null) {
             spravcePasu.dokonciNakupAZacniNovy();
         }
+    }
+    private int vypocitejXpZaNakup(List<Zbozi> uctenka) {
+        int ziskaneXp = 0;
+
+        for (Zbozi z : uctenka) {
+            int xpZaPolozku = z.cena / 5;
+            if (z.typ == 0) {
+                xpZaPolozku += 1;
+            } else if (z.typ >= 1 && z.typ <= 4) {
+                xpZaPolozku += 5;
+            }
+            if (z.minVaha > 0 && z.maxVaha > 0) {
+                xpZaPolozku += 15;
+            }
+            xpZaPolozku += z.lvlOdemknuti * 10;
+            if (z.minVaha == 0 && z.maxVaha == 0) {
+                ziskaneXp += xpZaPolozku * Math.max(1, z.maxPocet);
+            } else {
+                ziskaneXp += xpZaPolozku;
+            }
+        }
+
+        return Math.max(5, ziskaneXp);
     }
     public String getVybranaHudba() {
         return vybranaHudba;
