@@ -1,7 +1,7 @@
 Jmeno: "Karel";
-Penize: 61991;
-XP: 7523;
+Penize: 71207304;
+XP: 20219;
 Vylepseni: 40000;
-OdemceneZbozi: 16,2,1,3,4;
-VybranaHudba: Athena_Chlebová_-_Večerka;
+OdemceneZbozi: 16;
+VybranaHudba: Filip_Dang_-_Pojď_nakoupit_bejbe;
 OdemcenaHudba: obchod_theme,Filip_Dang_-_Pojď_nakoupit_bejbe,Filip_Dang_-_Štědrá_večerka,Athena_Chlebová_-_Večerka,Tereza_Kerndlová_-_Schody_z_nebe;

@@ -1,7 +1,7 @@
 Jmeno: "Karel";
-Penize: 124400;
-XP: 0;
+Penize: 1499786;
+XP: 4702634;
 Vylepseni: 00000;
-OdemceneZbozi: 16;
+OdemceneZbozi: 16,59;
 VybranaHudba: obchod_theme;
 OdemcenaHudba: obchod_theme;

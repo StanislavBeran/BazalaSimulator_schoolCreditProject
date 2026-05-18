@@ -60,24 +60,35 @@ public class NastaveniMenu extends JPanel {
         hudbaComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         hudbaComboBox.setBackground(new Color(200, 200, 200));
         hudbaComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        hudbaComboBox.addItem("Bez Hudby");
         hudbaComboBox.addActionListener(e -> {
             if (hudbaComboBox.getSelectedItem() != null) {
                 if (nacitaniDat) return;
                 String vybranaZobrazena = (String) hudbaComboBox.getSelectedItem();
                 BazalaSimulator sim = hlavniOkno.getSimulator();
-                if (sim != null && sim.getOdemcenaHudba() != null) {
-                    String vybranaPuvodni = null;
-                    for (String h : sim.getOdemcenaHudba()) {
-                        if (h.replace('_', ' ').equals(vybranaZobrazena)) {
-                            vybranaPuvodni = h;
-                            break;
+
+                if (sim != null) {
+                    if (vybranaZobrazena.equals("Bez hudby")) {
+                        if (!"Bez hudby".equals(sim.getVybranaHudba())) {
+                            sim.nastavVybranouHudbu("Bez hudby");
+                            if (hlavniOkno.getPredchoziObrazovka().equals("BAZALA_SIMULATOR")) {
+                                SpravceZvuku.zastavVsechnuHudbu();
+                            }
                         }
-                    }
-                    if (vybranaPuvodni != null && !vybranaPuvodni.equals(sim.getVybranaHudba())) {
-                        sim.nastavVybranouHudbu(vybranaPuvodni);
-                        if (hlavniOkno.getPredchoziObrazovka().equals("BAZALA_SIMULATOR")) {
-                            SpravceZvuku.zastavVsechnuHudbu();
-                            SpravceZvuku.prehraj(vybranaPuvodni, vybranaPuvodni, 0, true);
+                    } else if (sim.getOdemcenaHudba() != null) {
+                        String vybranaPuvodni = null;
+                        for (String h : sim.getOdemcenaHudba()) {
+                            if (h.replace('_', ' ').equals(vybranaZobrazena)) {
+                                vybranaPuvodni = h;
+                                break;
+                            }
+                        }
+                        if (vybranaPuvodni != null && !vybranaPuvodni.equals(sim.getVybranaHudba())) {
+                            sim.nastavVybranouHudbu(vybranaPuvodni);
+                            if (hlavniOkno.getPredchoziObrazovka().equals("BAZALA_SIMULATOR")) {
+                                SpravceZvuku.zastavVsechnuHudbu();
+                                SpravceZvuku.prehraj(vybranaPuvodni, vybranaPuvodni, 0, true);
+                            }
                         }
                     }
                 }
@@ -105,16 +116,22 @@ public class NastaveniMenu extends JPanel {
     private void obnovNabidkuHudby() {
         nacitaniDat = true;
         hudbaComboBox.removeAllItems();
+
+        hudbaComboBox.addItem("Bez hudby");
+
         simulator = hlavniOkno.getSimulator();
         if (simulator != null && simulator.getOdemcenaHudba() != null) {
             for (String h : simulator.getOdemcenaHudba()){
                 hudbaComboBox.addItem(h.replace('_', ' '));
             }
+
             if (simulator.getVybranaHudba() != null) {
-                hudbaComboBox.setSelectedItem(simulator.getVybranaHudba().replace('_', ' '));
+                if (simulator.getVybranaHudba().equals("Bez hudby")) {
+                    hudbaComboBox.setSelectedItem("Bez hudby");
+                } else {
+                    hudbaComboBox.setSelectedItem(simulator.getVybranaHudba().replace('_', ' '));
+                }
             }
-        } else {
-            hudbaComboBox.addItem("obchod theme");
         }
         nacitaniDat = false;
     }

@@ -1,4 +1,7 @@
-Jmeno: "erger";
-Obtiznost: 0;
-Penize: 5412;
+Jmeno: "Karluv Obchůdek";
+Penize: 10000;
 XP: 0;
+Vylepseni: 00000;
+OdemceneZbozi: 16;
+VybranaHudba: obchod_theme;
+OdemcenaHudba: obchod_theme;

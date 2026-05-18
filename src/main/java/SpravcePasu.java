@@ -89,7 +89,6 @@ public class SpravcePasu extends JPanel {
             int startY = (getHeight() / 2) - (VELIKOST_POLOZKY / 2);
             if(getHeight() == 0) startY = 40;
 
-            // Vytvorenie položky s priradením ID aktuálne generovaného zákazníka
             PolozkaNaPase novaPolozka = new PolozkaNaPase(vybrane, -VELIKOST_POLOZKY, startY, VELIKOST_POLOZKY, VELIKOST_POLOZKY, pocetKusu, aktualniSpawnovanyZakaznik);
 
             novaPolozka.addMouseListener(new java.awt.event.MouseAdapter() {

@@ -44,7 +44,6 @@ public class PolozkaNaPase extends JLabel {
             java.net.URL imgUrl = getClass().getResource("/zboziObrazky/" + z.nazev + ".png");
             if (imgUrl != null) {
                 img = new ImageIcon(imgUrl).getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
-
             }
         } catch (Exception e) {
             System.err.println("Obrázek pro " + z.nazev + " nenalezen.");

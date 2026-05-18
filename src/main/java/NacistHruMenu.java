@@ -79,7 +79,9 @@ public class NacistHruMenu extends JPanel {
                     simulator.nactiOdemceneZbozi(ulozenaHra.odemceneZbozi);
                     simulator.nastavDetailyHry(pozice, ulozenaHra.nazevObchodu, ulozenaHra.vybranaHudba, ulozenaHra.odemcenaHudba);
                     SpravceZvuku.zastav("obchodak_theme_sound");
-                    SpravceZvuku.prehraj("hra_hudba_v_pozadi", ulozenaHra.vybranaHudba, 0, true);
+                    if (!"Bez hudby".equals(ulozenaHra.vybranaHudba)) {
+                        SpravceZvuku.prehraj("hra_hudba_v_pozadi", ulozenaHra.vybranaHudba, 0, true);
+                    }
                     hlavniOkno.zobrazObrazovku("BAZALA_SIMULATOR");
 
 

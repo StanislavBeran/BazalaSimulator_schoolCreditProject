@@ -126,8 +126,11 @@ public class ObchodMenu extends JPanel {
                     String mnozstviText = (z.minVaha > 0) ? "Váha: " + z.minVaha + "-" + z.maxVaha + " g" : "Max kusů: " + z.maxPocet;
                     String upozorneniLevel = (!vlastni && simulator.getLevel() < z.lvlOdemknuti) ? "<font color='red'>" : "";
 
-                    String infoHtml = "<html><div style='text-align: center; padding: 5px;'>"
-                            + "<b style='font-size:14px;'>" + z.nazev.replace('_', ' ') + "</b><br>"
+                    String cistyNazev = z.nazev.replace('_', ' ');
+                    int velikostPisma = cistyNazev.length() > 15 ? 11 : 14;
+
+                    String infoHtml = "<html><div style='width: 140px; text-align: center; padding: 5px;'>"
+                            + "<b style='font-size:" + velikostPisma + "px;'>" + cistyNazev + "</b><br>"
                             + "<i style='font-size:10px;'>" + getTypText(z.typ) + "</i><br><br>"
                             + "<span style='font-size:11px;'>" + mnozstviText + "</span><br>"
                             + upozorneniLevel + "<span style='font-size:11px;'>Od levelu: " + z.lvlOdemknuti + "</span>" + (upozorneniLevel.isEmpty() ? "" : "</font>") + "<br>"
@@ -235,8 +238,10 @@ public class ObchodMenu extends JPanel {
                     lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
                 }
                 String[] casti = nazev.split(" - ");
-                String infoHtml = "<html><div style='text-align: center; padding: 5px;'>"
-                        + "<b style='font-size:14px;'>" + casti[1] + "</b><br>"
+                String nazevHudby = casti[1];
+                int velikostPismaHudba = nazevHudby.length() > 15 ? 11 : 14;
+                String infoHtml = "<html><div style='width: 140px; text-align: center; padding: 5px;'>"
+                        + "<b style='font-size:" + velikostPismaHudba + "px;'>" + nazevHudby + "</b><br>"
                         + "<i style='font-size:10px;'>Hudba</i><br><br>"
                         + "<span style='font-size:11px;'>" + casti[0] + "</span><br>"
                         + "<span style='font-size:11px;'>|</span><br>"

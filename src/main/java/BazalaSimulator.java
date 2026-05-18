@@ -15,7 +15,6 @@ public class BazalaSimulator extends JPanel {
 
     List<Zbozi> zboziList = new ArrayList<>();
 
-    // ZMĚNA ZDE: Nyní používáme naši novou třídu!
     private PokladnaObrazovka panelObrazovky;
     private HerniPanel panelPenez;
     private HerniPanel panelXp;
@@ -365,7 +364,7 @@ public class BazalaSimulator extends JPanel {
     public void zahajPlatbu() {
         cenaNakupu = panelObrazovky.getCelkovaCena();
         if (cenaNakupu == 0) {
-            vypisDoKonzole("Zákazník nic nekoupil. Odchází...");
+            vypisDoKonzole("Zákazník nic nekoupil.");
             dokonciPlatbu(false);
             return;
         }
