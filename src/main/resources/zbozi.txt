@@ -2,7 +2,7 @@ Citrón;1;3;30;0;0;5;2;Citron
 Banány;2;3;25;60;70;3;3;Banán
 Borůvky;3;0;60;0;0;2;5;Borůvky
 Hruška;4;3;20;50;60;5;4;Hruška
-Jablko_Zelené;5;3;15;50;60;5;1;Jablko Zelené
+Jablko_Zelené;5;3;15;50;60;5;1;Jablko Z.
 Jahody;6;0;50;0;0;2;2;Jahody
 Pomeranč;7;3;20;60;80;5;2;Pomeranč
 Jablko_Červené;8;3;18;50;60;5;2;Jablko Č.
@@ -63,7 +63,7 @@ Pedro;63;0;29;0;0;8;21;Pedro
 Vepřová_krkovice;64;0;72;0;0;12;72;Krkovice V.
 Vepřové_maso;65;0;98;0;0;15;83;Vepř. Karé
 Smetana_PIlos;66;0;35;0;0;6;12;Smetana Pilos
-Smetana_na_šlehání;67;0;41;0;0;12;42;Smetana na šlehání
+Smetana_na_šlehání;67;0;41;0;0;12;42;Smetana šl.
 Bohemia_čočkové;68;0;52;0;0;4;25;Bohemia čočka
 Bohemia_Slanina;69;0;48;0;0;4;51;Bohemia slanina
 Bohemia_z_pece;70;0;51;0;0;7;61;Bohemia z pece
