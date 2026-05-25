@@ -393,9 +393,15 @@ public class PokladnaObrazovka extends JPanel {
         lblIdCena.setFont(new Font("Arial", Font.PLAIN, isFs ? 18 : 8));
         lblIdCena.setForeground(new Color(100, 100, 100));
 
+        int velikostPisma;
+        if (nazev.length() > 12) {
+            velikostPisma = isFs ? 15 : 8;
+        } else {
+            velikostPisma = isFs ? 22 : 10;
+        }
         JLabel lblNazev = new JLabel(nazev);
         lblNazev.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblNazev.setFont(new Font("Arial", Font.BOLD, isFs ? 22 : 10));
+        lblNazev.setFont(new Font("Arial", Font.BOLD, velikostPisma));
         lblNazev.setForeground(Color.BLACK);
 
         textPanel.add(Box.createVerticalStrut(2));
