@@ -9,12 +9,12 @@ Jablko_Červené;8;3;18;50;60;5;2;Jablko Č.
 Okurka;9;2;21;80;100;4;6;Okurek
 Papriky;10;0;68;0;0;2;7;Papriky
 Rajčata;11;0;62;0;0;3;5;Rajčata
-Kaiserka_Bílá;12;1;3;0;0;8;2;Kaiserka
-Celozrná_kaiserka;13;1;4;0;0;8;3;KairekaNGR
+Kaiserka_Bílá;12;1;3;0;0;4;2;Kaiserka
+Celozrná_kaiserka;13;1;4;0;0;6;3;KairekaNGR
 Chleba_Šumava;14;1;46;0;0;2;1;Šumava
 Chleba_Dřevorubecký;15;1;56;0;0;2;5;Chléb D.
-Rohlík;16;1;2;0;0;8;1;Rohlík
-Rohlík_Makový;17;1;4;0;0;8;6;Rohlík Makový
+Rohlík;16;1;2;0;0;6;1;Rohlík
+Rohlík_Makový;17;1;4;0;0;6;6;Rohlík Makový
 Pizza_žemle;18;1;25;0;0;3;50;Žemle
 Křemešník_salám;20;0;41;0;0;2;15;Křemešník
 Poličan_salám;21;0;28;0;0;2;5;Poličan
@@ -32,7 +32,7 @@ Grana_parmazan;32;0;160;0;0;2;25;Grana
 Cheddar;33;0;115;0;0;2;18;Cheddar
 Mocarela_sýr;34;0;42;0;0;4;21;Mozzarella
 Kuřecí_prsa;35;0;117;0;0;2;30;Kuře Řízky
-Radegast_pivo;36;0;12;0;0;10;41;Radegast
+Radegast_pivo;36;0;12;0;0;6;41;Radegast
 Tvaroháček_Vanilka;37;0;25;0;0;4;12;Tvarohák
 Jogurt_Bílý;38;0;21;0;0;4;6;Jogurt Bílý
 Máslo;39;0;46;0;0;2;1;Máslo
@@ -40,36 +40,36 @@ Vejce_6_ks;40;0;56;0;0;2;1;Vejce 6
 Pribináček;41;0;26;0;0;4;31;Pribináček
 Termix_kakao;42;0;18;0;0;6;17;Termix kakao
 Vejce_10_ks;43;0;74;0;0;2;24;Vejce 10
-Mléko;44;0;14;0;0;10;2;Mléko
+Mléko;44;0;14;0;0;6;2;Mléko
 Smetana33;45;0;32;0;0;4;12;Smetana 33%
 Smetana_Káva;46;0;12;0;0;2;1;Smetana Káva
 Bonpari;47;0;25;0;0;2;1;Bonpari
 Brambory_malé;48;0;89;0;0;5;1;Brambory 2kg
-Brambory_velké;49;0;168;0;0;9;12;Brambory 5kg
+Brambory_velké;49;0;168;0;0;6;12;Brambory 5kg
 Fizi_candy;50;0;29;0;0;2;26;Fizi Candy
 Fizi_drink_cola;51;0;16;0;0;5;16;Fizi Drink
-Haribo_medvídc;52;0;34;0;0;9;62;Haribo Medv.
+Haribo_medvídc;52;0;34;0;0;6;62;Haribo Medv.
 Haribo_Pico;53;0;35;0;0;6;36;Haribo PICO
-Hašlerky;54;0;32;0;0;8;66;Hašlerky
-Hovězí_jerky;55;0;54;0;0;12;85;Jerky MrBeast
-Hovězí_mleté;56;0;112;0;0;15;69;Hovězí Mleté
-Hovězí_roštěná;57;0;156;0;0;12;55;Hovězí Roštěná
-Hovězí_stake;58;0;260;0;0;10;69;Hovězí Strip
-Kájínky;59;0;999;0;0;99;99;Kájínky
-Kuře_celé;60;0;128;0;0;6;20;Kuře Celé
+Hašlerky;54;0;32;0;0;5;66;Hašlerky
+Hovězí_jerky;55;0;54;0;0;3;85;Jerky MrBeast
+Hovězí_mleté;56;0;112;0;0;2;69;Hovězí Mleté
+Hovězí_roštěná;57;0;156;0;0;4;55;Roštěná h
+Hovězí_stake;58;0;260;0;0;2;69;Hovězí Strip
+Kájínky;59;0;999;0;0;1;99;Kájínky
+Kuře_celé;60;0;128;0;0;2;20;Kuře Celé
 M&M;61;0;31;0;0;2;10;M&M
-Mixle_Pixle;62;0;32;0;0;6;15;Mixle_Pixle
-Pedro;63;0;29;0;0;8;21;Pedro Žvejky
-Vepřová_krkovice;64;0;72;0;0;12;72; Vepř. Krkovice
-Vepřové_maso;65;0;98;0;0;15;83;Vepř. Karé
+Mixle_Pixle;62;0;32;0;0;4;15;Mixle Pixle
+Pedro;63;0;29;0;0;5;21;Pedro Žvejky
+Vepřová_krkovice;64;0;72;0;0;2;72; Vepř. Krkovice
+Vepřové_maso;65;0;98;0;0;5;83;Vepř. Karé
 Smetana_PIlos;66;0;35;0;0;6;12;Smetana Pilos
-Smetana_na_šlehání;67;0;41;0;0;12;42;Smetana šlehání
-Bohemia_čočkové;68;0;52;0;0;16;25;Bohemia č
-Bohemia_Slanina;69;0;48;0;0;24;51;Bohemia s
-Bohemia_z_pece;70;0;51;0;0;27;61;Bohemia z pece
-Marlboro_mint;71;0;162;0;0;30;79;Marlboro mint
-Siberia_slim;72;0;149;0;0;35;81;Siberia slim
-Strážnické_Solené;73;0;42;0;0;21;46;Strážnické s
-Terea;74;0;125;0;0;36;86;Terea
-Tortilla_Chipsy;75;0;43;0;0;12;26;Tortilla Chips
-Velo_orange;76;0;168;0;0;25;62;Velo Orange
+Smetana_na_šlehání;67;0;41;0;0;4;42;Smetana šlehání
+Bohemia_čočkové;68;0;52;0;0;4;25;Bohemia čočka
+Bohemia_Slanina;69;0;48;0;0;4;51;Bohemia slanina
+Bohemia_z_pece;70;0;51;0;0;7;61;Bohemia z pece
+Marlboro_mint;71;0;162;0;0;3;79;Marlboro mint
+Siberia_slim;72;0;149;0;0;5;81;Siberia slim
+Strážnické_Solené;73;0;42;0;0;3;46;Strážnické slané
+Terea;74;0;125;0;0;2;86;Terea
+Tortilla_Chipsy;75;0;43;0;0;5;26;Tortilla Chips
+Velo_orange;76;0;168;0;0;5;62;Velo Orange

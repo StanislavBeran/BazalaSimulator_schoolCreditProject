@@ -14,7 +14,6 @@ public class PokladnaObrazovka extends JPanel {
     private Runnable onToggleFullscreen;
     private Runnable aktualizujSeznam;
 
-    // NOVÉ: Seznam pro ukládání nákupu
     private List<Zbozi> polozkyNaUctence;
     private Runnable prekresliUctenku;
     private BazalaSimulator simulator;
@@ -125,7 +124,9 @@ public class PokladnaObrazovka extends JPanel {
 
         gbc.gridx = 0; gbc.weightx = isFs ? 0.45 : 0.42;
         add(levyPanel, gbc);
-
+        // ==========================================
+        // PRAVÁ ČÁST PANELU
+        // ==========================================
         JPanel rightPanel = new JPanel(new BorderLayout(0, 2));
         rightPanel.setBackground(new Color(100, 120, 200));
 
@@ -286,7 +287,6 @@ public class PokladnaObrazovka extends JPanel {
         gbc.gridx = 1; gbc.weightx = isFs ? 0.20 : 0.28;
         add(numpadWrapper, gbc);
 
-        // Vložení pravého panelu na konec
         gbc.gridx = 2; gbc.weightx = isFs ? 0.35 : 0.24;
         add(rightPanel, gbc);
     }
@@ -421,9 +421,6 @@ public class PokladnaObrazovka extends JPanel {
         return panel;
     }
 
-    // ==========================================
-    // GETTERY PRO ULOŽENÍ STAVU PŘED PŘEPNUTÍM
-    // ==========================================
     public int getAktualniKategorie() {
         return aktualniKategorie;
     }

@@ -9,7 +9,6 @@ public class HerniPanel extends JPanel {
     private Image bgImage;
     private Typ typPanelu;
 
-    // Data pro Peníze a XP
     private int penize = 0;
     private int xp = 0;
     private int maxXp = 100;
@@ -44,7 +43,6 @@ public class HerniPanel extends JPanel {
         repaint();
     }
 
-    // Přidá text a umaže starý
     public void pridejZpravu(String zprava) {
         zpravy.add(zprava);
         if (zpravy.size() > 4) {
@@ -95,7 +93,6 @@ public class HerniPanel extends JPanel {
             g2.drawString(text, textX, textY);
 
         } else if (typPanelu == Typ.KONZOLE) {
-            // Vykreslení konzole (jako v opravdovém terminálu)
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
             int y = 25;
             for (String zprava : zpravy) {

@@ -78,18 +78,16 @@ public class BazalaSimulator extends JPanel {
             vrstvy.add(pasGif, Integer.valueOf(2));
 
             spravcePasu = new SpravcePasu(zboziList, pasGif, this);
-            vrstvy.add(spravcePasu, Integer.valueOf(3)); // Pás je vrstva 3
+            vrstvy.add(spravcePasu, Integer.valueOf(3));
 
             panelPenez = new HerniPanel(HerniPanel.Typ.PENIZE);
             panelPenez.setPenize(1500);
             vrstvy.add(panelPenez, Integer.valueOf(5));
 
-            // MÍSTO PŮVODNÍHO: panelXp = new HerniPanel(true);
             panelXp = new HerniPanel(HerniPanel.Typ.XP);
             panelXp.setXpData(1, 45, 100);
             vrstvy.add(panelXp, Integer.valueOf(5));
 
-            // NOVÝ PANEL KONZOLE
             panelKonzole = new HerniPanel(HerniPanel.Typ.KONZOLE);
             vrstvy.add(panelKonzole, Integer.valueOf(5));
 
@@ -205,13 +203,11 @@ public class BazalaSimulator extends JPanel {
         if (panelPenez != null) {
             int sirkaBaru = (int)(280 * scaleW);
             int vyskaBaru = (int)(60 * scaleH);
-            // Umístění vlevo nahoře s malým odsazením
             panelPenez.setBounds((int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
         }
         if (panelXp != null) {
             int sirkaBaru = (int)(280 * scaleW);
             int vyskaBaru = (int)(60 * scaleH);
-            // Umístění vpravo nahoře s malým odsazením
             panelXp.setBounds(w - sirkaBaru - (int)(20 * scaleW), (int)(15 * scaleH), sirkaBaru, vyskaBaru);
         }
         if (panelKonzole != null) {
@@ -337,9 +333,6 @@ public class BazalaSimulator extends JPanel {
         if (informacniOkno != null) {
             informacniOkno.setVisible(true);
         }
-    }
-    public String getVylepseni(){
-        return vylepseni;
     }
     public List<Integer> getOdemceneZbozi(){
         return odemceneZbozi;
@@ -515,7 +508,7 @@ public class BazalaSimulator extends JPanel {
         if (!odemceneZbozi.contains(id)) {
             odemceneZbozi.add(id);
             if (panelObrazovky != null) {
-                panelObrazovky.obnovSeznamZbozi(); // Ihned přidá zboží do menu pokladny
+                panelObrazovky.obnovSeznamZbozi();
             }
         }
     }
@@ -567,7 +560,7 @@ public class BazalaSimulator extends JPanel {
     public boolean kupHudbu(String souborHudby, int cena) {
         if (aktualniPenize >= cena && !odemcenaHudba.contains(souborHudby)) {
             aktualniPenize -= cena;
-            nactiPenize(aktualniPenize); // Překreslí panel s penězi
+            nactiPenize(aktualniPenize);
             odemcenaHudba.add(souborHudby);
             vypisDoKonzole("Zakoupena nová hudba! Můžeš ji změnit v Nastavení.");
             return true;

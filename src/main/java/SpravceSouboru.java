@@ -11,7 +11,6 @@ public class SpravceSouboru {
         }
 
         String jmenoObchodu = "Neznámé";
-        int obtiznost = 0;
         int penize = 0;
         int xp = 0;
         String vylepseni = "00000";

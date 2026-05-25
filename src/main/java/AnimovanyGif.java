@@ -23,17 +23,16 @@ public class AnimovanyGif extends JPanel {
     }
 
     public void beziPas(boolean maBezet) {
-        if (this.bezi == maBezet) return; // Nemusíme nic dělat, pokud se stav nemění
+        if (this.bezi == maBezet) return;
         this.bezi = maBezet;
 
         if (!bezi && getWidth() > 0 && getHeight() > 0) {
-            // Trik pro zastavení: Vyfotíme aktuální snímek GIFu a uložíme si ho
             zastavenySnimek = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = zastavenySnimek.createGraphics();
             g2.drawImage(gifImage, 0, 0, getWidth(), getHeight(), null);
             g2.dispose();
         } else {
-            zastavenySnimek = null; // Smažeme fotku, GIF se začne zase hybat
+            zastavenySnimek = null;
         }
         repaint();
     }
@@ -41,7 +40,7 @@ public class AnimovanyGif extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Pokud běží, vykreslujeme normálně GIF. Pokud stojí, vykreslíme naši statickou "fotku".
+        // Pokud běží, vykresluje normálně GIF. Pokud stojí, vykreslíme statickou fotku.
         if (bezi && gifImage != null) {
             g.drawImage(gifImage, 0, 0, getWidth(), getHeight(), this);
         } else if (!bezi && zastavenySnimek != null) {

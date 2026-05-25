@@ -17,8 +17,9 @@ public class PolozkaNaPase extends JLabel {
 
     int cilX, cilY;
     public int idZakaznika;
+    private final int[] sablonaX = {11, 0, 28, 15, 7, 21};
+    private final int[] sablonaY = {0,  9, 19, 29, 39, 48};
 
-    // UPRAVENÝ KONSTRUKTOR: Přijímá parametr navíc (pocetKusu)
     public PolozkaNaPase(Zbozi z, int x, int y, int sirka, int vyska, int pocetKusu, int idZakaznika) {
         this.zboziData = z;
         this.pocetKusu = pocetKusu;
@@ -31,12 +32,21 @@ public class PolozkaNaPase extends JLabel {
         }
         this.idZakaznika = idZakaznika;
         int offset = 6;
-        int sirkaCelkem = sirka + ((pocetKusu - 1) * offset);
-        int vyskaCelkem = vyska + ((pocetKusu - 1) * offset);
 
+        int maxShiftX = 0;
+        int maxShiftY = 0;
+        for (int i = 0; i < pocetKusu; i++) {
+            int shiftX = (i < 6) ? sablonaX[i] : (i * offset);
+            int shiftY = (i < 6) ? sablonaY[i] : (i * offset);
+            if (shiftX > maxShiftX) maxShiftX = shiftX;
+            if (shiftY > maxShiftY) maxShiftY = shiftY;
+        }
 
-        // Zvětšíme velikost komponenty tak, aby se do ní "hromádka" vešla a neosekla se
-        setBounds(x, y - ((pocetKusu - 1) * offset), sirkaCelkem, vyskaCelkem);
+        int sirkaCelkem = sirka + maxShiftX;
+        int vyskaCelkem = vyska + maxShiftY;
+
+        setBounds(x, y - (maxShiftY / 2), sirkaCelkem, vyskaCelkem);
+
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         setToolTipText(pocetKusu + "x " + z.nazev + " (" + z.cena + " Kč / ks)");
 
@@ -64,15 +74,18 @@ public class PolozkaNaPase extends JLabel {
 
         if (img != null) {
             for (int i = 0; i < pocetKusu; i++) {
-                int drawX = i * offset;
-                int drawY = i * offset;
+                int drawX = (i < 6) ? sablonaX[i] : (i * offset);
+                int drawY = (i < 6) ? sablonaY[i] : (i * offset);
+
                 g2.drawImage(img, drawX, drawY, null);
             }
         } else {
-            // Pokud chybí obrázek, krabice se přizpůsobí menšímu z rozměrů
             g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, Math.min(sirkaZakladni, vyskaZakladni) / 2));
             for (int i = 0; i < pocetKusu; i++) {
-                g2.drawString("📦", i * offset, (vyskaZakladni / 2) + (i * offset));
+                int drawX = (i < 6) ? sablonaX[i] : (i * offset);
+                int drawY = (i < 6) ? sablonaY[i] : (i * offset);
+
+                g2.drawString("📦", drawX, (vyskaZakladni / 2) + drawY);
             }
         }
     }

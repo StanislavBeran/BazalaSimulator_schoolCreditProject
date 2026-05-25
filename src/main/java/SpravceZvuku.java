@@ -85,7 +85,7 @@ public class SpravceZvuku {
         try {
             if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                // Převod procentní hlasitosti na decibely (reálnější útlum zvuku)
+                // Převod procentní hlasitosti na decibely
                 float db = (globalniHlasitost <= 0.01f) ? -80.0f : (float)(Math.log10(globalniHlasitost) * 20.0f);
                 gainControl.setValue(db);
             }

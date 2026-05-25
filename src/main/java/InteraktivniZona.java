@@ -9,15 +9,12 @@ public class InteraktivniZona extends JPanel {
     private boolean isHovered = false;
     private String nazev;
 
-    // Nová proměnná pro odkaz na hlavní simulátor
     private BazalaSimulator simulator;
 
-    // Kratší konstruktor pro hranaté zóny
     public InteraktivniZona(int x, int y, int w, int h, String nazev, BazalaSimulator simulator) {
         this(x, y, w, h, nazev, false, simulator);
     }
 
-    // Hlavní konstruktor pro všechny zóny
     public InteraktivniZona(int x, int y, int w, int h, String nazev, boolean jeKulaty, BazalaSimulator simulator) {
         this.origX = x;
         this.origY = y;
@@ -25,7 +22,7 @@ public class InteraktivniZona extends JPanel {
         this.origH = h;
         this.nazev = nazev;
         this.jeKulaty = jeKulaty;
-        this.simulator = simulator; // Uložíme si odkaz
+        this.simulator = simulator;
 
         setOpaque(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));

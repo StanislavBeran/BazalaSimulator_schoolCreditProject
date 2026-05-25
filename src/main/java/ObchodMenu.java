@@ -13,7 +13,7 @@ public class ObchodMenu extends JPanel {
         this.simulator = simulator;
 
         setLayout(new GridBagLayout());
-        setOpaque(false); // Aby fungovalo ztmavení pozadí
+        setOpaque(false);
 
         addMouseListener(new MouseAdapter() {});
 
@@ -203,7 +203,10 @@ public class ObchodMenu extends JPanel {
                     {"Tereza Kerndlová - Schody z nebe", "Tereza_Kerndlová_-_Schody_z_nebe", "500"},
                     {"Athena Chlebová - Večerka", "Athena_Chlebová_-_Večerka", "1000"},
                     {"Filip Dang - Pojď nakoupit bejbe", "Filip_Dang_-_Pojď_nakoupit_bejbe", "1500"},
-                    {"Filip Dang - Štědrá večerka", "Filip_Dang_-_Štědrá_večerka", "2500"}
+                    {"Filip Dang - Štědrá večerka", "Filip_Dang_-_Štědrá_večerka", "2500"},
+                    {"Gala - Freed from desire", "Gala_-_Freed_from_desire", "2000"},
+                    {"Michael Jackson - Billie Jean", "Michael_Jackson_-_Billie_Jean", "1000"},
+                    {"Filip Dang & Petr Pinkas - Čeká mě sleva", "Filip_Dang_&_Petr_Pinkas_-_Čeká_mě_sleva", "3000"}
             };
 
             for (String[] h : dostupnaHudba) {

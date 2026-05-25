@@ -11,11 +11,8 @@ public class HerniMenu extends JPanel {
         this.hlavniOkno = hlavniOkno;
 
         setLayout(new GridBagLayout());
-
-        // NOVÉ: Musíme říct Javě, ať pod tím vykresluje hru!
         setOpaque(false);
 
-        // Zabrání klikání "skrz" menu na herní pult
         addMouseListener(new MouseAdapter() {});
 
         JPanel oknoPanel = new JPanel();
@@ -58,10 +55,9 @@ public class HerniMenu extends JPanel {
         add(oknoPanel);
     }
 
-    // NOVÉ: Tahle metoda se postará o ten krásný tmavý průhledný efekt přes celou hru
     @Override
     protected void paintComponent(Graphics g) {
-        g.setColor(new Color(0, 0, 0, 200)); // 200 určuje sílu ztmavení (0 je neviditelné, 255 úplná tma)
+        g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, getWidth(), getHeight());
         super.paintComponent(g);
     }

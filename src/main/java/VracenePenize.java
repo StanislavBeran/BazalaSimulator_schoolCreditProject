@@ -23,7 +23,6 @@ public class VracenePenize extends JPanel {
     public void pridejPenize(int hodnota) {
         Penize p = new Penize();
         try {
-            // Načtení obrázku podle tvé cesty (např. /minceBankovky/100.png)
             URL imgUrl = getClass().getResource("/minceBankovky/" + hodnota + ".png");
             if (imgUrl != null) {
                 p.img = new ImageIcon(imgUrl).getImage();
@@ -34,10 +33,9 @@ public class VracenePenize extends JPanel {
             e.printStackTrace();
         }
 
-        // Mince jsou typicky hodnoty 50 a méně
+
         p.jeMince = (hodnota <= 50);
 
-        // Vymyslíme náhodnou pozici, ale tak, aby to nevyjelo mimo náš vyhrazený prostor (panel)
         p.relX = random.nextDouble() * 0.7;
         p.relY = p.jeMince ? (random.nextDouble() * 0.7) : (random.nextDouble() * 0.23);
 
@@ -63,10 +61,9 @@ public class VracenePenize extends JPanel {
 
         for (Penize p : hromadkaPenez) {
             if (p.img != null) {
-                // Bankovky uděláme přes půlku panelu, mince jen na čtvrtinu
+                // Bankovky půlku panelu, mince čtvrtina panelu
                 int imgW = p.jeMince ? (int)(w * 0.12) : (int)(w * 0.16);
 
-                // Výšku dopočítáme podle originálních proporcí obrázku (aby nebyl spláclý)
                 int imgWOriginal = Math.max(1, p.img.getWidth(null));
                 int imgHOriginal = p.img.getHeight(null);
                 int imgH = (imgHOriginal * imgW) / imgWOriginal;
@@ -76,7 +73,6 @@ public class VracenePenize extends JPanel {
 
                 g2.drawImage(p.img, drawX, drawY, imgW, imgH, this);
             } else {
-                // Pokud chybí obrázek, nakreslíme provizorní barevné kolečko/obdélník
                 g2.setColor(p.jeMince ? new Color(200, 150, 50) : new Color(100, 200, 100));
                 if (p.jeMince) g2.fillOval((int)(p.relX * w), (int)(p.relY * h), 30, 30);
                 else g2.fillRect((int)(p.relX * w), (int)(p.relY * h), 60, 30);

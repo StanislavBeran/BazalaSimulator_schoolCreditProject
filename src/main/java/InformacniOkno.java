@@ -7,10 +7,9 @@ public class InformacniOkno extends JPanel {
 
     public InformacniOkno(Runnable akcePoZavreni) {
         this.akcePoZavreni = akcePoZavreni;
-        setLayout(new GridBagLayout()); // Slouží k vycentrování obsahu
+        setLayout(new GridBagLayout());
         setBackground(new Color(0, 0, 0, 180)); // Poloprůhledné černé pozadí
 
-        // Tento prázdný listener "požírá" kliknutí myši, aby neprošla dolů na hru
         addMouseListener(new MouseAdapter() {});
 
         // --- VNITŘNÍ BOX S NÁVODEM ---
@@ -27,7 +26,7 @@ public class InformacniOkno extends JPanel {
         oknoPanel.add(nadpis);
         oknoPanel.add(Box.createVerticalStrut(20));
 
-        // Text návodu (používáme HTML tagy pro odřádkování a ztučnění)
+        // Text návodu
         String navod = "<html><div style='text-align: left; width: 400px;'>" +
                 "Tady je rychlý návod jak zmáknout směnu jak Bazala:<br><br>" +
                 "1. Zboží na pásu <b>S kódem (typ 0)</b> stačí pouze kliknout a máš vyřešíno.<br>" +
@@ -68,7 +67,6 @@ public class InformacniOkno extends JPanel {
         btnZavrit.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnZavrit.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Akce po kliknutí: skryje okno a zavolá příkaz ke startu pásu
         btnZavrit.addActionListener(e -> {
             setVisible(false);
             if (this.akcePoZavreni != null) {

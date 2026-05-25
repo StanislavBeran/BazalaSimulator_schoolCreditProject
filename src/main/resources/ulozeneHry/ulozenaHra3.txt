@@ -1,7 +1,7 @@
 Jmeno: "Karel";
-Penize: 71207304;
-XP: 20219;
+Penize: 71042985;
+XP: 29049;
 Vylepseni: 40000;
-OdemceneZbozi: 16;
-VybranaHudba: Filip_Dang_-_Pojď_nakoupit_bejbe;
-OdemcenaHudba: obchod_theme,Filip_Dang_-_Pojď_nakoupit_bejbe,Filip_Dang_-_Štědrá_večerka,Athena_Chlebová_-_Večerka,Tereza_Kerndlová_-_Schody_z_nebe;
+OdemceneZbozi: 16,72,59,18,5,14,2,1,12,8,7,21,4,17,15;
+VybranaHudba: Filip_Dang_&_Petr_Pinkas_-_Čeká_mě_sleva;
+OdemcenaHudba: obchod_theme,Filip_Dang_-_Pojď_nakoupit_bejbe,Filip_Dang_-_Štědrá_večerka,Athena_Chlebová_-_Večerka,Tereza_Kerndlová_-_Schody_z_nebe,Filip_Dang_-_Čeká_mě_sleva,Michael_Jackson_-_Billie_Jean,Gala_-_Freed_from_desire,Filip_Dang_&_Petr_Pinkas_-_Čeká_mě_sleva;
