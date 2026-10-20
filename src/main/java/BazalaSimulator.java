@@ -133,7 +133,7 @@ public class BazalaSimulator extends JPanel {
             });
             vrstvy.add(settingsLabel, JLayeredPane.PALETTE_LAYER);
 
-            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this, 5, "", "", new ArrayList<>());
+            panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this, TypZbozi.KATEGORIE_VSE, "", "", new ArrayList<>());
             vrstvy.add(panelObrazovky, Integer.valueOf(4));
 
             hotspoty.add(new InteraktivniZona(745, 476, 41, 72, "Platební terminál", this));
@@ -458,9 +458,9 @@ public class BazalaSimulator extends JPanel {
 
         for (Zbozi z : uctenka) {
             int xpZaPolozku = z.cena / XP_DELITEL_CENY;
-            if (z.typ == 0) {
+            if (z.jeKusove()) {
                 xpZaPolozku += XP_ZA_KUSOVE_ZBOZI;
-            } else if (z.typ >= 1 && z.typ <= 4) {
+            } else if (z.jeSkenovane()) {
                 xpZaPolozku += XP_ZA_VAZENE_ZBOZI;
             }
             if (z.minVaha > 0 && z.maxVaha > 0) {

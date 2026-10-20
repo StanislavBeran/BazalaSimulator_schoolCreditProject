@@ -73,11 +73,11 @@ public class PokladnaObrazovka extends JPanel {
 
             for (Zbozi z : zboziList) {
                 boolean odpovidaTextu = z.nazev.toLowerCase().contains(hledanyText) || (z.id + "").contains(hledanyText);
-                boolean odpovidaKategorii = (aktualniKategorie == 5) || (z.typ == aktualniKategorie);
+                boolean odpovidaKategorii = (aktualniKategorie == TypZbozi.KATEGORIE_VSE) || (z.typ == aktualniKategorie);
                 boolean odpovinaOdemcenemuZbozi = simulator.getOdemceneZbozi().contains(z.id);
 
                 if (odpovidaTextu && odpovidaKategorii && odpovinaOdemcenemuZbozi) {
-                    if(z.typ != 0){
+                    if (z.jeSkenovane()) {
                         seznamZbozi.add(vytvorProduktPanel(z.nazev, z.id, z.cena, z.zkracenyNazev));
                     }
                 }
@@ -322,7 +322,7 @@ public class PokladnaObrazovka extends JPanel {
 
         btn.addActionListener(e -> {
             SpravceZvuku.prehraj("kliknuti_na_obrazovku");
-            if (aktualniKategorie == idKategorie) aktualniKategorie = 5;
+            if (aktualniKategorie == idKategorie) aktualniKategorie = TypZbozi.KATEGORIE_VSE;
             else aktualniKategorie = idKategorie;
             aktualizujSeznam.run();
             Container parent = btn.getParent();
@@ -483,7 +483,7 @@ public class PokladnaObrazovka extends JPanel {
                         if (pouzivaVahu || z.maxPocet >= zadaneMnozstvi) {
                             boolean muzuPridat = true;
 
-                            if (z.typ >= 1 && z.typ <= 4) {
+                            if (z.jeSkenovane()) {
                                 if (simulator != null) {
                                     muzuPridat = simulator.overZboziZeScanneru(hledaneId, zadaneMnozstvi);
                                 }

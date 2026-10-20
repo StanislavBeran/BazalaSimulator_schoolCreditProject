@@ -104,14 +104,14 @@ public class SpravcePasu extends JPanel {
                     }
 
                     if (novaPolozka.stav == PolozkaNaPase.Stav.NA_PASE) {
-                        if (novaPolozka.zboziData.typ == 0) {
-                            // Logika pro položky typu "Ostatní"
+                        if (novaPolozka.zboziData.jeKusove()) {
+                            // Logika pro kusové zboží ("Má kód")
                             if (simulator != null) {
                                 simulator.pridejZboziNaUctenku(novaPolozka.zboziData, novaPolozka.pocetKusu);
                             }
                             int nahodneY = novaPolozka.getY() + (random.nextInt(101) - 50);
                             novaPolozka.nastavCil(ODSTAV_X, nahodneY, PolozkaNaPase.Stav.JEDE_DO_ODSTAVNEHO_MISTA);
-                        } else if (novaPolozka.zboziData.typ >= 1 && novaPolozka.zboziData.typ <= 4) {
+                        } else if (novaPolozka.zboziData.jeSkenovane()) {
                             boolean scannerVolny = true;
                             for (PolozkaNaPase p : aktivniPolozky) {
                                 if (p.stav == PolozkaNaPase.Stav.JEDE_NA_SCANNER || p.stav == PolozkaNaPase.Stav.CEKA_NA_SCANNERU) {

@@ -285,13 +285,7 @@ public class ObchodMenu extends JPanel {
     }
 
     private String getTypText(int typ) {
-        switch (typ) {
-            case 1: return "Pečivo";
-            case 2: return "Zelenina";
-            case 3: return "Ovoce";
-            case 4: return "Ostatní";
-            default: return "Má kód";
-        }
+        return TypZbozi.zKodu(typ).getNazev();
     }
 
     private int vypocitejCenuOdemknuti(Zbozi z) {
