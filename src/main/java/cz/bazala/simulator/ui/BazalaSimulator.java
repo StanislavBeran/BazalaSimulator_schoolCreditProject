@@ -58,7 +58,9 @@ public class BazalaSimulator extends JPanel {
     private int cenaNakupu = 0;
     private int castkaVratit = 0;
     private int castkaVraceno = 0;
-    private int aktualniPenize = 0;
+
+    // Herní stav (peníze, XP, vylepšení, odemčení, hudba, detaily hry).
+    private final StavHry stav = new StavHry();
 
     // Konstanty pro výpočet XP za nákup
     private static final int XP_DELITEL_CENY = 5;      // část ceny zboží převedená na XP
@@ -69,22 +71,11 @@ public class BazalaSimulator extends JPanel {
     private static final int XP_FINALNI_DELITEL = 4;   // zmírnění celkového zisku XP
     private static final int XP_MINIMUM = 5;           // minimální XP za jakýkoli nákup
 
-    private int aktualniSlot = 1;
-    private String jmenoObchodu = "Můj Obchod";
-    private int celkoveXp = 0;
-    private String vylepseni = "00000";
-    private List<Integer> odemceneZbozi;
-    private String vybranaHudba = "obchod_theme";
-    private List<String> odemcenaHudba = new ArrayList<>(List.of("obchod_theme"));
-    private boolean hraJeNactena = false;
-
     public BazalaSimulator(Menu okno) {
         this.hlavniOkno = okno;
         setLayout(new BorderLayout());
         vrstvy = new JLayeredPane();
         zboziList = SpravceSouboru.nactiZbozi();
-        odemceneZbozi = new ArrayList<>();
-        odemceneZbozi.add(16);
         try {
             bgPanel = okno.new BackgroundPanel(backgroundPath);
             vrstvy.add(bgPanel, JLayeredPane.DEFAULT_LAYER);
@@ -305,37 +296,29 @@ public class BazalaSimulator extends JPanel {
         }
     }
     public void nactiPenize(int penize) {
-        this.aktualniPenize = penize;
+        stav.setPenize(penize);
         if (panelPenez != null) {
             panelPenez.setPenize(penize);
         }
     }
     public String getJmenoObchodu(){
-        return jmenoObchodu;
+        return stav.getJmenoObchodu();
     }
     public void nactiXp(int celkoveXp) {
-        this.celkoveXp = celkoveXp;
+        stav.setCelkoveXp(celkoveXp);
 
         if (panelXp != null) {
-            int level = (celkoveXp / 100) + 1;
-            int zbyvajiciXpDoDalsihoLevelu = celkoveXp % 100;
-            int maxXp = 100;
-            panelXp.setXpData(level, zbyvajiciXpDoDalsihoLevelu, maxXp);
+            panelXp.setXpData(stav.getLevel(), stav.getXpDoDalsihoLevelu(), stav.getMaxXpNaLevel());
         }
     }
     public void nactiVylepseni(String vylepseni) {
-        this.vylepseni = vylepseni;
+        stav.setVylepseni(vylepseni);
         if (spravcePasu != null) {
             spravcePasu.aplikujVylepseniRychlosti(getUrovenRychlostiPasu());
         }
     }
     public void nactiOdemceneZbozi(List<Integer> odemceneZbozi) {
-        if (odemceneZbozi == null) {
-            this.odemceneZbozi = new ArrayList<>();
-            this.odemceneZbozi.add(16);
-        } else {
-            this.odemceneZbozi = odemceneZbozi;
-        }
+        stav.setOdemceneZbozi(odemceneZbozi);
         if (panelObrazovky != null) {
             panelObrazovky.obnovSeznamZbozi();
         }
@@ -349,7 +332,7 @@ public class BazalaSimulator extends JPanel {
         }
     }
     public List<Integer> getOdemceneZbozi(){
-        return odemceneZbozi;
+        return stav.getOdemceneZbozi();
     }
     public void zobrazVahu(int vaha) {
         if (panelObrazovky != null) {
@@ -447,9 +430,9 @@ public class BazalaSimulator extends JPanel {
         }
         if (uspesne) {
             int xpZaNakup = vypocitejXpZaNakup(panelObrazovky.getPolozkyNaUctence());
-            nactiXp(celkoveXp + xpZaNakup);
+            nactiXp(stav.getCelkoveXp() + xpZaNakup);
 
-            nactiPenize(aktualniPenize + cenaNakupu);
+            nactiPenize(stav.getPenize() + cenaNakupu);
             vypisDoKonzole("Získáno " + cenaNakupu + " Kč a " + xpZaNakup + " XP.");
         }
         panelObrazovky.vycistiUctenku();
@@ -482,38 +465,34 @@ public class BazalaSimulator extends JPanel {
         return Math.max(XP_MINIMUM, ziskaneXp / XP_FINALNI_DELITEL);
     }
     public String getVybranaHudba() {
-        return vybranaHudba;
+        return stav.getVybranaHudba();
     }
     public List<String> getOdemcenaHudba() {
-        return odemcenaHudba;
+        return stav.getOdemcenaHudba();
     }
     public void nastavVybranouHudbu(String hudba) {
-        this.vybranaHudba = hudba;
+        stav.setVybranaHudba(hudba);
     }
     public void nastavDetailyHry(int slot, String jmeno, String vybrana, List<String> odemcena) {
-        this.aktualniSlot = slot;
-        this.jmenoObchodu = jmeno;
-        this.hraJeNactena = true;
+        stav.setAktualniSlot(slot);
+        stav.setJmenoObchodu(jmeno);
+        stav.setHraNactena(true);
         if (panelObrazovky != null) {
             panelObrazovky.vycistiUctenku();
         }
-        this.vybranaHudba = (vybrana != null && !vybrana.isEmpty()) ? vybrana : "obchod_theme";
-        if (odemcena != null && !odemcena.isEmpty()) {
-            this.odemcenaHudba = odemcena;
-        } else {
-            this.odemcenaHudba = new ArrayList<>(List.of("obchod_theme"));
-        }
+        stav.setVybranaHudba(vybrana);
+        stav.setOdemcenaHudba(odemcena);
     }
     public int getAktualniPenize() {
-        return aktualniPenize;
+        return stav.getPenize();
     }
 
     public void odectiPenize(int castka) {
-        nactiPenize(aktualniPenize - castka);
+        nactiPenize(stav.getPenize() - castka);
     }
 
     public int getLevel() {
-        return (celkoveXp / 100) + 1;
+        return stav.getLevel();
     }
 
     public List<Zbozi> getZboziList() {
@@ -521,16 +500,16 @@ public class BazalaSimulator extends JPanel {
     }
 
     public void odemkniZbozi(int id) {
-        if (!odemceneZbozi.contains(id)) {
-            odemceneZbozi.add(id);
+        if (stav.odemkniZbozi(id)) {
             if (panelObrazovky != null) {
                 panelObrazovky.obnovSeznamZbozi();
             }
         }
     }
     public void ulozHru() {
-        if (!hraJeNactena) return;
-        SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, String.valueOf(aktualniPenize), celkoveXp, vylepseni, odemceneZbozi, vybranaHudba, odemcenaHudba);
+        if (!stav.jeHraNactena()) return;
+        SpravceSouboru.ulozHruDoSouboru(stav.getAktualniSlot(), stav.getJmenoObchodu(), String.valueOf(stav.getPenize()),
+                stav.getCelkoveXp(), stav.getVylepseni(), stav.getOdemceneZbozi(), stav.getVybranaHudba(), stav.getOdemcenaHudba());
         System.out.println("Hra byla úspěšně uložena!");
     }
     public void zobrazObchod() {
@@ -540,24 +519,17 @@ public class BazalaSimulator extends JPanel {
         }
     }
     public int getUrovenRychlostiPasu() {
-        if (vylepseni == null || vylepseni.isEmpty()) return 0;
-        return Character.getNumericValue(vylepseni.charAt(0));
+        return stav.getUrovenRychlostiPasu();
     }
 
     public void zvysUrovenRychlostiPasu() {
-        int current = getUrovenRychlostiPasu();
-        if (current < 4) {
-            current++;
-            StringBuilder sb = new StringBuilder(vylepseni);
-            sb.setCharAt(0, Character.forDigit(current, 10));
-            vylepseni = sb.toString();
-            if (spravcePasu != null) {
-                spravcePasu.aplikujVylepseniRychlosti(current);
-            }
+        int novaUroven = stav.zvysUrovenRychlostiPasu();
+        if (novaUroven >= 0 && spravcePasu != null) {
+            spravcePasu.aplikujVylepseniRychlosti(novaUroven);
         }
     }
     public void resetujHerniPole() {
-        hraJeNactena = false;
+        stav.setHraNactena(false);
         cekaNaPlatbu = false;
         platbaKartou = false;
         if (spravcePasu != null) {
@@ -574,18 +546,19 @@ public class BazalaSimulator extends JPanel {
 
     }
     public boolean kupHudbu(String souborHudby, int cena) {
-        if (aktualniPenize >= cena && !odemcenaHudba.contains(souborHudby)) {
-            aktualniPenize -= cena;
-            nactiPenize(aktualniPenize);
-            odemcenaHudba.add(souborHudby);
-            vypisDoKonzole("Zakoupena nová hudba! Můžeš ji změnit v Nastavení.");
-            return true;
-        } else if (odemcenaHudba.contains(souborHudby)) {
-            vypisDoKonzole("Chyba: Tuto hudbu už vlastníš!");
-            return false;
-        } else {
-            vypisDoKonzole("Chyba: Nedostatek peněz!");
-            return false;
+        StavHry.VysledekKoupeHudby vysledek = stav.zkusKoupitHudbu(souborHudby, cena);
+        switch (vysledek) {
+            case KOUPENO:
+                nactiPenize(stav.getPenize());
+                vypisDoKonzole("Zakoupena nová hudba! Můžeš ji změnit v Nastavení.");
+                return true;
+            case JIZ_VLASTNENO:
+                vypisDoKonzole("Chyba: Tuto hudbu už vlastníš!");
+                return false;
+            case NEDOSTATEK_PENEZ:
+            default:
+                vypisDoKonzole("Chyba: Nedostatek peněz!");
+                return false;
         }
     }
 }
