@@ -1,3 +1,5 @@
+package cz.bazala.simulator.io;
+
 import javax.sound.sampled.*;
 import java.io.File;
 import java.net.URL;

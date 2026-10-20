@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
@@ -48,7 +52,7 @@ public class PolozkaNaPase extends JLabel {
         setBounds(x, y - (maxShiftY / 2), sirkaCelkem, vyskaCelkem);
 
         setCursor(new Cursor(Cursor.HAND_CURSOR));
-        setToolTipText(pocetKusu + "x " + z.nazev + " (" + z.cena + " Kč / ks)");
+        setToolTipText(pocetKusu + "x " + z.nazev + " (" + z.cena + " KÄ / ks)");
 
         try {
             java.net.URL imgUrl = getClass().getResource("/zboziObrazky/" + z.nazev + ".png");
@@ -56,7 +60,7 @@ public class PolozkaNaPase extends JLabel {
                 img = new ImageIcon(imgUrl).getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
             }
         } catch (Exception e) {
-            System.err.println("Obrázek pro " + z.nazev + " nenalezen.");
+            System.err.println("ObrÃ¡zek pro " + z.nazev + " nenalezen.");
         }
     }
     public void nastavCil(int x, int y, Stav novyStav) {
@@ -85,7 +89,7 @@ public class PolozkaNaPase extends JLabel {
                 int drawX = (i < 6) ? sablonaX[i] : (i * offset);
                 int drawY = (i < 6) ? sablonaY[i] : (i * offset);
 
-                g2.drawString("📦", drawX, (vyskaZakladni / 2) + drawY);
+                g2.drawString("ðŸ“¦", drawX, (vyskaZakladni / 2) + drawY);
             }
         }
     }

@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
@@ -27,7 +31,7 @@ public class VracenePenize extends JPanel {
             if (imgUrl != null) {
                 p.img = new ImageIcon(imgUrl).getImage();
             } else {
-                System.out.println("Obrázek /minceBankovky/" + hodnota + ".png nebyl nalezen!");
+                System.out.println("ObrÃ¡zek /minceBankovky/" + hodnota + ".png nebyl nalezen!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +65,7 @@ public class VracenePenize extends JPanel {
 
         for (Penize p : hromadkaPenez) {
             if (p.img != null) {
-                // Bankovky půlku panelu, mince čtvrtina panelu
+                // Bankovky pÅ¯lku panelu, mince Ätvrtina panelu
                 int imgW = p.jeMince ? (int)(w * 0.12) : (int)(w * 0.16);
 
                 int imgWOriginal = Math.max(1, p.img.getWidth(null));

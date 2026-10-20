@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,7 +18,7 @@ public class HerniPanel extends JPanel {
     private int maxXp = 100;
     private int level = 1;
 
-    // Seznam zpráv pro Konzoli
+    // Seznam zprÃ¡v pro Konzoli
     private List<String> zpravy = new ArrayList<>();
 
     public HerniPanel(Typ typPanelu) {
@@ -66,7 +70,7 @@ public class HerniPanel extends JPanel {
         if (typPanelu == Typ.PENIZE) {
             g2.setFont(new Font("Segoe UI", Font.BOLD, 18));
             fm = g2.getFontMetrics();
-            String text = penize + " Kč";
+            String text = penize + " KÄ";
             int textX = (getWidth() - fm.stringWidth(text)) / 2;
             int textY = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
             g2.setColor(Color.WHITE);

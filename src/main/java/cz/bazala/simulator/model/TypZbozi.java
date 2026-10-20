@@ -1,3 +1,5 @@
+package cz.bazala.simulator.model;
+
 /**
  * Typ (kategorie) zboží. Číselný kód odpovídá hodnotě uložené v zbozi.txt
  * a zároveň ID kategorie používanému ve filtru pokladní obrazovky.

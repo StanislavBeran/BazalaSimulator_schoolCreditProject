@@ -1,3 +1,5 @@
+package cz.bazala.simulator.io;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 

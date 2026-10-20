@@ -1,13 +1,16 @@
+package cz.bazala.simulator.model;
+
 public class Zbozi {
-    String nazev;
-    int id;
-    int typ ;
-    int cena;
-    int minVaha;
-    int maxVaha;
-    int maxPocet;
-    int lvlOdemknuti;
-    String zkracenyNazev;
+    public String nazev;
+    public int id;
+    public int typ;
+    public int cena;
+    public int minVaha;
+    public int maxVaha;
+    public int maxPocet;
+    public int lvlOdemknuti;
+    public String zkracenyNazev;
+
     public Zbozi(String nazev, int id, int typ, int cena, int minVaha, int maxVaha, int maxPocet, int lvlOdemknuti, String zkracenyNazev) {
         // typ: viz enum TypZbozi (0 = kusové, 1 = pečivo, 2 = zelenina, 3 = ovoce, 4 = ostatní)
         this.nazev = nazev;

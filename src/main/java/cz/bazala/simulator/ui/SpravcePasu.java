@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,7 +29,7 @@ public class SpravcePasu extends JPanel {
     private int aktualniSpawnovanyZakaznik = 1;
     private int obsluhovanyZakaznik = 1;
 
-    // Proměnné pro dělítko
+    // PromÄ›nnÃ© pro dÄ›lÃ­tko
     private int velikostNakupu;
     private boolean cekaNaDelitko = false;
     private boolean delitkoJeNaPase = false;
@@ -46,7 +50,7 @@ public class SpravcePasu extends JPanel {
     }
     public void odstartujPas() {
         this.velikostNakupu = random.nextInt(5) + 1;
-        simulator.vypisDoKonzole("🛒 Nový zákazník! Bude kupovat " + this.velikostNakupu + " položek.");
+        simulator.vypisDoKonzole("ðŸ›’ NovÃ½ zÃ¡kaznÃ­k! Bude kupovat " + this.velikostNakupu + " poloÅ¾ek.");
         if (!pohybTimer.isRunning()) {
             pohybTimer.start();
         }
@@ -95,17 +99,17 @@ public class SpravcePasu extends JPanel {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
                     if (novaPolozka.idZakaznika != obsluhovanyZakaznik) {
-                        if (simulator != null) simulator.vypisDoKonzole("Chyba: Nesahej na nákup dalšího zákazníka!");
+                        if (simulator != null) simulator.vypisDoKonzole("Chyba: Nesahej na nÃ¡kup dalÅ¡Ã­ho zÃ¡kaznÃ­ka!");
                         return;
                     }
                     if (simulator != null && simulator.cekaNaPlatbu()) {
-                        simulator.vypisDoKonzole("Chyba: Nejdřív musíš dokončit platbu!");
+                        simulator.vypisDoKonzole("Chyba: NejdÅ™Ã­v musÃ­Å¡ dokonÄit platbu!");
                         return;
                     }
 
                     if (novaPolozka.stav == PolozkaNaPase.Stav.NA_PASE) {
                         if (novaPolozka.zboziData.jeKusove()) {
-                            // Logika pro kusové zboží ("Má kód")
+                            // Logika pro kusovÃ© zboÅ¾Ã­ ("MÃ¡ kÃ³d")
                             if (simulator != null) {
                                 simulator.pridejZboziNaUctenku(novaPolozka.zboziData, novaPolozka.pocetKusu);
                             }
@@ -122,7 +126,7 @@ public class SpravcePasu extends JPanel {
                             if (scannerVolny) {
                                 novaPolozka.nastavCil(SCANNER_X, SCANNER_Y, PolozkaNaPase.Stav.JEDE_NA_SCANNER);
                             } else {
-                                if (simulator != null) simulator.vypisDoKonzole("Chyba: Scanner je momentálně obsazený!");
+                                if (simulator != null) simulator.vypisDoKonzole("Chyba: Scanner je momentÃ¡lnÄ› obsazenÃ½!");
                             }
                         }
                     }
@@ -143,7 +147,7 @@ public class SpravcePasu extends JPanel {
     private void vygenerujDelitko() {
         Zbozi delitkoData = new Zbozi("delitko_nakupu", -1, -1, 0, 0, 0, 1, 0, "delitko_nakupu");
 
-        // ROZMĚRY DĚLÍTKA
+        // ROZMÄšRY DÄšLÃTKA
         int vyskaDelitka = VELIKOST_POLOZKY * 2;
         int sirkaDelitka = VELIKOST_POLOZKY / 2;
 
@@ -168,7 +172,7 @@ public class SpravcePasu extends JPanel {
                         }
                     } else {
                         if (simulator != null) {
-                            simulator.vypisDoKonzole("Chyba: Dělítko ještě nedojelo ke scanneru!");
+                            simulator.vypisDoKonzole("Chyba: DÄ›lÃ­tko jeÅ¡tÄ› nedojelo ke scanneru!");
                         }
                     }
                 }
@@ -185,7 +189,7 @@ public class SpravcePasu extends JPanel {
 
         velikostNakupu = random.nextInt(5) + 1;
         if (simulator != null) {
-            simulator.vypisDoKonzole("🛒 Další zákazník skládá věci na pás (" + velikostNakupu + " položek).");
+            simulator.vypisDoKonzole("ðŸ›’ DalÅ¡Ã­ zÃ¡kaznÃ­k sklÃ¡dÃ¡ vÄ›ci na pÃ¡s (" + velikostNakupu + " poloÅ¾ek).");
         }
     }
 
@@ -265,7 +269,7 @@ public class SpravcePasu extends JPanel {
         return false;
     }
     public void dokonciNakupAZacniNovy() {
-        if (simulator != null) simulator.vypisDoKonzole("✅ Nákup zaplacen.");
+        if (simulator != null) simulator.vypisDoKonzole("âœ… NÃ¡kup zaplacen.");
         obsluhovanyZakaznik++;
         List<PolozkaNaPase> keSmazani = new ArrayList<>();
         for (PolozkaNaPase p : aktivniPolozky) {

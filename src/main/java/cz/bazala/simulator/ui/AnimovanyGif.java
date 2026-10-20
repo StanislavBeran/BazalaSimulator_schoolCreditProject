@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -40,7 +44,7 @@ public class AnimovanyGif extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Pokud běží, vykresluje normálně GIF. Pokud stojí, vykreslíme statickou fotku.
+        // Pokud bÄ›Å¾Ã­, vykresluje normÃ¡lnÄ› GIF. Pokud stojÃ­, vykreslÃ­me statickou fotku.
         if (bezi && gifImage != null) {
             g.drawImage(gifImage, 0, 0, getWidth(), getHeight(), this);
         } else if (!bezi && zastavenySnimek != null) {

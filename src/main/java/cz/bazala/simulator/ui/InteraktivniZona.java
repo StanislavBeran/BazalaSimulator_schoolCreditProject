@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -41,12 +45,12 @@ public class InteraktivniZona extends JPanel {
             }
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (nazev.equals("vypínač")) {
+                if (nazev.equals("vypÃ­naÄ")) {
                     if (simulator != null) simulator.prepniVypinac();
                 } else {
                     if (simulator != null) simulator.zpracujKliknutiNaPolozku(nazev);
 
-                    if (nazev.equals("Platební terminál")) {
+                    if (nazev.equals("PlatebnÃ­ terminÃ¡l")) {
                         SpravceZvuku.prehraj("pipnuti");
                     } else {
                         if (jeKulaty) {

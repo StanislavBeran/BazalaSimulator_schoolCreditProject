@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -22,14 +26,14 @@ public class NastaveniMenu extends JPanel {
         mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
         mainContainer.setOpaque(false);
 
-        JLabel nadpis = new JLabel("NASTAVENÍ");
+        JLabel nadpis = new JLabel("NASTAVENÃ");
         nadpis.setFont(new Font("Segoe UI", Font.BOLD, 36));
         nadpis.setForeground(Color.WHITE);
         nadpis.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainContainer.add(nadpis);
         mainContainer.add(Box.createVerticalStrut(40));
 
-        JLabel volLabel = new JLabel("Hlasitost hudby a zvuků:");
+        JLabel volLabel = new JLabel("Hlasitost hudby a zvukÅ¯:");
         volLabel.setForeground(Color.WHITE);
         volLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         volLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -98,8 +102,8 @@ public class NastaveniMenu extends JPanel {
         mainContainer.add(hudbaComboBox);
         mainContainer.add(Box.createVerticalStrut(30));
 
-        // --- VOLBA ROZLIŠENÍ / FULLSCREEN ---
-        JLabel rozliseniLabel = new JLabel("Rozlišení:");
+        // --- VOLBA ROZLIÅ ENÃ / FULLSCREEN ---
+        JLabel rozliseniLabel = new JLabel("RozliÅ¡enÃ­:");
         rozliseniLabel.setForeground(Color.WHITE);
         rozliseniLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         rozliseniLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -125,7 +129,7 @@ public class NastaveniMenu extends JPanel {
         mainContainer.add(rozliseniComboBox);
         mainContainer.add(Box.createVerticalStrut(50));
 
-        JButton btnZpet = Menu.vytvorTlacitko("Zpět");
+        JButton btnZpet = Menu.vytvorTlacitko("ZpÄ›t");
         btnZpet.addActionListener(e -> {
             hlavniOkno.zobrazObrazovku(hlavniOkno.getPredchoziObrazovka());
         });
@@ -162,7 +166,7 @@ public class NastaveniMenu extends JPanel {
             }
         }
 
-        // Synchronizuj combobox rozlišení s aktuálním stavem okna (např. po F11).
+        // Synchronizuj combobox rozliÅ¡enÃ­ s aktuÃ¡lnÃ­m stavem okna (napÅ™. po F11).
         if (rozliseniComboBox != null) {
             rozliseniComboBox.setSelectedItem(hlavniOkno.getAktualniZobrazeni().popis);
         }

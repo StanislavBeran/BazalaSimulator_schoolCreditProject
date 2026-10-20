@@ -1,3 +1,7 @@
+package cz.bazala.simulator.ui;
+
+import cz.bazala.simulator.model.*;
+import cz.bazala.simulator.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -27,16 +31,16 @@ public class HerniMenu extends JPanel {
         oknoPanel.add(nadpis);
         oknoPanel.add(Box.createVerticalStrut(40));
 
-        JButton btnPokracovat = Menu.vytvorTlacitko("Pokračovat");
+        JButton btnPokracovat = Menu.vytvorTlacitko("PokraÄovat");
         btnPokracovat.addActionListener(e -> setVisible(false));
 
-        JButton btnNastaveni = Menu.vytvorTlacitko("Nastavení");
+        JButton btnNastaveni = Menu.vytvorTlacitko("NastavenÃ­");
         btnNastaveni.addActionListener(e -> {
             hlavniOkno.setPredchoziObrazovka("BAZALA_SIMULATOR");
             hlavniOkno.zobrazObrazovku("NASTAVENI");
         });
 
-        JButton btnUlozitOdejit = Menu.vytvorTlacitko("Uložit a odejít");
+        JButton btnUlozitOdejit = Menu.vytvorTlacitko("UloÅ¾it a odejÃ­t");
         btnUlozitOdejit.addActionListener(e -> {
             simulator.ulozHru();
             simulator.resetujHerniPole();
