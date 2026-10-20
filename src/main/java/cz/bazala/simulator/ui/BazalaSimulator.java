@@ -545,6 +545,29 @@ public class BazalaSimulator extends JPanel {
         }
 
     }
+
+    /**
+     * Panic reset: zahodí rozdělaný nákup a zaseknutý stav (pás, scanner,
+     * platba) a spustí nového zákazníka. Herní postup (peníze, XP, odemčení)
+     * zůstává zachován - čistí se jen aktuální rozehraná situace.
+     */
+    public void resetujZakaznika() {
+        cekaNaPlatbu = false;
+        platbaKartou = false;
+        if (spravcePasu != null) {
+            spravcePasu.vycistiVsechno();
+        }
+        if (panelObrazovky != null) {
+            panelObrazovky.vycistiUctenku();
+            panelObrazovky.nastavVahu(0);
+            panelObrazovky.nastavStavPlatby(false, 0, 0);
+        }
+        if (panelVracenychPenez != null) {
+            panelVracenychPenez.vycistiHromadku();
+        }
+        vypisDoKonzole("Zákazník byl resetován. Přichází nový.");
+        spustSimulaci();
+    }
     public boolean kupHudbu(String souborHudby, int cena) {
         StavHry.VysledekKoupeHudby vysledek = stav.zkusKoupitHudbu(souborHudby, cena);
         switch (vysledek) {

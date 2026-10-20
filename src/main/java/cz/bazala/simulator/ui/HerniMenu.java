@@ -41,6 +41,20 @@ public class HerniMenu extends JPanel {
             hlavniOkno.zobrazObrazovku("NASTAVENI");
         });
 
+        JButton btnResetZakaznika = Menu.vytvorTlacitko("Reset zákazníka");
+        btnResetZakaznika.addActionListener(e -> {
+            int volba = JOptionPane.showConfirmDialog(
+                    this,
+                    "Resetovat aktuálního zákazníka? Rozdělaný nákup se zahodí.\nPeníze a XP zůstanou zachovány.",
+                    "Reset zákazníka",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if (volba == JOptionPane.YES_OPTION) {
+                simulator.resetujZakaznika();
+                setVisible(false);
+            }
+        });
+
         JButton btnUlozitOdejit = Menu.vytvorTlacitko("Uložit a odejít");
         btnUlozitOdejit.addActionListener(e -> {
             simulator.ulozHru();
@@ -54,6 +68,8 @@ public class HerniMenu extends JPanel {
         oknoPanel.add(btnPokracovat);
         oknoPanel.add(Box.createVerticalStrut(20));
         oknoPanel.add(btnNastaveni);
+        oknoPanel.add(Box.createVerticalStrut(20));
+        oknoPanel.add(btnResetZakaznika);
         oknoPanel.add(Box.createVerticalStrut(20));
         oknoPanel.add(btnUlozitOdejit);
 
