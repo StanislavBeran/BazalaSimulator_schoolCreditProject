@@ -510,6 +510,9 @@ public class PokladnaObrazovka extends JPanel {
                 }
 
             } catch (NumberFormatException ex) {
+                if (simulator != null) {
+                    simulator.vypisDoKonzole("Chyba: Neplatný vstup. Zadej ID zboží (např. 16) nebo ID*množství.");
+                }
             }
         }
         numpadDisplay.setText("");

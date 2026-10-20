@@ -252,7 +252,12 @@ public class Menu extends JFrame {
     }
 
     public static void main(String[] args) {
-        try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception e) {}
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            // Nevadí - použije se výchozí Look & Feel.
+            System.err.println("Nepodařilo se nastavit systémový Look & Feel: " + e.getMessage());
+        }
 
         SwingUtilities.invokeLater(() -> {
             new Menu();

@@ -89,6 +89,8 @@ public class SpravceZvuku {
                 float db = (globalniHlasitost <= 0.01f) ? -80.0f : (float)(Math.log10(globalniHlasitost) * 20.0f);
                 gainControl.setValue(db);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.err.println("Nepodařilo se nastavit hlasitost: " + e.getMessage());
+        }
     }
 }
