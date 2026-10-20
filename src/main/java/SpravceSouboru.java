@@ -76,31 +76,42 @@ public class SpravceSouboru {
                         hodnota = hodnota.substring(1, hodnota.length() - 1);
                     }
 
-                    if (radek.startsWith("Jmeno")) {
-                        jmenoObchodu = hodnota;
-                    } else if (radek.startsWith("Penize")) {
-                        penize = Integer.parseInt(hodnota);
-                    } else if (radek.startsWith("XP")) {
-                        xp = Integer.parseInt(hodnota);
-                    } else if (radek.startsWith("Vylepseni")) {
-                        vylepseni = hodnota;
-                    } else if (radek.startsWith("OdemceneZbozi")) {
-                        String[] ids = hodnota.split(",");
-                        for (String id : ids) {
-                            if (!id.trim().isEmpty()) odemceneZbozi.add(Integer.parseInt(id.trim()));
+                    // Jeden vadný řádek nesmí zahodit celou uloženou hru - proto se
+                    // číselné položky parsují tolerantně a vadný řádek se jen přeskočí.
+                    try {
+                        if (radek.startsWith("Jmeno")) {
+                            jmenoObchodu = hodnota;
+                        } else if (radek.startsWith("Penize")) {
+                            penize = Integer.parseInt(hodnota);
+                        } else if (radek.startsWith("XP")) {
+                            xp = Integer.parseInt(hodnota);
+                        } else if (radek.startsWith("Vylepseni")) {
+                            vylepseni = hodnota;
+                        } else if (radek.startsWith("OdemceneZbozi")) {
+                            String[] ids = hodnota.split(",");
+                            for (String id : ids) {
+                                if (id.trim().isEmpty()) continue;
+                                try {
+                                    odemceneZbozi.add(Integer.parseInt(id.trim()));
+                                } catch (NumberFormatException e) {
+                                    System.err.println("Přeskakuji neplatné ID zboží v uložené hře (" + cesta + "): " + id.trim());
+                                }
+                            }
+                        } else if (radek.startsWith("VybranaHudba")) {
+                            vybranaHudba = hodnota;
+                        } else if (radek.startsWith("OdemcenaHudba")) {
+                            String[] hudby = hodnota.split(",");
+                            for (String h : hudby) {
+                                if (!h.trim().isEmpty()) odemcenaHudba.add(h.trim());
+                            }
                         }
-                    } else if (radek.startsWith("VybranaHudba")) {
-                        vybranaHudba = hodnota;
-                    } else if (radek.startsWith("OdemcenaHudba")) {
-                        String[] hudby = hodnota.split(",");
-                        for (String h : hudby) {
-                            if (!h.trim().isEmpty()) odemcenaHudba.add(h.trim());
-                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("Přeskakuji poškozený řádek v uložené hře (" + cesta + "): " + radek);
                     }
                 }
             }
             return new UlozenaHra(jmenoObchodu, penize, xp, vylepseni, odemceneZbozi, vybranaHudba, odemcenaHudba);
-        } catch (IOException | NumberFormatException e) {
+        } catch (IOException e) {
             System.err.println("Chyba při čtení uložené hry (" + cesta + "): " + e.getMessage());
             return new UlozenaHra(STAV_CHYBA, 0, 0, "00000", null, "obchod_theme", null);
         }
