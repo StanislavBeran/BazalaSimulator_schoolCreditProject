@@ -58,11 +58,12 @@ public class NovaHraMenu extends JPanel {
         // --- TLAČÍTKO VYTVOŘIT ---
         JButton btnVytvorit = Menu.vytvorTlacitko("Vytvořit hru");
         btnVytvorit.addActionListener(e -> {
-            String jmenoHry = txtNazev.getText();
+            String surovyNazev = txtNazev.getText().trim();
             int indexSlotu = cbSlot.getSelectedIndex() + 1;
             String penizeText = ((String) cbPenize.getSelectedItem()).replace(" Kč", "");
 
-            if (!jmenoHry.isEmpty()) {
+            if (!surovyNazev.isEmpty()) {
+                String jmenoHry = SpravceSouboru.ocistiJmeno(surovyNazev);
                 List<Integer> startovniZbozi = new ArrayList<>();
                 startovniZbozi.add(16);
                 SpravceSouboru.ulozHruDoSouboru(indexSlotu, jmenoHry, penizeText, 0, "00000", startovniZbozi, "obchod_theme", new ArrayList<>(List.of("obchod_theme")));

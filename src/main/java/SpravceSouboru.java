@@ -17,6 +17,23 @@ public class SpravceSouboru {
     // zpětné kompatibilitě se staršími uloženými hrami.
     private static final String STARA_SLOZKA = "src/main/resources/ulozeneHry/";
 
+    /** Maximální délka názvu obchodu. */
+    public static final int MAX_DELKA_JMENA = 30;
+
+    /**
+     * Očistí název obchodu, aby neporušil formát uloženého souboru.
+     * Odstraní znaky, které kolidují se syntaxí (uvozovky, středníky,
+     * dvojtečky, konce řádků), ořízne mezery a omezí délku.
+     */
+    public static String ocistiJmeno(String jmeno) {
+        if (jmeno == null) return "Obchod";
+        String vysledek = jmeno.replaceAll("[\";:\\r\\n]", "").trim();
+        if (vysledek.length() > MAX_DELKA_JMENA) {
+            vysledek = vysledek.substring(0, MAX_DELKA_JMENA).trim();
+        }
+        return vysledek.isEmpty() ? "Obchod" : vysledek;
+    }
+
     private static File souborProSlot(int slot) {
         return new File(SLOZKA_ULOZENYCH_HER, "ulozenaHra" + slot + ".txt");
     }
@@ -101,7 +118,7 @@ public class SpravceSouboru {
         File soubor = souborProSlot(slot);
         try (PrintWriter writer = new PrintWriter(
                 new OutputStreamWriter(new FileOutputStream(soubor), StandardCharsets.UTF_8))) {
-            writer.println("Jmeno: \"" + jmeno + "\";");
+            writer.println("Jmeno: \"" + ocistiJmeno(jmeno) + "\";");
             writer.println("Penize: " + penize + ";");
             writer.println("XP: " + xp + ";");
             writer.println("Vylepseni: " + vylepseni + ";");
