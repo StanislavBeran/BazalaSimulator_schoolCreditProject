@@ -60,7 +60,7 @@ public class NastaveniMenu extends JPanel {
         hudbaComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         hudbaComboBox.setBackground(new Color(200, 200, 200));
         hudbaComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-        hudbaComboBox.addItem("Bez Hudby");
+        hudbaComboBox.addItem("Bez hudby");
         hudbaComboBox.addActionListener(e -> {
             if (hudbaComboBox.getSelectedItem() != null) {
                 if (nacitaniDat) return;

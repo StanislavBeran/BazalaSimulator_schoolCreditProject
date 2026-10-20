@@ -105,7 +105,7 @@ public class SpravcePasu extends JPanel {
 
                     if (novaPolozka.stav == PolozkaNaPase.Stav.NA_PASE) {
                         if (novaPolozka.zboziData.typ == 0) {
-                            // Logika pre položky typu "Ostatné"
+                            // Logika pro položky typu "Ostatní"
                             if (simulator != null) {
                                 simulator.pridejZboziNaUctenku(novaPolozka.zboziData, novaPolozka.pocetKusu);
                             }

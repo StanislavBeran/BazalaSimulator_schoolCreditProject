@@ -2,10 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class NacistHruMenu extends JPanel {
     private Menu hlavniOkno;
@@ -60,13 +56,18 @@ public class NacistHruMenu extends JPanel {
         tlacitkaContainer.removeAll();
 
         for (int i = 1; i <= 3; i++) {
-            String cestaKSouboru = "src/main/resources/ulozeneHry/ulozenaHra" + i + ".txt";
-            UlozenaHra ulozenaHra = SpravceSouboru.nactiUlozeneHryZeSouboru(cestaKSouboru);
-            String textTlacitka = ulozenaHra.nazevObchodu + " lvl: " + ((ulozenaHra.xp/100)+1) + " " + ulozenaHra.pocetPenez + " Kč";
+            UlozenaHra ulozenaHra = SpravceSouboru.nactiUlozenouHru(i);
+
+            boolean jePrazdny = SpravceSouboru.STAV_PRAZDNY.equals(ulozenaHra.nazevObchodu)
+                    || SpravceSouboru.STAV_CHYBA.equals(ulozenaHra.nazevObchodu);
+
+            String textTlacitka = jePrazdny
+                    ? ulozenaHra.nazevObchodu
+                    : ulozenaHra.nazevObchodu + " lvl: " + ((ulozenaHra.xp / 100) + 1) + " " + ulozenaHra.pocetPenez + " Kč";
 
             JButton btnUlozenaHra = Menu.vytvorTlacitko(textTlacitka);
 
-            if (textTlacitka.equals("Prázdná pozice") || textTlacitka.equals("Chyba při čtení")) {
+            if (jePrazdny) {
                 btnUlozenaHra.setEnabled(false);
             } else {
                 final int pozice = i;

@@ -19,7 +19,7 @@ public class BazalaSimulator extends JPanel {
     private HerniPanel panelPenez;
     private HerniPanel panelXp;
     private InformacniOkno informacniOkno;
-    private Boolean vypinacObrazovky = (Boolean) true;
+    private boolean vypinacObrazovky = true;
     private HerniPanel panelKonzole;
     private VracenePenize panelVracenychPenez;
     private HerniMenu herniMenu;
@@ -54,6 +54,15 @@ public class BazalaSimulator extends JPanel {
     private int castkaVratit = 0;
     private int castkaVraceno = 0;
     private int aktualniPenize = 0;
+
+    // Konstanty pro výpočet XP za nákup
+    private static final int XP_DELITEL_CENY = 5;      // část ceny zboží převedená na XP
+    private static final int XP_ZA_KUSOVE_ZBOZI = 1;   // bonus za zboží prodávané na kusy (typ 0)
+    private static final int XP_ZA_VAZENE_ZBOZI = 5;   // bonus za zboží z kategorií 1-4
+    private static final int XP_BONUS_ZA_VAHU = 15;    // bonus za zboží, které se váží
+    private static final int XP_ZA_UROVEN_ODEMKNUTI = 10;
+    private static final int XP_FINALNI_DELITEL = 4;   // zmírnění celkového zisku XP
+    private static final int XP_MINIMUM = 5;           // minimální XP za jakýkoli nákup
 
     private int aktualniSlot = 1;
     private String jmenoObchodu = "Můj Obchod";
@@ -280,7 +289,7 @@ public class BazalaSimulator extends JPanel {
     }
 
     public void prepniVypinac() {
-        vypinacObrazovky = (Boolean) !vypinacObrazovky;
+        vypinacObrazovky = !vypinacObrazovky;
         if (panelObrazovky != null) {
             panelObrazovky.setVisible(vypinacObrazovky);
         }
@@ -420,7 +429,9 @@ public class BazalaSimulator extends JPanel {
                         panelVracenychPenez.vycistiHromadku();
                     }
                 }
-            } catch (Exception e) {}
+            } catch (NumberFormatException e) {
+                vypisDoKonzole("Chyba: Neznámá hodnota platidla (" + nazev + ").");
+            }
         }
     }
 
@@ -446,16 +457,16 @@ public class BazalaSimulator extends JPanel {
         int ziskaneXp = 0;
 
         for (Zbozi z : uctenka) {
-            int xpZaPolozku = z.cena / 5;
+            int xpZaPolozku = z.cena / XP_DELITEL_CENY;
             if (z.typ == 0) {
-                xpZaPolozku += 1;
+                xpZaPolozku += XP_ZA_KUSOVE_ZBOZI;
             } else if (z.typ >= 1 && z.typ <= 4) {
-                xpZaPolozku += 5;
+                xpZaPolozku += XP_ZA_VAZENE_ZBOZI;
             }
             if (z.minVaha > 0 && z.maxVaha > 0) {
-                xpZaPolozku += 15;
+                xpZaPolozku += XP_BONUS_ZA_VAHU;
             }
-            xpZaPolozku += z.lvlOdemknuti * 10;
+            xpZaPolozku += z.lvlOdemknuti * XP_ZA_UROVEN_ODEMKNUTI;
             if (z.minVaha == 0 && z.maxVaha == 0) {
                 ziskaneXp += xpZaPolozku * Math.max(1, z.maxPocet);
             } else {
@@ -463,7 +474,7 @@ public class BazalaSimulator extends JPanel {
             }
         }
 
-        return Math.max(5, ziskaneXp/4);
+        return Math.max(XP_MINIMUM, ziskaneXp / XP_FINALNI_DELITEL);
     }
     public String getVybranaHudba() {
         return vybranaHudba;
