@@ -355,7 +355,7 @@ public class BazalaSimulator extends JPanel {
         if(text.contains("Chyba")){
             SpravceZvuku.prehraj("chyba");
         }
-        System.out.println(text);
+        //System.out.println(text);
         if (panelKonzole != null) {
             panelKonzole.pridejZpravu(text);
         }

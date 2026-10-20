@@ -7,6 +7,7 @@ public class NastaveniMenu extends JPanel {
     private Menu hlavniOkno;
     private JSlider hlasitostSlider;
     private JComboBox<String> hudbaComboBox;
+    private JComboBox<String> rozliseniComboBox;
     private BazalaSimulator simulator;
     private boolean nacitaniDat = false;
 
@@ -95,6 +96,33 @@ public class NastaveniMenu extends JPanel {
             }
         });
         mainContainer.add(hudbaComboBox);
+        mainContainer.add(Box.createVerticalStrut(30));
+
+        // --- VOLBA ROZLIŠENÍ / FULLSCREEN ---
+        JLabel rozliseniLabel = new JLabel("Rozlišení:");
+        rozliseniLabel.setForeground(Color.WHITE);
+        rozliseniLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        rozliseniLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainContainer.add(rozliseniLabel);
+
+        rozliseniComboBox = new JComboBox<>();
+        rozliseniComboBox.setMaximumSize(new Dimension(300, 35));
+        rozliseniComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        rozliseniComboBox.setBackground(new Color(200, 200, 200));
+        rozliseniComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        for (SpravceNastaveni.Zobrazeni z : SpravceNastaveni.Zobrazeni.values()) {
+            rozliseniComboBox.addItem(z.popis);
+        }
+        rozliseniComboBox.addActionListener(e -> {
+            if (nacitaniDat) return;
+            int index = rozliseniComboBox.getSelectedIndex();
+            if (index < 0) return;
+            SpravceNastaveni.Zobrazeni vybrane = SpravceNastaveni.Zobrazeni.values()[index];
+            if (vybrane == hlavniOkno.getAktualniZobrazeni()) return;
+            SpravceNastaveni.setZobrazeni(vybrane);
+            hlavniOkno.aplikujZobrazeni(vybrane);
+        });
+        mainContainer.add(rozliseniComboBox);
         mainContainer.add(Box.createVerticalStrut(50));
 
         JButton btnZpet = Menu.vytvorTlacitko("Zpět");
@@ -132,6 +160,11 @@ public class NastaveniMenu extends JPanel {
                     hudbaComboBox.setSelectedItem(simulator.getVybranaHudba().replace('_', ' '));
                 }
             }
+        }
+
+        // Synchronizuj combobox rozlišení s aktuálním stavem okna (např. po F11).
+        if (rozliseniComboBox != null) {
+            rozliseniComboBox.setSelectedItem(hlavniOkno.getAktualniZobrazeni().popis);
         }
         nacitaniDat = false;
     }

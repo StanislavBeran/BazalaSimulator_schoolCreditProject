@@ -8,6 +8,11 @@ public class Menu extends JFrame {
 
     private BazalaSimulator bazalaSimulator;
     private String predchoziObrazovka = "HLAVNI_MENU";
+
+    // Poslední okenní (ne-fullscreen) rozlišení - pro návrat z fullscreenu přes F11.
+    private SpravceNastaveni.Zobrazeni posledniOkenni = SpravceNastaveni.Zobrazeni.R_1280_720;
+    private boolean jeFullscreen = false;
+
     public void setPredchoziObrazovka(String obrazovka) {
         this.predchoziObrazovka = obrazovka;
     }
@@ -15,13 +20,75 @@ public class Menu extends JFrame {
         return predchoziObrazovka;
     }
 
+    public boolean jeFullscreen() {
+        return jeFullscreen;
+    }
+
+    public SpravceNastaveni.Zobrazeni getAktualniZobrazeni() {
+        return jeFullscreen ? SpravceNastaveni.Zobrazeni.FULLSCREEN : posledniOkenni;
+    }
+
+    /**
+     * Aplikuje režim zobrazení na okno. Pro fullscreen použije undecorated okno
+     * přes celou obrazovku, jinak vycentrované okno daného rozlišení.
+     * Změna dekorace vyžaduje znovuvytvoření nativního okna (dispose + show).
+     */
+    public void aplikujZobrazeni(SpravceNastaveni.Zobrazeni zobrazeni) {
+        GraphicsDevice zarizeni = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+
+        // Zruš případný dřívější fullscreen, ať můžeme změnit dekoraci.
+        if (zarizeni.getFullScreenWindow() == this) {
+            zarizeni.setFullScreenWindow(null);
+        }
+        dispose();
+
+        if (zobrazeni.fullscreen) {
+            jeFullscreen = true;
+            setResizable(false);
+            setUndecorated(true);
+            setVisible(true);
+            if (zarizeni.isFullScreenSupported()) {
+                zarizeni.setFullScreenWindow(this);
+            } else {
+                // Fallback: maximalizované undecorated okno.
+                setExtendedState(JFrame.MAXIMIZED_BOTH);
+            }
+        } else {
+            jeFullscreen = false;
+            posledniOkenni = zobrazeni;
+            setUndecorated(false);
+            setExtendedState(JFrame.NORMAL);
+            setResizable(true);
+            setSize(zobrazeni.sirka, zobrazeni.vyska);
+            setLocationRelativeTo(null);
+            setVisible(true);
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    /** Zaregistruje klávesu F11 pro přepínání fullscreenu (globálně v okně). */
+    private void registrujKlavesovePrepinani() {
+        JRootPane root = getRootPane();
+        root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke("F11"), "prepniFullscreen");
+        root.getActionMap().put("prepniFullscreen", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                SpravceNastaveni.Zobrazeni cil = jeFullscreen
+                        ? posledniOkenni
+                        : SpravceNastaveni.Zobrazeni.FULLSCREEN;
+                SpravceNastaveni.setZobrazeni(cil);
+                aplikujZobrazeni(cil);
+            }
+        });
+    }
+
 
     public Menu() {
         setTitle("Bazala Simulator");
-        setSize(1280, 720);
-        setResizable(false);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setLocationRelativeTo(null);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -31,6 +98,9 @@ public class Menu extends JFrame {
                 System.exit(0);
             }
         });
+
+        // F11 přepíná mezi fullscreenem a posledním okenním rozlišením.
+        registrujKlavesovePrepinani();
         SpravceZvuku.prehraj("obchodak_theme_sound","zvuk_v_pozadi", 0, true);
         try {
             URL iconUrl = getClass().getResource("/logoAplikace.png");
@@ -61,6 +131,9 @@ public class Menu extends JFrame {
         hlavniContainer.add(nastaveniMenu, "NASTAVENI");
 
         setContentPane(hlavniContainer);
+
+        // Aplikuj uložený režim zobrazení (rozlišení nebo fullscreen).
+        aplikujZobrazeni(SpravceNastaveni.getZobrazeni());
     }
 
     private BackgroundPanel vytvorHlavniMenu() {
@@ -182,7 +255,7 @@ public class Menu extends JFrame {
         try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception e) {}
 
         SwingUtilities.invokeLater(() -> {
-            new Menu().setVisible(true);
+            new Menu();
         });
     }
 }
