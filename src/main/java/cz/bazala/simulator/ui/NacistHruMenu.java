@@ -2,6 +2,7 @@ package cz.bazala.simulator.ui;
 
 import cz.bazala.simulator.model.*;
 import cz.bazala.simulator.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -23,7 +24,7 @@ public class NacistHruMenu extends JPanel {
         mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
         mainContainer.setOpaque(false);
 
-        JLabel label = new JLabel("UloÅ¾enÃ© hry:");
+        JLabel label = new JLabel("Uložené hry:");
         label.setFont(new Font("Segoe UI", Font.BOLD, 20));
         label.setForeground(Color.WHITE);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -37,7 +38,7 @@ public class NacistHruMenu extends JPanel {
 
         mainContainer.add(Box.createVerticalStrut(20));
 
-        JButton btnZpet = Menu.vytvorTlacitko("ZpÄ›t do menu");
+        JButton btnZpet = Menu.vytvorTlacitko("Zpět do menu");
         btnZpet.addActionListener(e -> hlavniOkno.zobrazObrazovku("HLAVNI_MENU"));
         mainContainer.add(btnZpet);
 
@@ -67,7 +68,7 @@ public class NacistHruMenu extends JPanel {
 
             String textTlacitka = jePrazdny
                     ? ulozenaHra.nazevObchodu
-                    : ulozenaHra.nazevObchodu + " lvl: " + ((ulozenaHra.xp / 100) + 1) + " " + ulozenaHra.pocetPenez + " KÄ";
+                    : ulozenaHra.nazevObchodu + " lvl: " + ((ulozenaHra.xp / 100) + 1) + " " + ulozenaHra.pocetPenez + " Kč";
 
             JButton btnUlozenaHra = Menu.vytvorTlacitko(textTlacitka);
 
@@ -76,7 +77,7 @@ public class NacistHruMenu extends JPanel {
             } else {
                 final int pozice = i;
                 btnUlozenaHra.addActionListener(e -> {
-                    System.out.println("NaÄÃ­tÃ¡m hru ze slotu " + pozice);
+                    System.out.println("Načítám hru ze slotu " + pozice);
                     BazalaSimulator simulator = hlavniOkno.getSimulator();
                     simulator.nactiPenize(ulozenaHra.pocetPenez);
                     simulator.nactiXp(ulozenaHra.xp);

@@ -2,6 +2,7 @@ package cz.bazala.simulator.ui;
 
 import cz.bazala.simulator.model.*;
 import cz.bazala.simulator.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -45,12 +46,12 @@ public class InteraktivniZona extends JPanel {
             }
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (nazev.equals("vypÃ­naÄ")) {
+                if (nazev.equals("vypínač")) {
                     if (simulator != null) simulator.prepniVypinac();
                 } else {
                     if (simulator != null) simulator.zpracujKliknutiNaPolozku(nazev);
 
-                    if (nazev.equals("PlatebnÃ­ terminÃ¡l")) {
+                    if (nazev.equals("Platební terminál")) {
                         SpravceZvuku.prehraj("pipnuti");
                     } else {
                         if (jeKulaty) {

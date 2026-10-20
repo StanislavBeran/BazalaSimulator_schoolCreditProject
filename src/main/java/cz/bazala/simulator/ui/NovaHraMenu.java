@@ -2,6 +2,7 @@ package cz.bazala.simulator.ui;
 
 import cz.bazala.simulator.model.*;
 import cz.bazala.simulator.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -26,7 +27,7 @@ public class NovaHraMenu extends JPanel {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
 
-        JLabel label = new JLabel("Zadejte nÃ¡zev tvÃ©ho obchodu:");
+        JLabel label = new JLabel("Zadejte název tvého obchodu:");
         stylizujLabel(label);
         container.add(label);
         container.add(Box.createVerticalStrut(5));
@@ -36,7 +37,7 @@ public class NovaHraMenu extends JPanel {
         container.add(txtNazev);
         container.add(Box.createVerticalStrut(15));
 
-        JLabel lblSlot = new JLabel("Vyber pozici pro uloÅ¾enÃ­:");
+        JLabel lblSlot = new JLabel("Vyber pozici pro uložení:");
         stylizujLabel(lblSlot);
         container.add(lblSlot);
         container.add(Box.createVerticalStrut(5));
@@ -47,24 +48,24 @@ public class NovaHraMenu extends JPanel {
         container.add(cbSlot);
         container.add(Box.createVerticalStrut(15));
 
-        JLabel lblPenize = new JLabel("ZaÄÃ¡teÄnÃ­ poÄet penÄ›z:");
+        JLabel lblPenize = new JLabel("Začáteční počet peněz:");
         stylizujLabel(lblPenize);
         container.add(lblPenize);
         container.add(Box.createVerticalStrut(5));
 
-        String[] moznostiPenez = {"1000 KÄ", "2000 KÄ", "5000 KÄ", "10000 KÄ"};
+        String[] moznostiPenez = {"1000 Kč", "2000 Kč", "5000 Kč", "10000 Kč"};
         JComboBox<String> cbPenize = new JComboBox<>(moznostiPenez);
         stylizujKomponentu(cbPenize);
         container.add(cbPenize);
         container.add(Box.createVerticalStrut(25));
 
 
-        // --- TLAÄŒÃTKO VYTVOÅ˜IT ---
-        JButton btnVytvorit = Menu.vytvorTlacitko("VytvoÅ™it hru");
+        // --- TLAČÍTKO VYTVOŘIT ---
+        JButton btnVytvorit = Menu.vytvorTlacitko("Vytvořit hru");
         btnVytvorit.addActionListener(e -> {
             String surovyNazev = txtNazev.getText().trim();
             int indexSlotu = cbSlot.getSelectedIndex() + 1;
-            String penizeText = ((String) cbPenize.getSelectedItem()).replace(" KÄ", "");
+            String penizeText = ((String) cbPenize.getSelectedItem()).replace(" Kč", "");
 
             if (!surovyNazev.isEmpty()) {
                 String jmenoHry = SpravceSouboru.ocistiJmeno(surovyNazev);
@@ -84,12 +85,12 @@ public class NovaHraMenu extends JPanel {
 
                 simulator.zobrazNavodANastartujHru();
             } else {
-                JOptionPane.showMessageDialog(this, "MusÃ­Å¡ zadat nÃ¡zev!");
+                JOptionPane.showMessageDialog(this, "Musíš zadat název!");
             }
         });
 
-        // --- TLAÄŒÃTKO ZPÄšT ---
-        JButton btnZpet = Menu.vytvorTlacitko("ZpÄ›t do menu");
+        // --- TLAČÍTKO ZPĚT ---
+        JButton btnZpet = Menu.vytvorTlacitko("Zpět do menu");
         btnZpet.addActionListener(e -> hlavniOkno.zobrazObrazovku("HLAVNI_MENU"));
 
         container.add(btnVytvorit);

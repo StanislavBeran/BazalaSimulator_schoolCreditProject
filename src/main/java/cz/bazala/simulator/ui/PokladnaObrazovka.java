@@ -2,6 +2,7 @@ package cz.bazala.simulator.ui;
 
 import cz.bazala.simulator.model.*;
 import cz.bazala.simulator.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -51,7 +52,7 @@ public class PokladnaObrazovka extends JPanel {
         gbc.insets = new Insets(1, 1, 1, 1);
 
         // ==========================================
-        // 1. LEVÃ ÄŒÃST (Produkty + VyhledÃ¡vaÄ)
+        // 1. LEVÁ ČÁST (Produkty + Vyhledávač)
         // ==========================================
         JPanel levyPanel = new JPanel(new BorderLayout());
         levyPanel.setBackground(Color.WHITE);
@@ -103,15 +104,15 @@ public class PokladnaObrazovka extends JPanel {
 
         JPanel kategorie = new JPanel(new GridLayout(1, 4, 1, 1));
         kategorie.setBackground(Color.BLACK);
-        kategorie.add(vytvorZalozku("PEÄŒIVO", 1));
+        kategorie.add(vytvorZalozku("PEČIVO", 1));
         kategorie.add(vytvorZalozku("ZELENINA", 2));
         kategorie.add(vytvorZalozku("OVOCE", 3));
-        kategorie.add(vytvorZalozku("OSTATNÃ", 4));
+        kategorie.add(vytvorZalozku("OSTATNÍ", 4));
         hlavickaLevy.add(kategorie, BorderLayout.NORTH);
 
         JPanel searchPanel = new JPanel(new BorderLayout());
         searchPanel.setBackground(Color.WHITE);
-        JLabel searchIcon = new JLabel(" ðŸ” ");
+        JLabel searchIcon = new JLabel(" 🔍 ");
         searchIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 18 : 12));
         searchPanel.add(searchIcon, BorderLayout.WEST);
         searchPanel.add(vyhledavac, BorderLayout.CENTER);
@@ -129,7 +130,7 @@ public class PokladnaObrazovka extends JPanel {
         gbc.gridx = 0; gbc.weightx = isFs ? 0.45 : 0.42;
         add(levyPanel, gbc);
         // ==========================================
-        // PRAVÃ ÄŒÃST PANELU
+        // PRAVÁ ČÁST PANELU
         // ==========================================
         JPanel rightPanel = new JPanel(new BorderLayout(0, 2));
         rightPanel.setBackground(new Color(100, 120, 200));
@@ -157,14 +158,14 @@ public class PokladnaObrazovka extends JPanel {
                 }
 
                 sb.append(z.maxPocet).append(jednotka).append(z.nazev).append("\n")
-                        .append(cenaZaVsechny).append(" KÄ\n");
+                        .append(cenaZaVsechny).append(" Kč\n");
                 celkem += cenaZaVsechny;
             }
-            sb.append("\n---------------------\nCENA: ").append(celkem).append(" KÄ");
+            sb.append("\n---------------------\nCENA: ").append(celkem).append(" Kč");
 
             if (zobrazovatPlatbu) {
-                sb.append("\nVRÃTIT:  ").append(castkaVratit).append(" KÄ");
-                sb.append("\nVRÃCENO: ").append(castkaVraceno).append(" KÄ");
+                sb.append("\nVRÁTIT:  ").append(castkaVratit).append(" Kč");
+                sb.append("\nVRÁCENO: ").append(castkaVraceno).append(" Kč");
             }
             uctenkaText.setText(sb.toString());
         };
@@ -173,7 +174,7 @@ public class PokladnaObrazovka extends JPanel {
         JPanel spodniCast = new JPanel(new BorderLayout(0, 2));
         spodniCast.setBackground(new Color(100, 120, 200));
 
-        vahaLabel = new JLabel("VÃ¡ha: -- kg", SwingConstants.CENTER);
+        vahaLabel = new JLabel("Váha: -- kg", SwingConstants.CENTER);
         vahaLabel.setFont(new Font("Monospaced", Font.BOLD, isFs ? 22 : 11));
         spodniCast.add(vahaLabel, BorderLayout.NORTH);
 
@@ -198,7 +199,7 @@ public class PokladnaObrazovka extends JPanel {
 
 
         // ==========================================
-        // 2. STÅ˜EDNÃ ÄŒÃST (KlÃ¡vesnice)
+        // 2. STŘEDNÍ ČÁST (Klávesnice)
         // ==========================================
         JPanel numpadWrapper = new JPanel(new BorderLayout(0, 2));
         numpadWrapper.setBackground(Color.BLACK);
@@ -206,7 +207,7 @@ public class PokladnaObrazovka extends JPanel {
         JPanel numpadPanel = new JPanel(new GridLayout(5, 3, 2, 2));
         numpadPanel.setBackground(Color.BLACK);
 
-        String[] klavesy = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#", ",", "<-", "â†µ"};
+        String[] klavesy = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#", ",", "<-", "↵"};
 
         for (String k : klavesy) {
             JButton btn = new JButton(k) {
@@ -215,7 +216,7 @@ public class PokladnaObrazovka extends JPanel {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                    if (k.equals("â†µ")) {
+                    if (k.equals("↵")) {
                         if (getModel().isPressed()) g2.setColor(new Color(0, 180, 0));
                         else if (getModel().isRollover()) g2.setColor(new Color(50, 255, 50));
                         else g2.setColor(new Color(0, 200, 0));
@@ -240,7 +241,7 @@ public class PokladnaObrazovka extends JPanel {
             btn.setBorder(BorderFactory.createEmptyBorder());
             btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-            if (k.equals("â†µ")) {
+            if (k.equals("↵")) {
                 btn.setFont(new Font("Segoe UI Symbol", Font.BOLD, isFs ? 40 : 22));
                 btn.setForeground(Color.WHITE);
             } else if (k.equals("<-")) {
@@ -256,7 +257,7 @@ public class PokladnaObrazovka extends JPanel {
                 String aktualniText = numpadDisplay.getText();
                 if (k.equals("<-")) {
                     if (!aktualniText.isEmpty()) numpadDisplay.setText(aktualniText.substring(0, aktualniText.length() - 1));
-                } else if (k.equals("â†µ")) {
+                } else if (k.equals("↵")) {
                     zpracujVstupZNumpadu();
                 } else {
                     numpadDisplay.setText(aktualniText + k);
@@ -296,7 +297,7 @@ public class PokladnaObrazovka extends JPanel {
     }
 
     // ==========================================
-    // POMOCNÃ‰ METODY PRO VZHLED
+    // POMOCNÉ METODY PRO VZHLED
     // ==========================================
     private JButton vytvorZalozku(String text, int idKategorie) {
         JButton btn = new JButton(text) {
@@ -379,11 +380,11 @@ public class PokladnaObrazovka extends JPanel {
                 Image img = icon.getImage().getScaledInstance(imgSize, imgSize, Image.SCALE_SMOOTH);
                 lblObrazek.setIcon(new ImageIcon(img));
             } else {
-                lblObrazek.setText("ðŸ–¼ï¸");
+                lblObrazek.setText("🖼️");
                 lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 50 : 24));
             }
         } catch (Exception e) {
-            lblObrazek.setText("ðŸ–¼ï¸");
+            lblObrazek.setText("🖼️");
             lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, isFs ? 50 : 24));
         }
         panel.add(lblObrazek, BorderLayout.CENTER);
@@ -392,7 +393,7 @@ public class PokladnaObrazovka extends JPanel {
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setOpaque(false);
 
-        JLabel lblIdCena = new JLabel(id + " | " + cena + " KÄ");
+        JLabel lblIdCena = new JLabel(id + " | " + cena + " Kč");
         lblIdCena.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblIdCena.setFont(new Font("Arial", Font.PLAIN, isFs ? 18 : 8));
         lblIdCena.setForeground(new Color(100, 100, 100));
@@ -478,7 +479,7 @@ public class PokladnaObrazovka extends JPanel {
                         boolean pouzivaVahu = (z.minVaha > 0 && z.maxVaha > 0);
                         if (pouzivaVahu && casti.length == 1) {
                             if (simulator != null) {
-                                simulator.vypisDoKonzole("Chyba: Toto zboÅ¾Ã­ se vÃ¡Å¾Ã­! Zadej ID*VÃHA (napÅ™. " + hledaneId + "*500).");
+                                simulator.vypisDoKonzole("Chyba: Toto zboží se váží! Zadej ID*VÁHA (např. " + hledaneId + "*500).");
                             }
                             break;
                         }
@@ -497,12 +498,12 @@ public class PokladnaObrazovka extends JPanel {
                                 pridejPolozkuNaUctenku(z, zadaneMnozstvi);
                             } else {
                                 if (simulator != null) {
-                                    simulator.vypisDoKonzole("Chyba: ZadanÃ¡ vÃ¡ha/mnoÅ¾stvÃ­ nesouhlasÃ­ se scannerem!");
+                                    simulator.vypisDoKonzole("Chyba: Zadaná váha/množství nesouhlasí se scannerem!");
                                 }
                             }
                         } else {
                             if (simulator != null) {
-                                simulator.vypisDoKonzole("Chyba: ZboÅ¾Ã­ mÅ¯Å¾e bÃ½t v max mnoÅ¾stvÃ­ " + z.maxPocet + " ks!");
+                                simulator.vypisDoKonzole("Chyba: Zboží může být v max množství " + z.maxPocet + " ks!");
                             }
                         }
                         break;
@@ -510,12 +511,12 @@ public class PokladnaObrazovka extends JPanel {
                 }
 
                 if (!zboziNalezeno && simulator != null) {
-                    simulator.vypisDoKonzole("Chyba: NeznÃ¡mÃ© ID zboÅ¾Ã­ (" + hledaneId + ")!");
+                    simulator.vypisDoKonzole("Chyba: Neznámé ID zboží (" + hledaneId + ")!");
                 }
 
             } catch (NumberFormatException ex) {
                 if (simulator != null) {
-                    simulator.vypisDoKonzole("Chyba: NeplatnÃ½ vstup. Zadej ID zboÅ¾Ã­ (napÅ™. 16) nebo ID*mnoÅ¾stvÃ­.");
+                    simulator.vypisDoKonzole("Chyba: Neplatný vstup. Zadej ID zboží (např. 16) nebo ID*množství.");
                 }
             }
         }
@@ -541,9 +542,9 @@ public class PokladnaObrazovka extends JPanel {
     public void nastavVahu(int vaha) {
         if (vahaLabel != null) {
             if (vaha > 0) {
-                vahaLabel.setText("VÃ¡ha: " + vaha + " g");
+                vahaLabel.setText("Váha: " + vaha + " g");
             } else {
-                vahaLabel.setText("VÃ¡ha: -- kg");
+                vahaLabel.setText("Váha: -- kg");
             }
         }
     }

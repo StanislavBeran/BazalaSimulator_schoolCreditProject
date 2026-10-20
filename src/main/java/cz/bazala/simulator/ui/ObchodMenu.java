@@ -2,6 +2,7 @@ package cz.bazala.simulator.ui;
 
 import cz.bazala.simulator.model.*;
 import cz.bazala.simulator.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -26,14 +27,14 @@ public class ObchodMenu extends JPanel {
         oknoPanel.setPreferredSize(new Dimension(850, 550));
         oknoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 
-        // --- HLAVIÄŒKA ---
+        // --- HLAVIČKA ---
         JPanel hlavicka = new JPanel(new BorderLayout());
         JPanel kategorie = new JPanel(new GridLayout(1, 3, 1, 1));
         kategorie.setBackground(Color.BLACK);
 
-        kategorie.add(vytvorZalozku("ZBOÅ½Ã", 1));
-        kategorie.add(vytvorZalozku("VYLEPÅ ENÃ", 2));
-        kategorie.add(vytvorZalozku("OSTATNÃ", 3));
+        kategorie.add(vytvorZalozku("ZBOŽÍ", 1));
+        kategorie.add(vytvorZalozku("VYLEPŠENÍ", 2));
+        kategorie.add(vytvorZalozku("OSTATNÍ", 3));
         hlavicka.add(kategorie, BorderLayout.NORTH);
 
         JLabel nadpis = new JLabel("OBCHOD", SwingConstants.LEFT);
@@ -42,7 +43,7 @@ public class ObchodMenu extends JPanel {
         hlavicka.add(nadpis, BorderLayout.SOUTH);
         oknoPanel.add(hlavicka, BorderLayout.NORTH);
 
-        // --- TÄšLO OBCHODU ---
+        // --- TĚLO OBCHODU ---
         seznamVylepseni = new JPanel(new GridLayout(0, 4, 10, 10)); // 4 sloupce
         seznamVylepseni.setBackground(Color.WHITE);
 
@@ -67,9 +68,9 @@ public class ObchodMenu extends JPanel {
         infoPanel.add(lblPenizeInfo);
         paticka.add(infoPanel, BorderLayout.WEST);
         if (simulator != null && isVisible()) {
-            lblPenizeInfo.setText("PenÃ­ze: " + simulator.getAktualniPenize() + " KÄ | Level: " + simulator.getLevel());
+            lblPenizeInfo.setText("Peníze: " + simulator.getAktualniPenize() + " Kč | Level: " + simulator.getLevel());
         }
-        JButton btnZavrit = new JButton("ZpÄ›t");
+        JButton btnZavrit = new JButton("Zpět");
         btnZavrit.setFont(new Font("Arial", Font.BOLD, 16));
         btnZavrit.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnZavrit.addActionListener(e -> setVisible(false));
@@ -119,15 +120,15 @@ public class ObchodMenu extends JPanel {
                                 lblObrazek.setIcon(new ImageIcon(img));
                             }
                         } else {
-                            lblObrazek.setText("ðŸ–¼ï¸");
+                            lblObrazek.setText("🖼️");
                             lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
                         }
                     } catch (Exception e) {
-                        lblObrazek.setText("ðŸ–¼ï¸");
+                        lblObrazek.setText("🖼️");
                         lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
                     }
 
-                    String mnozstviText = (z.minVaha > 0) ? "VÃ¡ha: " + z.minVaha + "-" + z.maxVaha + " g" : "Max kusÅ¯: " + z.maxPocet;
+                    String mnozstviText = (z.minVaha > 0) ? "Váha: " + z.minVaha + "-" + z.maxVaha + " g" : "Max kusů: " + z.maxPocet;
                     String upozorneniLevel = (!vlastni && simulator.getLevel() < z.lvlOdemknuti) ? "<font color='red'>" : "";
 
                     String cistyNazev = z.nazev.replace('_', ' ');
@@ -138,8 +139,8 @@ public class ObchodMenu extends JPanel {
                             + "<i style='font-size:10px;'>" + getTypText(z.typ) + "</i><br><br>"
                             + "<span style='font-size:11px;'>" + mnozstviText + "</span><br>"
                             + upozorneniLevel + "<span style='font-size:11px;'>Od levelu: " + z.lvlOdemknuti + "</span>" + (upozorneniLevel.isEmpty() ? "" : "</font>") + "<br>"
-                            + "<span style='font-size:11px;'>Prodej za: " + z.cena + " KÄ</span><br><br>"
-                            + "<b style='font-size:16px; color:#1a5276;'>" + (vlastni ? "ZAKOUPENO" : (simulator.getAktualniPenize()>=cenaOdemknuti ? cenaOdemknuti : "<font color='red'>" + cenaOdemknuti) + " KÄ") + "</b>"
+                            + "<span style='font-size:11px;'>Prodej za: " + z.cena + " Kč</span><br><br>"
+                            + "<b style='font-size:16px; color:#1a5276;'>" + (vlastni ? "ZAKOUPENO" : (simulator.getAktualniPenize()>=cenaOdemknuti ? cenaOdemknuti : "<font color='red'>" + cenaOdemknuti) + " Kč") + "</b>"
                             + "</div></html>";
 
                     JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
@@ -150,7 +151,7 @@ public class ObchodMenu extends JPanel {
 
                     polozka.add(stredPanel, BorderLayout.CENTER);
 
-                    JButton btnKoupit = new JButton(vlastni ? "VlastnÃ­Å¡" : "Koupit");
+                    JButton btnKoupit = new JButton(vlastni ? "Vlastníš" : "Koupit");
                     btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
                     if (vlastni) {
@@ -178,15 +179,15 @@ public class ObchodMenu extends JPanel {
             polozka.setBackground(jeMax ? new Color(255, 235, 150) : Color.WHITE);
 
             String infoHtml = "<html><div style='text-align: center; padding: 5px;'>"
-                    + "<b style='font-size:16px;'>NovÃ½ motor pÃ¡su</b><br><br>"
-                    + "<span style='font-size:11px;'>ZrychlÃ­ pohyb zboÅ¾Ã­ po<br>pÃ¡se, zkrÃ¡tÃ­ prodlevu<br>generovÃ¡nÃ­ a urychlÃ­<br>Ãºklid do odstavnÃ©ho mÃ­sta.</span><br><br>"
-                    + "<b style='font-size:14px;'>ÃšroveÅˆ: " + uroven + " / 4</b><br><br>"
-                    + "<b style='font-size:16px; color:#1a5276;'>" + (jeMax ? "MAXIMÃLNÃ ÃšROVEÅ‡" : (maPenize ? cena : "<font color='red'>" + cena) + " KÄ") + "</b>"
+                    + "<b style='font-size:16px;'>Nový motor pásu</b><br><br>"
+                    + "<span style='font-size:11px;'>Zrychlí pohyb zboží po<br>páse, zkrátí prodlevu<br>generování a urychlí<br>úklid do odstavného místa.</span><br><br>"
+                    + "<b style='font-size:14px;'>Úroveň: " + uroven + " / 4</b><br><br>"
+                    + "<b style='font-size:16px; color:#1a5276;'>" + (jeMax ? "MAXIMÁLNÍ ÚROVEŇ" : (maPenize ? cena : "<font color='red'>" + cena) + " Kč") + "</b>"
                     + "</div></html>";
 
             JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
             polozka.add(lblInfo, BorderLayout.CENTER);
-            JButton btnKoupit = new JButton(jeMax ? "VylepÅ¡eno naplno" : "VylepÅ¡it");
+            JButton btnKoupit = new JButton(jeMax ? "Vylepšeno naplno" : "Vylepšit");
             btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
             if (jeMax) {
@@ -204,13 +205,13 @@ public class ObchodMenu extends JPanel {
             seznamVylepseni.add(polozka);
         } else {
             String[][] dostupnaHudba = {
-                    {"Tereza KerndlovÃ¡ - Schody z nebe", "Tereza_KerndlovÃ¡_-_Schody_z_nebe", "500"},
-                    {"Athena ChlebovÃ¡ - VeÄerka", "Athena_ChlebovÃ¡_-_VeÄerka", "1000"},
-                    {"Filip Dang - PojÄ nakoupit bejbe", "Filip_Dang_-_PojÄ_nakoupit_bejbe", "1500"},
-                    {"Filip Dang - Å tÄ›drÃ¡ veÄerka", "Filip_Dang_-_Å tÄ›drÃ¡_veÄerka", "2500"},
+                    {"Tereza Kerndlová - Schody z nebe", "Tereza_Kerndlová_-_Schody_z_nebe", "500"},
+                    {"Athena Chlebová - Večerka", "Athena_Chlebová_-_Večerka", "1000"},
+                    {"Filip Dang - Pojď nakoupit bejbe", "Filip_Dang_-_Pojď_nakoupit_bejbe", "1500"},
+                    {"Filip Dang - Štědrá večerka", "Filip_Dang_-_Štědrá_večerka", "2500"},
                     {"Gala - Freed from desire", "Gala_-_Freed_from_desire", "2000"},
                     {"Michael Jackson - Billie Jean", "Michael_Jackson_-_Billie_Jean", "1000"},
-                    {"Filip Dang & Petr Pinkas - ÄŒekÃ¡ mÄ› sleva", "Filip_Dang_&_Petr_Pinkas_-_ÄŒekÃ¡_mÄ›_sleva", "3000"}
+                    {"Filip Dang & Petr Pinkas - Čeká mě sleva", "Filip_Dang_&_Petr_Pinkas_-_Čeká_mě_sleva", "3000"}
             };
 
             for (String[] h : dostupnaHudba) {
@@ -237,11 +238,11 @@ public class ObchodMenu extends JPanel {
                             lblObrazek.setIcon(new ImageIcon(img));
                         }
                     } else {
-                        lblObrazek.setText("ðŸ–¼ï¸");
+                        lblObrazek.setText("🖼️");
                         lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
                     }
                 } catch (Exception e) {
-                    lblObrazek.setText("ðŸ–¼ï¸");
+                    lblObrazek.setText("🖼️");
                     lblObrazek.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 40));
                 }
                 String[] casti = nazev.split(" - ");
@@ -252,8 +253,8 @@ public class ObchodMenu extends JPanel {
                         + "<i style='font-size:10px;'>Hudba</i><br><br>"
                         + "<span style='font-size:11px;'>" + casti[0] + "</span><br>"
                         + "<span style='font-size:11px;'>|</span><br>"
-                        + "<span style='font-size:11px;'>ZmÄ›na v NastavenÃ­</span><br><br>"
-                        + "<b style='font-size:16px; color:#1a5276;'>" + (vlastni ? "ZAKOUPENO" : (maPenize ? cena : "<font color='red'>" + cena) + " KÄ") + "</b>"
+                        + "<span style='font-size:11px;'>Změna v Nastavení</span><br><br>"
+                        + "<b style='font-size:16px; color:#1a5276;'>" + (vlastni ? "ZAKOUPENO" : (maPenize ? cena : "<font color='red'>" + cena) + " Kč") + "</b>"
                         + "</div></html>";
 
                 JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
@@ -264,7 +265,7 @@ public class ObchodMenu extends JPanel {
 
                 polozka.add(stredPanel, BorderLayout.CENTER);
 
-                JButton btnKoupit = new JButton(vlastni ? "VlastnÃ­Å¡" : "Koupit");
+                JButton btnKoupit = new JButton(vlastni ? "Vlastníš" : "Koupit");
                 btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
                 if (vlastni) {

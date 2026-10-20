@@ -2,6 +2,7 @@ package cz.bazala.simulator.ui;
 
 import cz.bazala.simulator.model.*;
 import cz.bazala.simulator.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -59,17 +60,17 @@ public class BazalaSimulator extends JPanel {
     private int castkaVraceno = 0;
     private int aktualniPenize = 0;
 
-    // Konstanty pro vÃ½poÄet XP za nÃ¡kup
-    private static final int XP_DELITEL_CENY = 5;      // ÄÃ¡st ceny zboÅ¾Ã­ pÅ™evedenÃ¡ na XP
-    private static final int XP_ZA_KUSOVE_ZBOZI = 1;   // bonus za zboÅ¾Ã­ prodÃ¡vanÃ© na kusy (typ 0)
-    private static final int XP_ZA_VAZENE_ZBOZI = 5;   // bonus za zboÅ¾Ã­ z kategoriÃ­ 1-4
-    private static final int XP_BONUS_ZA_VAHU = 15;    // bonus za zboÅ¾Ã­, kterÃ© se vÃ¡Å¾Ã­
+    // Konstanty pro výpočet XP za nákup
+    private static final int XP_DELITEL_CENY = 5;      // část ceny zboží převedená na XP
+    private static final int XP_ZA_KUSOVE_ZBOZI = 1;   // bonus za zboží prodávané na kusy (typ 0)
+    private static final int XP_ZA_VAZENE_ZBOZI = 5;   // bonus za zboží z kategorií 1-4
+    private static final int XP_BONUS_ZA_VAHU = 15;    // bonus za zboží, které se váží
     private static final int XP_ZA_UROVEN_ODEMKNUTI = 10;
-    private static final int XP_FINALNI_DELITEL = 4;   // zmÃ­rnÄ›nÃ­ celkovÃ©ho zisku XP
-    private static final int XP_MINIMUM = 5;           // minimÃ¡lnÃ­ XP za jakÃ½koli nÃ¡kup
+    private static final int XP_FINALNI_DELITEL = 4;   // zmírnění celkového zisku XP
+    private static final int XP_MINIMUM = 5;           // minimální XP za jakýkoli nákup
 
     private int aktualniSlot = 1;
-    private String jmenoObchodu = "MÅ¯j Obchod";
+    private String jmenoObchodu = "Můj Obchod";
     private int celkoveXp = 0;
     private String vylepseni = "00000";
     private List<Integer> odemceneZbozi;
@@ -140,31 +141,31 @@ public class BazalaSimulator extends JPanel {
             panelObrazovky = new PokladnaObrazovka(false, zboziList, this::toggleFullscreen, this, TypZbozi.KATEGORIE_VSE, "", "", new ArrayList<>());
             vrstvy.add(panelObrazovky, Integer.valueOf(4));
 
-            hotspoty.add(new InteraktivniZona(745, 476, 41, 72, "PlatebnÃ­ terminÃ¡l", this));
-            hotspoty.add(new InteraktivniZona(800, 330, 20, 20, "vypÃ­naÄ", true, this));
+            hotspoty.add(new InteraktivniZona(745, 476, 41, 72, "Platební terminál", this));
+            hotspoty.add(new InteraktivniZona(800, 330, 20, 20, "vypínač", true, this));
 
             // Bankovky
-            hotspoty.add(new InteraktivniZona(532, 580, 38, 72, "100 KÄ", this));
-            hotspoty.add(new InteraktivniZona(576, 580, 38, 72, "200 KÄ", this));
-            hotspoty.add(new InteraktivniZona(617, 580, 38, 72, "500 KÄ", this));
-            hotspoty.add(new InteraktivniZona(661, 580, 38, 72, "1000 KÄ", this));
-            hotspoty.add(new InteraktivniZona(702, 580, 38, 72, "2000 KÄ", this));
-            hotspoty.add(new InteraktivniZona(742, 580, 38, 72, "5000 KÄ", this));
+            hotspoty.add(new InteraktivniZona(532, 580, 38, 72, "100 Kč", this));
+            hotspoty.add(new InteraktivniZona(576, 580, 38, 72, "200 Kč", this));
+            hotspoty.add(new InteraktivniZona(617, 580, 38, 72, "500 Kč", this));
+            hotspoty.add(new InteraktivniZona(661, 580, 38, 72, "1000 Kč", this));
+            hotspoty.add(new InteraktivniZona(702, 580, 38, 72, "2000 Kč", this));
+            hotspoty.add(new InteraktivniZona(742, 580, 38, 72, "5000 Kč", this));
 
             // Mince
-            hotspoty.add(new InteraktivniZona(533, 661, 36, 36, "1 KÄ", true, this));
-            hotspoty.add(new InteraktivniZona(576, 661, 36, 36, "2 KÄ", true, this));
-            hotspoty.add(new InteraktivniZona(617, 661, 36, 36, "5 KÄ", true, this));
-            hotspoty.add(new InteraktivniZona(661, 661, 36, 36, "10 KÄ", true, this));
-            hotspoty.add(new InteraktivniZona(703, 661, 36, 36, "20 KÄ", true, this));
-            hotspoty.add(new InteraktivniZona(745, 661, 36, 36, "50 KÄ", true, this));
+            hotspoty.add(new InteraktivniZona(533, 661, 36, 36, "1 Kč", true, this));
+            hotspoty.add(new InteraktivniZona(576, 661, 36, 36, "2 Kč", true, this));
+            hotspoty.add(new InteraktivniZona(617, 661, 36, 36, "5 Kč", true, this));
+            hotspoty.add(new InteraktivniZona(661, 661, 36, 36, "10 Kč", true, this));
+            hotspoty.add(new InteraktivniZona(703, 661, 36, 36, "20 Kč", true, this));
+            hotspoty.add(new InteraktivniZona(745, 661, 36, 36, "50 Kč", true, this));
 
             for (InteraktivniZona zona : hotspoty) {
                 vrstvy.add(zona, Integer.valueOf(1));
             }
 
         } catch (Exception e) {
-            System.err.println("Chyba pÅ™i naÄÃ­tÃ¡nÃ­ prvkÅ¯: " + e.getMessage());
+            System.err.println("Chyba při načítání prvků: " + e.getMessage());
             setBackground(Color.DARK_GRAY);
         }
 
@@ -370,7 +371,7 @@ public class BazalaSimulator extends JPanel {
     public void zahajPlatbu() {
         cenaNakupu = panelObrazovky.getCelkovaCena();
         if (cenaNakupu == 0) {
-            vypisDoKonzole("ZÃ¡kaznÃ­k nic nekoupil.");
+            vypisDoKonzole("Zákazník nic nekoupil.");
             dokonciPlatbu(false);
             return;
         }
@@ -378,8 +379,8 @@ public class BazalaSimulator extends JPanel {
         cekaNaPlatbu = true;
         platbaKartou = Math.random() < 0.5;
         if (platbaKartou) {
-            vypisDoKonzole("ZÃ¡kaznÃ­k chce platit KARTOU (" + cenaNakupu + " KÄ).");
-            vypisDoKonzole("Klikni na PlatebnÃ­ terminÃ¡l.");
+            vypisDoKonzole("Zákazník chce platit KARTOU (" + cenaNakupu + " Kč).");
+            vypisDoKonzole("Klikni na Platební terminál.");
             panelObrazovky.nastavStavPlatby(false, 0, 0);
         } else {
             int[] bankovky = {100, 200, 500, 1000, 2000, 5000};
@@ -395,7 +396,7 @@ public class BazalaSimulator extends JPanel {
             castkaVratit = dalZakanik - cenaNakupu;
             castkaVraceno = 0;
 
-            vypisDoKonzole("ZÃ¡kaznÃ­k platÃ­ HOTOVÄš. Dal ti " + dalZakanik + " KÄ. VraÅ¥ mu: " + castkaVratit + " KÄ.");
+            vypisDoKonzole("Zákazník platí HOTOVĚ. Dal ti " + dalZakanik + " Kč. Vrať mu: " + castkaVratit + " Kč.");
             panelObrazovky.nastavStavPlatby(true, castkaVratit, castkaVraceno);
         }
     }
@@ -404,29 +405,29 @@ public class BazalaSimulator extends JPanel {
         if (!cekaNaPlatbu) return;
 
         if (platbaKartou) {
-            if (nazev.equals("PlatebnÃ­ terminÃ¡l")) {
-                vypisDoKonzole("Platba kartou PÅ˜IJATA!");
+            if (nazev.equals("Platební terminál")) {
+                vypisDoKonzole("Platba kartou PŘIJATA!");
                 dokonciPlatbu(true);
             } else {
-                vypisDoKonzole("ZÃ¡kaznÃ­k platÃ­ kartou.");
+                vypisDoKonzole("Zákazník platí kartou.");
             }
         } else {
-            if (nazev.equals("PlatebnÃ­ terminÃ¡l")) {
-                vypisDoKonzole("ZÃ¡kaznÃ­k platÃ­ hotovÄ›.");
+            if (nazev.equals("Platební terminál")) {
+                vypisDoKonzole("Zákazník platí hotově.");
                 return;
             }
             try {
-                int hodnota = Integer.parseInt(nazev.replace(" KÄ", "").trim());
+                int hodnota = Integer.parseInt(nazev.replace(" Kč", "").trim());
                 castkaVraceno += hodnota;
                 panelObrazovky.nastavStavPlatby(true, castkaVratit, castkaVraceno);
                 if (panelVracenychPenez != null) {
                     panelVracenychPenez.pridejPenize(hodnota);
                 }
                 if (castkaVraceno == castkaVratit) {
-                    vypisDoKonzole("âœ… NÃ¡kup zaplacen.");
+                    vypisDoKonzole("✅ Nákup zaplacen.");
                     dokonciPlatbu(true);
                 } else if (castkaVraceno > castkaVratit) {
-                    vypisDoKonzole("Chyba: VracÃ­Å¡ moc! ÄŒÃ¡stka se resetuje na 0.");
+                    vypisDoKonzole("Chyba: Vracíš moc! Částka se resetuje na 0.");
                     castkaVraceno = 0;
                     panelObrazovky.nastavStavPlatby(true, castkaVratit, castkaVraceno);
                     if (panelVracenychPenez != null) {
@@ -434,7 +435,7 @@ public class BazalaSimulator extends JPanel {
                     }
                 }
             } catch (NumberFormatException e) {
-                vypisDoKonzole("Chyba: NeznÃ¡mÃ¡ hodnota platidla (" + nazev + ").");
+                vypisDoKonzole("Chyba: Neznámá hodnota platidla (" + nazev + ").");
             }
         }
     }
@@ -449,7 +450,7 @@ public class BazalaSimulator extends JPanel {
             nactiXp(celkoveXp + xpZaNakup);
 
             nactiPenize(aktualniPenize + cenaNakupu);
-            vypisDoKonzole("ZÃ­skÃ¡no " + cenaNakupu + " KÄ a " + xpZaNakup + " XP.");
+            vypisDoKonzole("Získáno " + cenaNakupu + " Kč a " + xpZaNakup + " XP.");
         }
         panelObrazovky.vycistiUctenku();
 
@@ -530,7 +531,7 @@ public class BazalaSimulator extends JPanel {
     public void ulozHru() {
         if (!hraJeNactena) return;
         SpravceSouboru.ulozHruDoSouboru(aktualniSlot, jmenoObchodu, String.valueOf(aktualniPenize), celkoveXp, vylepseni, odemceneZbozi, vybranaHudba, odemcenaHudba);
-        System.out.println("Hra byla ÃºspÄ›Å¡nÄ› uloÅ¾ena!");
+        System.out.println("Hra byla úspěšně uložena!");
     }
     public void zobrazObchod() {
         if (obchodMenu != null) {
@@ -577,13 +578,13 @@ public class BazalaSimulator extends JPanel {
             aktualniPenize -= cena;
             nactiPenize(aktualniPenize);
             odemcenaHudba.add(souborHudby);
-            vypisDoKonzole("Zakoupena novÃ¡ hudba! MÅ¯Å¾eÅ¡ ji zmÄ›nit v NastavenÃ­.");
+            vypisDoKonzole("Zakoupena nová hudba! Můžeš ji změnit v Nastavení.");
             return true;
         } else if (odemcenaHudba.contains(souborHudby)) {
-            vypisDoKonzole("Chyba: Tuto hudbu uÅ¾ vlastnÃ­Å¡!");
+            vypisDoKonzole("Chyba: Tuto hudbu už vlastníš!");
             return false;
         } else {
-            vypisDoKonzole("Chyba: Nedostatek penÄ›z!");
+            vypisDoKonzole("Chyba: Nedostatek peněz!");
             return false;
         }
     }

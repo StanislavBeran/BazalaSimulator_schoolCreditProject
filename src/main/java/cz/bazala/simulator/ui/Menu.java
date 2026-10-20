@@ -2,6 +2,7 @@ package cz.bazala.simulator.ui;
 
 import cz.bazala.simulator.model.*;
 import cz.bazala.simulator.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
@@ -13,7 +14,7 @@ public class Menu extends JFrame {
     private BazalaSimulator bazalaSimulator;
     private String predchoziObrazovka = "HLAVNI_MENU";
 
-    // PoslednÃ­ okennÃ­ (ne-fullscreen) rozliÅ¡enÃ­ - pro nÃ¡vrat z fullscreenu pÅ™es F11.
+    // Poslední okenní (ne-fullscreen) rozlišení - pro návrat z fullscreenu přes F11.
     private SpravceNastaveni.Zobrazeni posledniOkenni = SpravceNastaveni.Zobrazeni.R_1280_720;
     private boolean jeFullscreen = false;
 
@@ -33,14 +34,14 @@ public class Menu extends JFrame {
     }
 
     /**
-     * Aplikuje reÅ¾im zobrazenÃ­ na okno. Pro fullscreen pouÅ¾ije undecorated okno
-     * pÅ™es celou obrazovku, jinak vycentrovanÃ© okno danÃ©ho rozliÅ¡enÃ­.
-     * ZmÄ›na dekorace vyÅ¾aduje znovuvytvoÅ™enÃ­ nativnÃ­ho okna (dispose + show).
+     * Aplikuje režim zobrazení na okno. Pro fullscreen použije undecorated okno
+     * přes celou obrazovku, jinak vycentrované okno daného rozlišení.
+     * Změna dekorace vyžaduje znovuvytvoření nativního okna (dispose + show).
      */
     public void aplikujZobrazeni(SpravceNastaveni.Zobrazeni zobrazeni) {
         GraphicsDevice zarizeni = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-        // ZruÅ¡ pÅ™Ã­padnÃ½ dÅ™Ã­vÄ›jÅ¡Ã­ fullscreen, aÅ¥ mÅ¯Å¾eme zmÄ›nit dekoraci.
+        // Zruš případný dřívější fullscreen, ať můžeme změnit dekoraci.
         if (zarizeni.getFullScreenWindow() == this) {
             zarizeni.setFullScreenWindow(null);
         }
@@ -54,7 +55,7 @@ public class Menu extends JFrame {
             if (zarizeni.isFullScreenSupported()) {
                 zarizeni.setFullScreenWindow(this);
             } else {
-                // Fallback: maximalizovanÃ© undecorated okno.
+                // Fallback: maximalizované undecorated okno.
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         } else {
@@ -72,7 +73,7 @@ public class Menu extends JFrame {
         repaint();
     }
 
-    /** Zaregistruje klÃ¡vesu F11 pro pÅ™epÃ­nÃ¡nÃ­ fullscreenu (globÃ¡lnÄ› v oknÄ›). */
+    /** Zaregistruje klávesu F11 pro přepínání fullscreenu (globálně v okně). */
     private void registrujKlavesovePrepinani() {
         JRootPane root = getRootPane();
         root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
@@ -103,7 +104,7 @@ public class Menu extends JFrame {
             }
         });
 
-        // F11 pÅ™epÃ­nÃ¡ mezi fullscreenem a poslednÃ­m okennÃ­m rozliÅ¡enÃ­m.
+        // F11 přepíná mezi fullscreenem a posledním okenním rozlišením.
         registrujKlavesovePrepinani();
         SpravceZvuku.prehraj("obchodak_theme_sound","zvuk_v_pozadi", 0, true);
         try {
@@ -115,7 +116,7 @@ public class Menu extends JFrame {
                 System.out.println("Ikona aplikace (/logoAplikace.png) nebyla nalezena.");
             }
         } catch (Exception e) {
-            System.err.println("Chyba pÅ™i naÄÃ­tÃ¡nÃ­ ikony: " + e.getMessage());
+            System.err.println("Chyba při načítání ikony: " + e.getMessage());
         }
 
         karty = new CardLayout();
@@ -136,7 +137,7 @@ public class Menu extends JFrame {
 
         setContentPane(hlavniContainer);
 
-        // Aplikuj uloÅ¾enÃ½ reÅ¾im zobrazenÃ­ (rozliÅ¡enÃ­ nebo fullscreen).
+        // Aplikuj uložený režim zobrazení (rozlišení nebo fullscreen).
         aplikujZobrazeni(SpravceNastaveni.getZobrazeni());
     }
 
@@ -163,24 +164,24 @@ public class Menu extends JFrame {
                 System.out.println("Logo (/logo.png) nebylo nalezeno.");
             }
         } catch (Exception e) {
-            System.err.println("Chyba pÅ™i naÄÃ­tÃ¡nÃ­ loga: " + e.getMessage());
+            System.err.println("Chyba při načítání loga: " + e.getMessage());
         }
 
         menuContainer.add(Box.createVerticalStrut(50));
 
-        String[] texty = {"ZaÄÃ­t novou hru", "NaÄÃ­st hru", "NastavenÃ­", "Exit"};
+        String[] texty = {"Začít novou hru", "Načíst hru", "Nastavení", "Exit"};
         for (String text : texty) {
             JButton btn = vytvorTlacitko(text);
             btn.addActionListener(e -> {
                 String cmd = e.getActionCommand();
                 switch (cmd) {
-                    case "ZaÄÃ­t novou hru":
+                    case "Začít novou hru":
                         zobrazObrazovku("NOVA_HRA");
                         break;
-                    case "NaÄÃ­st hru":
+                    case "Načíst hru":
                         zobrazObrazovku("NACIST_HRU");
                         break;
-                    case "NastavenÃ­":
+                    case "Nastavení":
                         setPredchoziObrazovka("HLAVNI_MENU");
                         zobrazObrazovku("NASTAVENI");
                         break;
@@ -237,7 +238,7 @@ public class Menu extends JFrame {
             if (imgUrl != null) {
                 this.backgroundImage = new ImageIcon(imgUrl).getImage();
             } else {
-                System.err.println("Nenalezen obrÃ¡zek pozadÃ­: " + path);
+                System.err.println("Nenalezen obrázek pozadí: " + path);
             }
         }
 
@@ -259,8 +260,8 @@ public class Menu extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            // NevadÃ­ - pouÅ¾ije se vÃ½chozÃ­ Look & Feel.
-            System.err.println("NepodaÅ™ilo se nastavit systÃ©movÃ½ Look & Feel: " + e.getMessage());
+            // Nevadí - použije se výchozí Look & Feel.
+            System.err.println("Nepodařilo se nastavit systémový Look & Feel: " + e.getMessage());
         }
 
         SwingUtilities.invokeLater(() -> {
