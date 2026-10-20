@@ -12,7 +12,9 @@ public class SpravceZvuku {
     private static float globalniHlasitost = 1.0f;
 
     private static AudioInputStream nactiStream(String cesta) throws Exception {
-        URL url = SpravceZvuku.class.getResource(cesta);
+        // Absolutní cesta v classpath (/...), aby fungovala nezávisle na balíčku třídy.
+        String classpathCesta = cesta.startsWith("/") ? cesta : "/" + cesta;
+        URL url = SpravceZvuku.class.getResource(classpathCesta);
         if (url != null) return AudioSystem.getAudioInputStream(url);
         File soubor = new File(cesta);
         if (soubor.exists()) return AudioSystem.getAudioInputStream(soubor);

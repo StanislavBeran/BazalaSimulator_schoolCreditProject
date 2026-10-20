@@ -369,7 +369,7 @@ public class PokladnaObrazovka extends JPanel {
 
         JLabel lblObrazek = new JLabel("", SwingConstants.CENTER);
         try {
-            java.net.URL imgUrl = getClass().getResource("zboziObrazky/" + obrazekCesta + ".png");
+            java.net.URL imgUrl = getClass().getResource("/zboziObrazky/" + obrazekCesta + ".png");
             if (imgUrl != null) {
                 ImageIcon icon = new ImageIcon(imgUrl);
                 Image img = icon.getImage().getScaledInstance(imgSize, imgSize, Image.SCALE_SMOOTH);
