@@ -152,18 +152,20 @@ public class SpravceSouboru {
     }
 
     public static List<Zbozi> nactiZbozi() {
-        File soubor = new File("src/main/resources/zbozi.txt");
-        if (!soubor.exists() || soubor.length() == 0) {
-            // Fallback: zkus načíst z classpath (funguje i z JARu).
-            return nactiZboziZClasspath();
+        // Standardní zdroj je classpath (/zbozi.txt) - funguje i ze zabaleného JARu.
+        // Soubor v src/main/resources má přednost jen jako override pro vývoj,
+        // aby šlo upravit zboží bez rebuildu.
+        File diskovyOverride = new File("src/main/resources/zbozi.txt");
+        if (diskovyOverride.exists() && diskovyOverride.length() > 0) {
+            return nactiZboziZeStreamu(() -> new FileInputStream(diskovyOverride), diskovyOverride.getPath());
         }
-        return nactiZboziZeStreamu(() -> new FileInputStream(soubor), soubor.getPath());
+        return nactiZboziZClasspath();
     }
 
     private static List<Zbozi> nactiZboziZClasspath() {
         InputStream is = SpravceSouboru.class.getResourceAsStream("/zbozi.txt");
         if (is == null) {
-            throw new IllegalStateException("Nenačetlo se zboží: soubor zbozi.txt nebyl nalezen.");
+            throw new IllegalStateException("Nenačetlo se zboží: soubor zbozi.txt nebyl nalezen na disku ani v classpath.");
         }
         return nactiZboziZeStreamu(() -> is, "classpath:/zbozi.txt");
     }
@@ -204,6 +206,8 @@ public class SpravceSouboru {
 
         if (zboziVsechny.isEmpty()) {
             System.out.println("Seznam zboží je prázdný, žádné platné řádky nebyly nalezeny.");
+        } else {
+            System.out.println("Načteno " + zboziVsechny.size() + " položek zboží ze zdroje: " + popisZdroje);
         }
 
         return zboziVsechny;
