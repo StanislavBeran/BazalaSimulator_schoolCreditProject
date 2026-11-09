@@ -43,5 +43,8 @@ build/
 ${project.build.directory}/
 # Runtime data - uložené hry
 /ulozeneHry/
+/ulozeneHry/ulozenaHra1.txt
+/ulozeneHry/ulozenaHra2.txt
+/ulozeneHry/ulozenaHra3.txt
 # Runtime config - nastavení zobrazení
 /nastaveni.cfg

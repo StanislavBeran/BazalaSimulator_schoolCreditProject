@@ -1,7 +1,7 @@
-Jmeno: "Bazaland";
-Penize: 2016;
-XP: 30;
+Jmeno: "Karel";
+Penize: 1000;
+XP: 0;
 Vylepseni: 00000;
 OdemceneZbozi: 16;
-VybranaHudba: Filip_Dang_-_Čeká_mě_sleva;
-OdemcenaHudba: obchod_theme,Filip_Dang_&_Petr_Pinkas_-_Čeká_mě_sleva;
+VybranaHudba: obchod_theme;
+OdemcenaHudba: obchod_theme;
