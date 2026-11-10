@@ -68,6 +68,11 @@ public class SpravceSouboru {
         ArrayList<Integer> odemceneZbozi = new ArrayList<>();
         String vybranaHudba = "obchod_theme";
         List<String> odemcenaHudba = new ArrayList<>();
+        int celkemObslouzeno = 0;
+        int nejlepsiKombo = 0;
+        int nejlepsiTrzbaSmeny = 0;
+        int celkemVydelano = 0;
+        int cisloSmeny = 1;
 
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(new FileInputStream(soubor), StandardCharsets.UTF_8))) {
@@ -109,13 +114,29 @@ public class SpravceSouboru {
                             for (String h : hudby) {
                                 if (!h.trim().isEmpty()) odemcenaHudba.add(h.trim());
                             }
+                        } else if (radek.startsWith("CelkemObslouzeno")) {
+                            celkemObslouzeno = Integer.parseInt(hodnota);
+                        } else if (radek.startsWith("NejlepsiKombo")) {
+                            nejlepsiKombo = Integer.parseInt(hodnota);
+                        } else if (radek.startsWith("NejlepsiTrzbaSmeny")) {
+                            nejlepsiTrzbaSmeny = Integer.parseInt(hodnota);
+                        } else if (radek.startsWith("CelkemVydelano")) {
+                            celkemVydelano = Integer.parseInt(hodnota);
+                        } else if (radek.startsWith("CisloSmeny")) {
+                            cisloSmeny = Integer.parseInt(hodnota);
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("Přeskakuji poškozený řádek v uložené hře (" + cesta + "): " + radek);
                     }
                 }
             }
-            return new UlozenaHra(jmenoObchodu, penize, xp, vylepseni, odemceneZbozi, vybranaHudba, odemcenaHudba);
+            UlozenaHra vysledek = new UlozenaHra(jmenoObchodu, penize, xp, vylepseni, odemceneZbozi, vybranaHudba, odemcenaHudba);
+            vysledek.celkemObslouzeno = celkemObslouzeno;
+            vysledek.nejlepsiKombo = nejlepsiKombo;
+            vysledek.nejlepsiTrzbaSmeny = nejlepsiTrzbaSmeny;
+            vysledek.celkemVydelano = celkemVydelano;
+            vysledek.cisloSmeny = cisloSmeny;
+            return vysledek;
         } catch (IOException e) {
             System.err.println("Chyba při čtení uložené hry (" + cesta + "): " + e.getMessage());
             return new UlozenaHra(STAV_CHYBA, 0, 0, "00000", null, "obchod_theme", null);
@@ -123,6 +144,14 @@ public class SpravceSouboru {
     }
 
     public static void ulozHruDoSouboru(int slot, String jmeno, String penize, int xp, String vylepseni, List<Integer> odemceneZbozi, String vybranaHudba, List<String> odemcenaHudba) {
+        ulozHruDoSouboru(slot, jmeno, penize, xp, vylepseni, odemceneZbozi, vybranaHudba, odemcenaHudba,
+                0, 0, 0, 0, 1);
+    }
+
+    public static void ulozHruDoSouboru(int slot, String jmeno, String penize, int xp, String vylepseni,
+                                        List<Integer> odemceneZbozi, String vybranaHudba, List<String> odemcenaHudba,
+                                        int celkemObslouzeno, int nejlepsiKombo, int nejlepsiTrzbaSmeny,
+                                        int celkemVydelano, int cisloSmeny) {
         if (odemceneZbozi == null) {
             odemceneZbozi = new ArrayList<>();
             odemceneZbozi.add(16);
@@ -149,6 +178,13 @@ public class SpravceSouboru {
 
             String odemcenaHudbaText = (odemcenaHudba == null) ? "" : String.join(",", odemcenaHudba);
             writer.println("OdemcenaHudba: " + odemcenaHudbaText + ";");
+
+            // Statistiky / rekordy a směna
+            writer.println("CelkemObslouzeno: " + celkemObslouzeno + ";");
+            writer.println("NejlepsiKombo: " + nejlepsiKombo + ";");
+            writer.println("NejlepsiTrzbaSmeny: " + nejlepsiTrzbaSmeny + ";");
+            writer.println("CelkemVydelano: " + celkemVydelano + ";");
+            writer.println("CisloSmeny: " + cisloSmeny + ";");
 
             System.out.println("Hra uložena do slotu: " + slot);
         } catch (IOException ex) {

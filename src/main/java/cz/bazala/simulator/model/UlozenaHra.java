@@ -12,6 +12,13 @@ public class UlozenaHra {
     public String vybranaHudba;
     public List<String> odemcenaHudba;
 
+    // Statistiky / rekordy a směna (nová pole; starší uložené hry je nemají → 0/1).
+    public int celkemObslouzeno;
+    public int nejlepsiKombo;
+    public int nejlepsiTrzbaSmeny;
+    public int celkemVydelano;
+    public int cisloSmeny = 1;
+
     public UlozenaHra(String nazevObchodu, int pocetPenez, int xp,  String vylepseni,  List<Integer> odemceneZbozi, String vybranaHudba, List<String> odemcenaHudba) {
         this.nazevObchodu = nazevObchodu;
         this.pocetPenez = pocetPenez;
