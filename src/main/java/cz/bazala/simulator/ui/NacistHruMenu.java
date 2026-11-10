@@ -83,6 +83,8 @@ public class NacistHruMenu extends JPanel {
                     simulator.nactiXp(ulozenaHra.xp);
                     simulator.nactiVylepseni(ulozenaHra.vylepseni);
                     simulator.nactiOdemceneZbozi(ulozenaHra.odemceneZbozi);
+                    simulator.nactiStatistiky(ulozenaHra.celkemObslouzeno, ulozenaHra.nejlepsiKombo,
+                            ulozenaHra.nejlepsiTrzbaSmeny, ulozenaHra.celkemVydelano, ulozenaHra.cisloSmeny);
                     simulator.nastavDetailyHry(pozice, ulozenaHra.nazevObchodu, ulozenaHra.vybranaHudba, ulozenaHra.odemcenaHudba);
                     SpravceZvuku.zastav("obchodak_theme_sound");
                     if (!"Bez hudby".equals(ulozenaHra.vybranaHudba)) {

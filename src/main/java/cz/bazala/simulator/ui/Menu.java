@@ -126,6 +126,7 @@ public class Menu extends JFrame {
         NovaHraMenu novaHraObrazovka = new NovaHraMenu(this);
         NacistHruMenu nacistHruMenu = new NacistHruMenu(this);
         NastaveniMenu nastaveniMenu = new NastaveniMenu(this);
+        StatistikyMenu statistikyMenu = new StatistikyMenu(this);
         bazalaSimulator = new BazalaSimulator(this);
 
         hlavniContainer.add(hlavniMenu, "HLAVNI_MENU");
@@ -134,6 +135,7 @@ public class Menu extends JFrame {
         hlavniContainer.add(bazalaSimulator, "BAZALA_SIMULATOR");
 
         hlavniContainer.add(nastaveniMenu, "NASTAVENI");
+        hlavniContainer.add(statistikyMenu, "STATISTIKY");
 
         setContentPane(hlavniContainer);
 
@@ -169,7 +171,7 @@ public class Menu extends JFrame {
 
         menuContainer.add(Box.createVerticalStrut(50));
 
-        String[] texty = {"Začít novou hru", "Načíst hru", "Nastavení", "Exit"};
+        String[] texty = {"Začít novou hru", "Načíst hru", "Statistiky", "Nastavení", "Exit"};
         for (String text : texty) {
             JButton btn = vytvorTlacitko(text);
             btn.addActionListener(e -> {
@@ -180,6 +182,9 @@ public class Menu extends JFrame {
                         break;
                     case "Načíst hru":
                         zobrazObrazovku("NACIST_HRU");
+                        break;
+                    case "Statistiky":
+                        zobrazObrazovku("STATISTIKY");
                         break;
                     case "Nastavení":
                         setPredchoziObrazovka("HLAVNI_MENU");
