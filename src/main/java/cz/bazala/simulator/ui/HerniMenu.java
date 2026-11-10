@@ -77,6 +77,16 @@ public class HerniMenu extends JPanel {
     }
 
     @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        // Otevřené pauzové menu zastaví pás, zavření ho obnoví.
+        if (simulator != null) {
+            if (visible) simulator.pozastavHru();
+            else simulator.obnovHru();
+        }
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, getWidth(), getHeight());

@@ -83,6 +83,16 @@ public class ObchodMenu extends JPanel {
     }
 
     @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        // Otevřený obchod zastaví pás, zavření ho obnoví.
+        if (simulator != null) {
+            if (visible) simulator.pozastavHru();
+            else simulator.obnovHru();
+        }
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -170,39 +180,9 @@ public class ObchodMenu extends JPanel {
                 }
             }
         } else if (aktualniKategorie == 2){
-            int uroven = simulator.getUrovenRychlostiPasu();
-            int cena = 5000 * (uroven + 1);
-            boolean jeMax = (uroven >= 4);
-            boolean maPenize = simulator.getAktualniPenize() >= cena;
-            JPanel polozka = new JPanel(new BorderLayout());
-            polozka.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-            polozka.setBackground(jeMax ? new Color(255, 235, 150) : Color.WHITE);
-
-            String infoHtml = "<html><div style='text-align: center; padding: 5px;'>"
-                    + "<b style='font-size:16px;'>Nový motor pásu</b><br><br>"
-                    + "<span style='font-size:11px;'>Zrychlí pohyb zboží po<br>páse, zkrátí prodlevu<br>generování a urychlí<br>úklid do odstavného místa.</span><br><br>"
-                    + "<b style='font-size:14px;'>Úroveň: " + uroven + " / 4</b><br><br>"
-                    + "<b style='font-size:16px; color:#1a5276;'>" + (jeMax ? "MAXIMÁLNÍ ÚROVEŇ" : (maPenize ? cena : "<font color='red'>" + cena) + " Kč") + "</b>"
-                    + "</div></html>";
-
-            JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
-            polozka.add(lblInfo, BorderLayout.CENTER);
-            JButton btnKoupit = new JButton(jeMax ? "Vylepšeno naplno" : "Vylepšit");
-            btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-            if (jeMax) {
-                btnKoupit.setEnabled(false);
-                btnKoupit.setBackground(new Color(255, 215, 0));
-            } else {
-                btnKoupit.setEnabled(maPenize);
-                btnKoupit.addActionListener(e -> {
-                    simulator.odectiPenize(cena);
-                    simulator.zvysUrovenRychlostiPasu();
-                    aktualizujNabidku();
-                });
+            for (StavHry.Vylepseni v : StavHry.Vylepseni.values()) {
+                seznamVylepseni.add(vytvorPolozkuVylepseni(v));
             }
-            polozka.add(btnKoupit, BorderLayout.SOUTH);
-            seznamVylepseni.add(polozka);
         } else {
             String[][] dostupnaHudba = {
                     {"Tereza Kerndlová - Schody z nebe", "Tereza_Kerndlová_-_Schody_z_nebe", "500"},
@@ -291,6 +271,86 @@ public class ObchodMenu extends JPanel {
 
     private String getTypText(int typ) {
         return TypZbozi.zKodu(typ).getNazev();
+    }
+
+    /** Lidský název vylepšení pro obchod. */
+    private String nazevVylepseni(StavHry.Vylepseni v) {
+        switch (v) {
+            case RYCHLOST_PASU: return "Nový motor pásu";
+            case BONUS_ODMEN: return "Věrnostní program";
+            case TRPELIVOST: return "Příjemné prostředí";
+            case DRUHY_SCANNER: return "Druhý scanner";
+            case AUTO_SKEN_KUSOVE: return "Chytré kódy";
+            default: return v.name();
+        }
+    }
+
+    /** Popis efektu vylepšení. */
+    private String popisVylepseni(StavHry.Vylepseni v) {
+        switch (v) {
+            case RYCHLOST_PASU: return "Zrychlí pohyb zboží po páse, zkrátí prodlevu generování a urychlí úklid.";
+            case BONUS_ODMEN: return "Zvýší peníze i XP za každý nákup (+15 % za úroveň).";
+            case TRPELIVOST: return "Zákazníci vydrží déle v klidu (+30 % trpělivosti za úroveň).";
+            case DRUHY_SCANNER: return "Umožní mít na scanneru dvě položky zároveň.";
+            case AUTO_SKEN_KUSOVE: return "Kusové zboží (s kódem) se odbaví samo bez klikání.";
+            default: return "";
+        }
+    }
+
+    /** Cena dalšího stupně daného vylepšení podle aktuální úrovně. */
+    private int cenaVylepseni(StavHry.Vylepseni v, int uroven) {
+        switch (v) {
+            case RYCHLOST_PASU: return 5000 * (uroven + 1);
+            case BONUS_ODMEN: return 4000 * (uroven + 1);
+            case TRPELIVOST: return 3500 * (uroven + 1);
+            case DRUHY_SCANNER: return 8000;
+            case AUTO_SKEN_KUSOVE: return 10000;
+            default: return 5000 * (uroven + 1);
+        }
+    }
+
+    private JPanel vytvorPolozkuVylepseni(StavHry.Vylepseni v) {
+        int uroven = simulator.getUrovenVylepseni(v);
+        boolean jeMax = (uroven >= v.maxUroven);
+        int cena = cenaVylepseni(v, uroven);
+        boolean maPenize = simulator.getAktualniPenize() >= cena;
+
+        JPanel polozka = new JPanel(new BorderLayout());
+        polozka.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        polozka.setBackground(jeMax ? new Color(255, 235, 150) : Color.WHITE);
+
+        // Přepínatelná vylepšení (max úroveň 1) ukazují Zap/Vyp místo úrovně.
+        String urovenText = (v.maxUroven == 1)
+                ? (jeMax ? "Stav: ZAPNUTO" : "Stav: vypnuto")
+                : ("Úroveň: " + uroven + " / " + v.maxUroven);
+
+        String infoHtml = "<html><div style='width: 150px; text-align: center; padding: 5px;'>"
+                + "<b style='font-size:15px;'>" + nazevVylepseni(v) + "</b><br><br>"
+                + "<span style='font-size:11px;'>" + popisVylepseni(v) + "</span><br><br>"
+                + "<b style='font-size:13px;'>" + urovenText + "</b><br><br>"
+                + "<b style='font-size:16px; color:#1a5276;'>"
+                + (jeMax ? "MAXIMÁLNÍ ÚROVEŇ" : (maPenize ? cena : "<font color='red'>" + cena) + " Kč")
+                + "</b></div></html>";
+
+        JLabel lblInfo = new JLabel(infoHtml, SwingConstants.CENTER);
+        polozka.add(lblInfo, BorderLayout.CENTER);
+
+        JButton btnKoupit = new JButton(jeMax ? "Vylepšeno naplno" : "Vylepšit");
+        btnKoupit.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        if (jeMax) {
+            btnKoupit.setEnabled(false);
+            btnKoupit.setBackground(new Color(255, 215, 0));
+        } else {
+            btnKoupit.setEnabled(maPenize);
+            btnKoupit.addActionListener(e -> {
+                if (simulator.kupVylepseni(v, cena)) {
+                    aktualizujNabidku();
+                }
+            });
+        }
+        polozka.add(btnKoupit, BorderLayout.SOUTH);
+        return polozka;
     }
 
     private int vypocitejCenuOdemknuti(Zbozi z) {
