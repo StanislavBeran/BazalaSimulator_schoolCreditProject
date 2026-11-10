@@ -71,6 +71,10 @@ public class BazalaSimulator extends JPanel {
     private static final int XP_FINALNI_DELITEL = 4;   // zmírnění celkového zisku XP
     private static final int XP_MINIMUM = 5;           // minimální XP za jakýkoli nákup
 
+    // Prahy spokojenosti (podíl zbývající trpělivosti) pro kombo.
+    private static final double PRAH_SPOKOJENOSTI_KOMBO = 0.6; // nad = kombo roste
+    private static final double PRAH_NASTVANI = 0.3;           // pod = kombo se ruší
+
     public BazalaSimulator(Menu okno) {
         this.hlavniOkno = okno;
         setLayout(new BorderLayout());
@@ -180,21 +184,21 @@ public class BazalaSimulator extends JPanel {
             settingsLabel.setBounds(w - 80, h - 80, 60, 60);
         }
         if (pasGif != null) {
-            double scaleW = (double) getWidth() / 1280;
-            double scaleH = (double) getHeight() / 720;
+            double scaleW = Rozmery.scaleX(getWidth());
+            double scaleH = Rozmery.scaleY(getHeight());
             int scaledX = (int)(PAS_X * scaleW);
             int scaledY = (int)(PAS_Y * scaleH);
             int scaledW = (int)(PAS_W * scaleW);
             int scaledH = (int)(PAS_H * scaleH);
             pasGif.setBounds(scaledX, scaledY, scaledW, scaledH);
             if (spravcePasu != null) {
-                spravcePasu.setBounds(scaledX, scaledY, (int)(1280 * scaleW), scaledH);
+                spravcePasu.setBounds(scaledX, scaledY, (int)(Rozmery.REF_SIRKA * scaleW), scaledH);
             }
 
         }
 
-        double scaleW = (double) w / 1280;
-        double scaleH = (double) h / 720;
+        double scaleW = Rozmery.scaleX(w);
+        double scaleH = Rozmery.scaleY(h);
 
         if (isFullscreen && fullscreenOverlay != null) {
             int fw = (int)(FS_W * scaleW);
@@ -313,9 +317,7 @@ public class BazalaSimulator extends JPanel {
     }
     public void nactiVylepseni(String vylepseni) {
         stav.setVylepseni(vylepseni);
-        if (spravcePasu != null) {
-            spravcePasu.aplikujVylepseniRychlosti(getUrovenRychlostiPasu());
-        }
+        aplikujVsechnaVylepseni();
     }
     public void nactiOdemceneZbozi(List<Integer> odemceneZbozi) {
         stav.setOdemceneZbozi(odemceneZbozi);
@@ -429,16 +431,70 @@ public class BazalaSimulator extends JPanel {
             panelVracenychPenez.vycistiHromadku();
         }
         if (uspesne) {
-            int xpZaNakup = vypocitejXpZaNakup(panelObrazovky.getPolozkyNaUctence());
-            nactiXp(stav.getCelkoveXp() + xpZaNakup);
+            SpravceZvuku.prehraj("mince"); // cinknutí kasy při zaplacení
 
-            nactiPenize(stav.getPenize() + cenaNakupu);
-            vypisDoKonzole("Získáno " + cenaNakupu + " Kč a " + xpZaNakup + " XP.");
+            // Spokojenost zákazníka podle zbývající trpělivosti v okamžiku platby.
+            double spokojenost = (spravcePasu != null) ? spravcePasu.getPomerTrpelivosti() : 1.0;
+
+            // Kombo: bezchybný a spokojený zákazník ho zvedá, naštvaný ho nuluje.
+            if (spokojenost >= PRAH_SPOKOJENOSTI_KOMBO) {
+                stav.zvysKombo();
+            } else if (spokojenost < PRAH_NASTVANI) {
+                stav.vynulujKombo();
+            }
+
+            // Výsledné násobiče: vylepšení (bonus) × kombo × spokojenost (min 0.5).
+            double faktorSpokojenosti = 0.5 + 0.5 * spokojenost; // 0.5..1.0
+            double nasobic = stav.getNasobicOdmen() * stav.getNasobicKomba() * faktorSpokojenosti;
+
+            int zakladXp = vypocitejXpZaNakup(panelObrazovky.getPolozkyNaUctence());
+            int xpZaNakup = Math.max(1, (int) Math.round(zakladXp * nasobic));
+            int penizeZaNakup = Math.max(0, (int) Math.round(cenaNakupu * nasobic));
+
+            nactiXp(stav.getCelkoveXp() + xpZaNakup);
+            nactiPenize(stav.getPenize() + penizeZaNakup);
+
+            // Zaevidování do směny a statistik.
+            boolean cilSplnen = stav.zaevidujNakup(penizeZaNakup);
+
+            StringBuilder zprava = new StringBuilder();
+            zprava.append("Získáno ").append(penizeZaNakup).append(" Kč a ").append(xpZaNakup).append(" XP");
+            if (stav.getKomboSerie() >= 2) {
+                zprava.append(" (kombo x").append(stav.getKomboSerie()).append(")");
+            }
+            zprava.append(".");
+            vypisDoKonzole(zprava.toString());
+
+            if (spokojenost < PRAH_NASTVANI) {
+                vypisDoKonzole("😠 Zákazník odešel naštvaný - kombo ztraceno.");
+            }
+
+            aktualizujUkazatelSmeny();
+            if (cilSplnen) {
+                oznamSplneniCile();
+            }
         }
         panelObrazovky.vycistiUctenku();
 
         if (spravcePasu != null) {
             spravcePasu.dokonciNakupAZacniNovy();
+        }
+    }
+
+    /** Oznámí splnění denního cíle, posune směnu a nastaví nový cíl. */
+    private void oznamSplneniCile() {
+        int odmena = 300 + stav.getCisloSmeny() * 100;
+        nactiPenize(stav.getPenize() + odmena);
+        vypisDoKonzole("🎯 Cíl směny splněn! Bonus " + odmena + " Kč.");
+        stav.setCisloSmeny(stav.getCisloSmeny() + 1);
+        stav.zahajNovouSmenu();
+        aktualizujUkazatelSmeny();
+    }
+
+    /** Aktualizuje zobrazení průběhu směny v konzoli/panelu (lehká zpětná vazba). */
+    private void aktualizujUkazatelSmeny() {
+        if (panelKonzole != null) {
+            panelKonzole.nastavSmena(stav.getCisloSmeny(), stav.getTrzbaSmeny(), stav.getCilSmeny());
         }
     }
     private int vypocitejXpZaNakup(List<Zbozi> uctenka) {
@@ -482,6 +538,21 @@ public class BazalaSimulator extends JPanel {
         }
         stav.setVybranaHudba(vybrana);
         stav.setOdemcenaHudba(odemcena);
+
+        // Zahájení (pokračování) směny: nastaví cíl podle čísla směny a levelu.
+        stav.zahajNovouSmenu();
+        stav.vynulujKombo();
+        aktualizujUkazatelSmeny();
+    }
+
+    /** Načte uložené statistiky/rekordy a číslo směny z uložené hry. */
+    public void nactiStatistiky(int celkemObslouzeno, int nejlepsiKombo, int nejlepsiTrzbaSmeny,
+                                int celkemVydelano, int cisloSmeny) {
+        stav.setCelkemObslouzeno(celkemObslouzeno);
+        stav.setNejlepsiKombo(nejlepsiKombo);
+        stav.setNejlepsiTrzbaSmeny(nejlepsiTrzbaSmeny);
+        stav.setCelkemVydelano(celkemVydelano);
+        stav.setCisloSmeny(cisloSmeny);
     }
     public int getAktualniPenize() {
         return stav.getPenize();
@@ -509,7 +580,9 @@ public class BazalaSimulator extends JPanel {
     public void ulozHru() {
         if (!stav.jeHraNactena()) return;
         SpravceSouboru.ulozHruDoSouboru(stav.getAktualniSlot(), stav.getJmenoObchodu(), String.valueOf(stav.getPenize()),
-                stav.getCelkoveXp(), stav.getVylepseni(), stav.getOdemceneZbozi(), stav.getVybranaHudba(), stav.getOdemcenaHudba());
+                stav.getCelkoveXp(), stav.getVylepseni(), stav.getOdemceneZbozi(), stav.getVybranaHudba(), stav.getOdemcenaHudba(),
+                stav.getCelkemObslouzeno(), stav.getNejlepsiKombo(), stav.getNejlepsiTrzbaSmeny(),
+                stav.getCelkemVydelano(), stav.getCisloSmeny());
         System.out.println("Hra byla úspěšně uložena!");
     }
     public void zobrazObchod() {
@@ -517,6 +590,16 @@ public class BazalaSimulator extends JPanel {
             obchodMenu.aktualizujNabidku();
             obchodMenu.setVisible(true);
         }
+    }
+
+    /** Pozastaví běh pásu (pohyb i spawn). Volá se při otevření menu/obchodu. */
+    public void pozastavHru() {
+        if (spravcePasu != null) spravcePasu.pozastav();
+    }
+
+    /** Obnoví běh pásu po zavření menu/obchodu, pokud hra běží. */
+    public void obnovHru() {
+        if (spravcePasu != null && stav.jeHraNactena()) spravcePasu.obnov();
     }
     public int getUrovenRychlostiPasu() {
         return stav.getUrovenRychlostiPasu();
@@ -526,6 +609,51 @@ public class BazalaSimulator extends JPanel {
         int novaUroven = stav.zvysUrovenRychlostiPasu();
         if (novaUroven >= 0 && spravcePasu != null) {
             spravcePasu.aplikujVylepseniRychlosti(novaUroven);
+        }
+    }
+
+    /** Násobič trpělivosti z vylepšení - čte ho SpravcePasu při startu zákazníka. */
+    public double getNasobicTrpelivosti() {
+        return stav.getNasobicTrpelivosti();
+    }
+
+    /** True, pokud je aktivní druhý scanner (SpravcePasu povolí 2 položky na scanneru). */
+    public boolean maDruhyScanner() {
+        return stav.maDruhyScanner();
+    }
+
+    /** True, pokud se kusové zboží odbavuje automaticky. */
+    public boolean maAutoSkenKusove() {
+        return stav.maAutoSkenKusove();
+    }
+
+    public int getUrovenVylepseni(StavHry.Vylepseni v) {
+        return stav.getUrovenVylepseni(v);
+    }
+
+    /**
+     * Koupě vylepšení daného druhu: strhne cenu, zvýší úroveň a aplikuje
+     * dopady do běžící hry. Vrací true při úspěchu.
+     */
+    public boolean kupVylepseni(StavHry.Vylepseni druh, int cena) {
+        if (stav.getPenize() < cena) {
+            vypisDoKonzole("Chyba: Nedostatek peněz na vylepšení!");
+            return false;
+        }
+        int novaUroven = stav.zvysUrovenVylepseni(druh);
+        if (novaUroven < 0) {
+            vypisDoKonzole("Chyba: Toto vylepšení je už na maximu!");
+            return false;
+        }
+        odectiPenize(cena);
+        aplikujVsechnaVylepseni();
+        return true;
+    }
+
+    /** Promítne aktuální úrovně všech vylepšení do běžící hry. */
+    private void aplikujVsechnaVylepseni() {
+        if (spravcePasu != null) {
+            spravcePasu.aplikujVylepseniRychlosti(stav.getUrovenRychlostiPasu());
         }
     }
     public void resetujHerniPole() {
@@ -565,6 +693,8 @@ public class BazalaSimulator extends JPanel {
         if (panelVracenychPenez != null) {
             panelVracenychPenez.vycistiHromadku();
         }
+        stav.vynulujKombo();
+        aktualizujUkazatelSmeny();
         vypisDoKonzole("Zákazník byl resetován. Přichází nový.");
         spustSimulaci();
     }

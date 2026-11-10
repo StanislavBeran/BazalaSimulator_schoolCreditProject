@@ -22,6 +22,11 @@ public class HerniPanel extends JPanel {
     // Seznam zpráv pro Konzoli
     private List<String> zpravy = new ArrayList<>();
 
+    // Průběh aktuální směny (zobrazeno v hlavičce konzole).
+    private int smenaCislo = 1;
+    private int smenaTrzba = 0;
+    private int smenaCil = 0;
+
     public HerniPanel(Typ typPanelu) {
         this.typPanelu = typPanelu;
         setOpaque(false);
@@ -53,6 +58,14 @@ public class HerniPanel extends JPanel {
         if (zpravy.size() > 4) {
             zpravy.remove(0);
         }
+        repaint();
+    }
+
+    /** Nastaví průběh aktuální směny zobrazovaný v hlavičce konzole. */
+    public void nastavSmena(int cislo, int trzba, int cil) {
+        this.smenaCislo = cislo;
+        this.smenaTrzba = trzba;
+        this.smenaCil = cil;
         repaint();
     }
 
@@ -100,6 +113,15 @@ public class HerniPanel extends JPanel {
         } else if (typPanelu == Typ.KONZOLE) {
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
             int y = 25;
+
+            // Hlavička: průběh směny (cíl tržby).
+            if (smenaCil > 0) {
+                g2.setColor(new Color(255, 215, 0));
+                String smenaText = "Směna " + smenaCislo + ": " + smenaTrzba + " / " + smenaCil + " Kč";
+                g2.drawString(smenaText, 20, y);
+                y += 20;
+            }
+
             for (String zprava : zpravy) {
                 if(zprava.contains("Chyba")){
                     g2.setColor(Color.red);
