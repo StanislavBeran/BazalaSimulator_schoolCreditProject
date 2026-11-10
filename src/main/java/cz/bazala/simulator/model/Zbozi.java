@@ -33,4 +33,31 @@ public class Zbozi {
     public boolean jeSkenovane() {
         return TypZbozi.jeSkenovane(typ);
     }
+
+    /** True, pokud se zboží váží (má definované rozpětí váhy). */
+    public boolean jeVazene() {
+        return minVaha > 0 && maxVaha > 0;
+    }
+
+    /**
+     * Vytvoří kopii zboží pro položku na účtence se zadaným množstvím.
+     * Podtržítka v názvu nahradí mezerami, aby se účtenka hezky vypsala.
+     * Nahrazuje dřívější ruční kopírování přes konstruktor na straně UI.
+     */
+    public Zbozi kopieSMnozstvim(int mnozstvi) {
+        Zbozi kopie = new Zbozi(nazev, id, typ, cena, minVaha, maxVaha, mnozstvi, lvlOdemknuti, zkracenyNazev);
+        kopie.nazev = kopie.nazev.replace('_', ' ');
+        return kopie;
+    }
+
+    // --- Gettery (zapouzdření; pole zůstávají veřejná kvůli zpětné kompatibilitě) ---
+    public String getNazev() { return nazev; }
+    public int getId() { return id; }
+    public int getTyp() { return typ; }
+    public int getCena() { return cena; }
+    public int getMinVaha() { return minVaha; }
+    public int getMaxVaha() { return maxVaha; }
+    public int getMaxPocet() { return maxPocet; }
+    public int getLvlOdemknuti() { return lvlOdemknuti; }
+    public String getZkracenyNazev() { return zkracenyNazev; }
 }

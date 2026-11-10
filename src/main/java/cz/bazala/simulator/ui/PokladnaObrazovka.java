@@ -449,10 +449,7 @@ public class PokladnaObrazovka extends JPanel {
     }
 
     public void pridejPolozkuNaUctenku(Zbozi z, int mnozstvi) {
-        Zbozi polozka = new Zbozi(z.nazev, z.id, z.typ, z.cena, z.minVaha,
-                z.maxVaha, mnozstvi, z.lvlOdemknuti, z.zkracenyNazev);
-
-        polozka.nazev = polozka.nazev.replace('_', ' ');
+        Zbozi polozka = z.kopieSMnozstvim(mnozstvi);
 
         polozkyNaUctence.add(polozka);
 
